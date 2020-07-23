@@ -201,5 +201,38 @@
             document.getElementById('end-of-year-button').disabled = true;
             document.getElementById('college-button').disabled = true;
         }
+
+        picked_card = "{{ player_info.picked_card }}";
+        done_action = "{{ player_info.done_action }}";
+        end_of_year = "{{ player_info.end_of_year }}";
+        ready_to_start = "{{ game.ready_to_start }}";
+        if(picked_card.toLowerCase() == "true") {
+            document.getElementById('pick-card-button').disabled = true;
+            document.getElementById('do-action-button').disabled = false;
+            document.getElementById('no-action-button').disabled = false;
+        }
+        else if((ready_to_start.toLowerCase() == "false")) {    // game not started yet
+            document.getElementById('pick-card-button').disabled = true;
+            document.getElementById('do-action-button').disabled = true;
+            document.getElementById('no-action-button').disabled = true;
+        }
+        else {  // have not yet picked card
+            document.getElementById('pick-card-button').disabled = false;
+            document.getElementById('do-action-button').disabled = true;
+            document.getElementById('no-action-button').disabled = true;
+        }
+
+        if(done_action.toLowerCase() == "true") {
+            document.getElementById('do-action-button').disabled = true;
+            document.getElementById('no-action-button').disabled = true;
+        }
+
+        if(end_of_year.toLowerCase() == "true") {
+            document.getElementById('end-of-year-button').disabled = false;
+        }
+        else {
+            document.getElementById('end-of-year-button').disabled = true;
+        }
+
     </script>
 {% endblock %}

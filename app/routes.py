@@ -55,7 +55,7 @@ def start_game():
 @login_required
 def join_game():
     game_id = request.args.get('game_id', type=int)  # get the game id the player specified
-    if((game_id == None) or (Game.query.filter_by(id=game_id).first() == None)):
+    if((game_id == None) or (Game.query.filter_by(id=game_id).first() == None) or (Game.query.filter_by(id=game_id).first().roll_order == True)):  # cannot join game if already started
         flash("Invalid Game ID")
         return redirect(url_for('player'))
     player = get_cur_player()
@@ -85,6 +85,17 @@ def remove_game(game_id):
     player = get_cur_player()
     player_info = Player_Info.query.filter_by(game_id=game_id, player_id=player.id).first()
     player_info.active = False  # keep the player info in the database in case the user wants to re-join
+    turn_num = player_info.turn_num
+    game = get_game(player_info.cur_game)
+    db.session.delete(player_info)
+
+    # need to update roll order since player left
+    player_infos = get_all_player_infos(game.id)
+    for pi in player_infos:
+        if(pi.turn_num > turn_num):  # shift earlier in roll order to replace player that left
+            pi.turn_num -= 1
+    game.num_players -= 1
+
     db.session.commit()
     return redirect(url_for('player'))
 
@@ -156,6 +167,9 @@ def set_ready():
 
     game = get_game(player.cur_game)
     switch_turn(game)
+
+    if(game.cur_turn == 1):  # went through everyone, ready to start game
+        game.ready_to_start = True
 
     db.session.commit()
     return redirect(url_for('player_info'))
@@ -408,6 +422,8 @@ def pick_card(game_id):
             player_info.points += card.amount
         else:
             player_info.money += card.amount
+
+    player_info.picked_card = True
 
     db.session.commit()
     return redirect(url_for('player_info'))
@@ -1492,6 +1508,7 @@ def get_announcements(player_info):
 
         if((game.first().cur_turn == 1) and (player_info.done_action)):    # already went through a round a turns, end of year
             announcements["End of year"] = "end_of_year"
+            player_info.end_of_year = True
         else:  # don't really want/need these to show up at end of year
             cur_turn = game.join(Player_Info, Player_Info.turn_num == Game.cur_turn).add_columns(Player_Info.player_id).join(Player, Player.id == Player_Info.player_id).add_columns(Player.name).first().name
             announcements[cur_turn + "'s turn"] = "turn"
@@ -1747,7 +1764,9 @@ def end_of_year():
     player_info.med_prob = False
     player_info.depressed = False
     player_info.buy_organic = False
+    player_info.picked_card = False
     player_info.done_action = False
+    player_info.end_of_year = False
 
     # handle college scholarships
     if((player_info.path == "college") and (player_info.age < 23) and (not player_info.mil_to_college)):  # not graduating yet, free tuition if mil -> college

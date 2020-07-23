@@ -311,7 +311,7 @@
             <td class="type">Miscellaneous $$$</td>
             <td class="details">
                 {% if rent != 0 %}
-                <p>Rent: No family houses are for annual rent</p>
+                <p>Rent: No-family houses are for annual rent</p>
                 {% endif %}
                 {% if car == "Public Transit" %}
                 <p>Public Transit: cost is annual fee</p>
@@ -604,6 +604,11 @@
                 document.getElementById("test-auto-ins-checkbox").disabled = true;
             else    
                 document.getElementById("test-auto-ins-checkbox").disabled = false;
+        }
+
+        end_of_year = "{{ player_info.end_of_year }}";
+        if(end_of_year.toLowerCase() == "false") {
+            document.getElementById('pay-button').disabled = true;
         }
         
     </script>
