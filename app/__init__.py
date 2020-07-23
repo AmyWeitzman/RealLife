@@ -13,7 +13,7 @@ migrate = Migrate(app, db)
 login = LoginManager(app)
 login.login_view = 'home'
 moment = Moment(app)
-socketio = SocketIO(app)
+#socketio = SocketIO(app)
 
 from app import routes, models
 
