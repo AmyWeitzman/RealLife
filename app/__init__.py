@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_moment import Moment
-from flask_socketio import SocketIO, emit
+#from flask_socketio import SocketIO, emit
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -42,5 +42,5 @@ from app import routes, models
 #     socketio.emit('output', data, room=client_id)
 #     print('sending message "{}" to client "{}".'.format(data, client_id))
 
-if __name__ == '__main__':
-    socketio.run(app)
+#if __name__ == '__main__':
+#    socketio.run(app)

@@ -1,5 +1,5 @@
 from flask import render_template, flash, redirect, url_for, request
-from app import app, db, socketio
+from app import app, db#, socketio
 from app.forms import LoginForm
 from flask_login import current_user, login_required, login_user
 from app.models import Player, Player_Info, Game, Card, Job, Vehicle, House
