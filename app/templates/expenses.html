@@ -1,0 +1,610 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/expenses.css') }}">
+    <table>
+        <tr><th id="table-title" colspan="6">YEARLY EXPENSES</th></tr>
+        <tr>
+            <th>Type</th>
+            <th>Details</th>
+            <th>Cost</th>
+            <th class="total-col">Total</th>
+            <th class="test" id="test-title">Test</th>
+        </tr>
+        <tr>
+            <td class="type">Job Stress</td>
+            <td class="details">
+                <ul>
+                    <li>based on income</li>
+                    <li>higher paying jobs are more stressful</li>
+                </ul>
+            </td>
+            <td>
+                <p>minus (base salary / 1000) points</p>
+                <span class="once">* for military, use current salary instead</span>
+            </td>
+            <td class="amount">-<span id="job-stress">{{ "{:,.0f}".format(job_stress) }}</span> points</td>
+
+            <td class="blank test" rowspan="5">
+                <form action="{{ url_for('test_expenses') }}">
+                    <label for="job"><b>Job:</b></label>
+                    <select name="job" id="job" class="dropdown">
+                        <option value="{{ player_info.job }}">{{ player_info.job }}</option>
+                        {% for job in jobs %}
+                        <option value="{{ job.title }}">{{ job.title }}</option>
+                        {% endfor %}
+                    </select><br>
+
+                    <label for="house"><b>House:</b></label>
+                    <select name="house" id="house" class="dropdown" onchange="updateTestOptions()">
+                        <option value="{{ player_info.house }}">{{ player_info.house }}</option>
+                        {% for house in houses %}
+                        <option value="{{ house.name }}">{{ house.name }}</option>
+                        {% endfor %}
+                    </select><br>
+                    {% if player_info.house != "None" %}
+                        <input type="checkbox" name="test-home-ins" class="checkbox" value="test-home-ins" id="test-home-ins-checkbox">
+                    {% else %}
+                        <input type="checkbox" name="test-home-ins" class="checkbox" value="test-home-ins" id="test-home-ins-checkbox" disabled>
+                    {% endif %}
+                        <label for="test-home-ins" class="once">w/ home insurance</label><br>
+
+                    <label for="car"><b>Vehicle:</b></label>
+                    <select name="car" id="car" class="dropdown" onchange="updateTestOptions()">
+                        <option value="{{ player_info.car }}">{{ player_info.car }}</option>
+                        {% for car in cars %}
+                        <option value="{{ car.name }}">{{ car.name }}</option>
+                        {% endfor %}
+                    </select><br>
+                    {% if player_info.house != "None" %}
+                        <input type="checkbox" name="test-auto-ins" class="checkbox" value="test-auto-ins" id=test-auto-ins-checkbox>
+                    {% else %}
+                        <input type="checkbox" name="test-auto-ins" class="checkbox" value="test-auto-ins" id=test-auto-ins-checkbox disabled>
+                    {% endif %}
+                        <label for="test-auto-ins" class="once">w/ auto insurance</label><br>
+
+                    <input type="checkbox" name="test-health-ins" class="checkbox" value="test-health-ins" id="test-health-ins-checkbox">
+                    <label for="test-health-ins"><b>Health insurance?</b></label><br>
+
+                    <input type="checkbox" name="test-married" class="checkbox" value="test-married" id="test-married-checkbox">
+                    <label for="test-married"><b>Married?</b></label><br>
+
+                    <p><b>Have child:</b></p>
+                    <input type="radio" name="test-kids" value="test-single-child">
+                    <label for="test-single-child" class="left-radio">Single</label>
+                    <input type="radio" name="test-kids" value="test-twins">
+                    <label for="test-twins" class="left-radio">Twins</label>
+                    <input type="radio" name="test-kids" value="test-kids-none" checked>
+                    <label for="test-kids-none">None</label><br>
+
+                    <label for="test-loan"><b>Loan:</b></label><br>
+                    <b id="dollar-sign">$</b> <input type="text" class="textbox" name="test-loans-amount"><br>
+
+                    <button type="submit" id="start-test-button">TEST</button>
+                </form>
+            </td>
+        </tr>
+        <tr>
+            <td class="type">House Stress</td>
+            <td class="details">
+                <ul>
+                    <li>based on house cost</li>
+                </ul>
+            </td>
+            <td>
+                <span class="italic">see houses chart</span>
+            </td>
+            <td class="amount">-<span id="house-stress">{{ "{:,.0f}".format(house_stress) }}</span> points</td>
+        </tr>
+        <tr>
+            <td class="type">Taxes</td>
+            <td class="details">
+                <ul>
+                    <li>based on income level</li>
+                </ul>
+            </td>
+            <td>
+                <span class="italic">see references chart</span>
+                {% if player_info.job == "Accountant" %}
+                <p class="once">* Accountant does not pay taxes</p>
+                {% elif player_info.married %}
+                <p class="once">* 50% off since married</p>
+                {% endif %}
+            </td>
+            <td class="amount">$<span id="taxes">{{ "{:,.0f}".format(taxes) }}</span></td>
+        </tr>
+        <tr>
+            <td class="type">Insurance</td>
+            <td class="details">
+                <ul>
+                    <li><b>auto:</b> covers car accident (except chiropractor)</li>
+                    <li><b>health:</b> covers major medical problems, chiropractor, psychologist</li>
+                    <span class="once">*NOTE: covered by parents until turn 26</span>
+                    <li><b>home:</b> covers earthquake, fire damage</li>
+                </ul>
+            </td>
+            <td>
+                <p><b>auto:</b><span class="italic"> see vehicles chart</span></p>
+                {% if player_info.job == "Mechanic" %}
+                <p  class="once">* Free auto insurance for mechanic</p>
+                {% endif %}
+                <p><b>health:</b> $500 per person</p>
+                {% if player_info.age < 26 %}
+                <p class="once">* Still covered by parents' health insurance</p>
+                {% endif %}
+                {% if benefits %}
+                <p class="once">* Free health insurance through military benefits</p>
+                {% endif %}
+                {% if player_info.job == "Doctor" %}
+                <p  class="once">* Doctor gets 10% off health insurance</p>
+                {% endif %}
+                <p><b>home:</b><span class="italic"> see houses chart</span></p>
+                {% if player_info.job == "Firefighter" %}
+                <p  class="once">* Free home insurance for firefighter</p>
+                {% endif %}
+                </ul>
+            </td>
+            <td class="amount">
+                <p><b>auto:</b> $<span id="auto-ins-val">{{ '{:,.0f}'.format(auto_ins) }}</span></p>
+                <p><b>health:</b> $<span id="health-ins-val">{{ '{:,.0f}'.format(health_ins) }}</span></p>
+                <p><b>home:</b> $<span id="home-ins-val">{{ '{:,.0f}'.format(home_ins) }}</span></p>
+            </td>
+        </tr>
+        <tr>
+            <td class="type">Shopping</td>
+            <td class="details">
+                <ul>
+                    <li>groceries, essentials</li>
+                </ul>
+            </td>
+            <td>
+                <p>$1000 per person</p>
+                {% if player_info.path == "college" %}
+                <p class="once">* college students get 50% off</p>
+                {% endif %}
+            </td>
+            <td class="amount">$<span id="shopping">{{ '{:,.0f}'.format(shopping) }}</span></td>
+        </tr>
+        <tr>
+            <td class="type">Car Maintenance</td>
+            <td class="details">
+                <ul>
+                    <li>only applicable if have small/large family vehicle</li>
+                </ul>
+            </td>
+            <td>
+                <p>$100</p>
+                {% if player_info.job == "Mechanic" %}
+                <p class="once">* free for mechanic</p>
+                {% endif %}
+            </td>
+            <td class="amount">$<span id="car-maintain">{{ '{:,.0f}'.format(car_maintenance) }}</span></td>
+        </tr>
+        <tr>
+            <td class="type">Maid Service</td>
+            <td class="details">
+                <ul>
+                    <li>only applicable if have house</li>
+                </ul>
+            </td>
+            <td> 
+                <span class="italic">see houses chart</span>  
+                {%  if player_info.was_janitor %}
+                <p class="once">* learned cleaning skills as janitor so no pay maid</p>
+                {% endif %}
+            </td>
+            <td class="amount">$<span id="maid">{{ '{:,.0f}'.format(maid) }}</span></td>
+        </tr>
+        <tr>
+            <td class="type">Utilities</td>
+            <td class="details">
+                <ul>
+                    <li>only applicable if have house</li>
+                </ul>
+            </td>
+            <td>
+                <p>$50 + 10% cost of house</p>
+                {% if player_info.job in ["Plumber", "Electrician"] %}
+                <p class="once">* {{ player_info.job }} gets 50% off</p>
+                {% endif %}
+            </td>
+            <td class="amount">$<span id="utils">{{ '{:,.0f}'.format(utilities) }}</span></td>
+        </tr>
+        <tr>
+            <td class="type">Dental Fees</td>
+            <td class="details">
+            </td>
+            <td>
+                <p>$10 per person</p>
+                {% if player_info.job == "Dentist" %}
+                <p class="once">* Dentist does not pay dental fees</p>
+                {% endif %}
+            </td>
+            <td class="amount">$<span id="dental">{{ '{:,.0f}'.format(dental_fees) }}</span></td>
+        </tr>
+        <tr>
+            <td class="type">Eat-out / Entertainment</td>
+            <td class="details">
+            </td>
+            <td>
+                <p><b>salary < $50,000:</b> 1% of salary</p>
+                <p><b>salary < $100,000:</b> 5% of salary</p>
+                <p><b>salary >= $100,000:</b> 10% of salary</p>
+                {% if player_info.job in ["Military", "Cashier", "Barista"] %}
+                    <p class="once">* {{ player_info.job }} gets 50% off</p>
+                {% endif %}
+                {% if player_info.path == "college" %}
+                    <p class="once">* covered by tuition</p>
+                {% endif %}
+                {% if player_info.path != "military" and benefits %}
+                    <p class="once">* military benefits: 50% off</p>
+                {% endif %}
+            </td>
+            <td class="amount">$<span id="eat-ent">{{ '{:,.0f}'.format(eat_ent) }}</span></td>
+        </tr>
+        <tr>
+            <td class="type">Gas</td>
+            <td class="details">
+                <ul>
+                    <li>only applicable if have small/large family vehicle</li>
+                </ul>
+            </td>
+            <td> 
+                <span class="italic">see vehicles chart</span>  
+                {% if player_info.job == "Truck Driver" %}
+                <p class="once">* free for truck driver</p>
+                {% endif %}
+            </td>
+            <td class="amount">$<span id="gas">{{ '{:,.0f}'.format(gas) }}</span></td>
+        </tr>
+        <tr>
+            <td class="type">Tax Prep Fee</td>
+            <td class="details">
+            </td>
+            <td> 
+                <span>$100</span>  
+                {% if player_info.job == "Accountant" %}
+                <p class="once">* free for accountant</p>
+                {% endif %}
+            </td>
+            <td class="amount">$<span id="tax-prep">{{ '{:,.0f}'.format(tax_prep) }}</span></td>
+        </tr>
+        <tr>
+            <td class="type">Miscellaneous Points</td>
+            <td class="details">
+                {% if player_info.buying_organic %}
+                <p>Buying organic: get 50 points per person</p>
+                {% endif %}
+                {% if player_info.depressed %}
+                <p>Depression: gain 10% of points back</p>
+                {% endif %}
+                {% if my_loans > 0 %}
+                <p>Loans: lose (loans / 10,000) points</p>
+                {% endif %}
+            </td>
+            <td>
+                {% if player_info.buying_organic %}
+                <p class="gain">Buying organic: +{{ "{:,.0f}".format(50 * num_people) }} points</p>
+                {% endif %}
+                {% if player_info.have_pet %}
+                <p class="gain">Pet: +10 points</p>
+                {% endif %}
+                {% if player_info.have_pool %}
+                <p class="gain">Pool: +250 points</p>
+                {% endif %}
+                {% if player_info.depressed %}
+                <p class="gain">Depression: +{{ "{:,.0f}".format(abs(player_info.points * 0.1)) }} points</p>
+                {% endif %}
+                {% if my_job == "Teacher" %}
+                <p class="gain">Teacher Appreciation: +100 points</p>
+                {% endif %}
+                {% if my_path == "college" and my_job != "None" %}
+                <p class="loss">College Job Stress: -50 points</p>
+                {% endif %}
+                {% if my_loans > 0 %}
+                <p class="loss">Loans: -{{ "{:,.0f}".format(loan_pts) }} points</p>
+                {% endif %}
+            </td>
+            <td class="amount"><span id="misc-points">{{ '{:,.0f}'.format(misc_points) }} points</span></td>
+        </tr>
+        <tr>
+            <td class="type">Miscellaneous $$$</td>
+            <td class="details">
+                {% if rent != 0 %}
+                <p>Rent: No family houses are for annual rent</p>
+                {% endif %}
+                {% if car == "Public Transit" %}
+                <p>Public Transit: cost is annual fee</p>
+                {% endif %}
+                {% if player_info.buying_organic %}
+                <p>* Buying organic: extra $1000 per person</p>
+                {% endif %}
+                {% if player_info.buying_organic and my_job == "Farmer" %}
+                <p>* Buying organic: farmer gets 25% off</p>
+                {% endif %}
+                {% if player_info.have_pet and my_job == "Veterinarian" %}
+                <p>* Veterinarian does not pay pet fees</p>
+                {% endif %}
+                {% if player_info.depressed %}
+                <p>Depression: $1000 fee to psychologist for treatment</p>
+                {% endif %}
+                {% if my_loans > 0 %}
+                <p>Loans: automatically pay back 0.5% of loans</p>
+                {% endif %}
+                {% if my_job == "Accountant" %}
+                <p>Accountant collects all tax prep fees</p>
+                {% endif %}
+                {% if my_job == "Waiter" %}
+                <p>Waiter gets $2000 in tips</p>
+                {% endif %}
+                {% if my_job == "Dentist" %}
+                <p>Dentist collects all dental fees</p>
+                {% endif %}
+                {% if my_job == "Veterinarian" %}
+                <p>Veterinarian collects all pet fees</p>
+                {% endif %}
+                {% if my_job == "Psychologist" %}
+                <p>Psychologist collects all depression fees</p>
+                {% endif %}
+                {% if my_job == "Athlete" and player_info.med_prob %}
+                <p class="once">* Athlete had medical problem, only gets paid 1/4 of salary</p>
+                {% endif %}
+                {% if player_info.cur_time_til_raise == 1 and my_path != "military" and my_job != "YouTuber" and not (my_job == "Teacher" and player_info.num_yrs_teacher == 15) %}
+                <p>Getting a $1000 raise this year</p>
+                {% endif %}
+                {% if player_info.cur_time_til_raise == 1 and my_path == "military" %}
+                <p>Salary doubles this year</p>
+                {% endif %}
+                {% if my_job == "Teacher" and player_info.num_yrs_teacher == 15 %}
+                <p>Teacher promoted to Principal</p>
+                {% endif %}
+            </td>
+            <td>
+                {% if rent != 0 %}
+                <p class="loss">Rent: ${{ "{:,.0f}".format(rent) }}</p>
+                {% endif %}
+                {% if car == "Public Transit" %}
+                <p class="loss">Public Transit: ${{ "{:,.0f}".format(transit_fee) }}</p>
+                {% endif %}
+                {% if player_info.buying_organic %}
+                <p class="loss">Buying organic: pay extra $1000 per person</p>
+                {% endif %}
+                {% if player_info.have_pet and player_info.job != "Veterinarian" %}
+                <p class="loss">Pet: $100</p>
+                {% endif %}
+                {% if player_info.have_pool %}
+                <p class="loss">Pool: $20,000</p>
+                {% endif %}
+                {% if player_info.depressed %}
+                <p class="loss">Depression: $1000</p>
+                {% endif %}
+                {% if my_loans > 0 %}
+                <p class="loss">Loans: ${{ "{:,.0f}".format(0.005 * loans_int) }}</p>
+                {% endif %}
+                {% if my_job == "Accountant" %}
+                <p class="gain">Tax prep: ${{ all_tax_prep_fees }}</p>
+                {% endif %}
+                {% if my_job == "Waiter" %}
+                <p class="gain">Waiter tips: $2000</p>
+                {% endif %}
+                {% if my_job == "Dentist" %}
+                <p class="gain">Dental fees: ${{ all_dental_fees }}</p>
+                {% endif %}
+                {% if my_job == "Veterinarian" %}
+                <p class="gain">Pet fees: ${{ all_pet_fees }}</p>
+                {% endif %}
+                {% if my_job == "Psychologist" %}
+                <p class="gain">Depression fees: ${{ all_depression_fees }}</p>
+                {% endif %}
+                {% if player_info.cur_time_til_raise == 1 and my_path != "military" and my_job != "YouTuber" and not (my_job == "Teacher" and player_info.num_yrs_teacher == 15) %}
+                <p class="gain">Raise: $1000</p>
+                {% endif %}
+                {% if player_info.cur_time_til_raise == 1 and my_path == "military" %}
+                <p class="gain">Raise: salary -> ${{ player_info.current_salary * 2 }}</p>
+                {% endif %}
+                {% if my_job == "Teacher" and player_info.num_yrs_teacher == 15 %}
+                <p>Raise: salary -> $100,000</p>
+                {% endif %}
+            </td>
+            <td class="amount">$<span id="misc-fees">{{ '{:,.0f}'.format(misc_fees) }}</span></td>
+        </tr>
+        <tr>
+            <td class="type tax-break">Tax Break</td>
+            <td class="details">
+            </td>
+            <td>
+                <p>$500 per child until first child turns 18</p>
+            </td>
+            <td class="amount tax-break">$<span id="tax-break-val">{{ '{:,.0f}'.format(500 * player_info.num_kids if player_info.oldest_child_age < 18 else 0) }}</span></td>
+        </tr>
+        <tr>
+            <td class="last-row" colspan="5">
+            <form id="results-form" action="{{ url_for('end_of_year') }}">
+                <p class="college-loans-bg input-label" class="top-margin"><b>College Loans + Interest</b></p>
+                <p class="in-line loans-cur-val">${{ '{:,.0f}'.format(college_loans_int) }}</p>
+                {% if player_info.college_loans == 0 %}
+                    <b class="last-dollar-sign in-line">$</b> <input type="text" class="textbox in-line college-loans-bg" name="college-loans-amount" id="pay-college-loans" value="0" readonly>
+                {% else %}
+                    <b  class="last-dollar-sign in-line">$</b> <input type="text" class="textbox in-line college-loans-bg" name="college-loans-amount" id="pay-college-loans" onchange="updateExpenses()">
+                {% endif %}
+          
+                <p class="loans-bg input-label"><b>Loans + Interest</b></p>
+                <p class="in-line loans-cur-val">${{ '{:,.0f}'.format(loans_int) }}</p>
+                {% if my_loans == 0 %}
+                    <b class="last-dollar-sign in-line">$</b> <input type="text" class="textbox in-line loans-bg" name="loans-amount" id="pay-loans" value="0" readonly>
+                {% else %}
+                    <b class="last-dollar-sign in-line">$</b> <input type="text" class="textbox in-line loans-bg" name="loans-amount" id="pay-loans" onchange="updateExpenses()">
+                {% endif %}
+                
+                <p class="auto-ins-bg input-label pad-bottom"><b>Auto Insurance </b></p>
+                {% if no_fam_car %}
+                    <input type="checkbox" name="auto-ins" class="ins-checkbox in-line" value="auto-ins" id="new-auto-ins" disabled>
+                {% elif (player_info.yrs_til_change_car != 3) and (player_info.have_auto_ins) %}
+                    <input type="checkbox" name="auto-ins" class="ins-checkbox in-line" value="auto-ins" id="new-auto-ins" checked>
+                {% endif %}
+                <label for="auto-ins" class="in-line checkbox-label">${{ '{:,.0f}'.format(new_auto_ins) }}</label>
+
+                <p class="health-ins-bg input-label pad-bottom"><b>Health Insurance </b></p>
+                {% if player_info.age < 26 %}
+                    <input type="checkbox" name="health-ins" class="ins-checkbox in-line" value="health-ins" id="new-health-ins" disabled checked>
+                {% elif player_info.have_health_ins %}
+                    <input type="checkbox" name="health-ins" class="ins-checkbox in-line" value="health-ins" id="new-health-ins" checked>
+                {% endif %}
+                <label for="health-ins" class="in-line checkbox-label" >${{ '{:,.0f}'.format(new_health_ins) }}</label>
+                
+                <p class="home-ins-bg input-label pad-bottom"><b>Home Insurance </b></p>
+                {% if no_fam_house %}
+                    <input type="checkbox" name="home-ins" class="ins-checkbox in-line" value="home-ins" id="new-home-ins" disabled>
+                {% elif (player_info.yrs_til_change_house != 3) and (player_info.have_home_ins) %}
+                    <input type="checkbox" name="home-ins" class="ins-checkbox in-line" value="home-ins" id="new-home-ins" checked>
+                {% endif %}
+                <label for="home-ins" class="in-line checkbox-label">${{ '{:,.0f}'.format(new_home_ins) }}</label>
+                
+                <p id="net-points" class="in-line top-margin"><b>NET POINTS: </b></p>
+                <input id="net-points-val" name="net-points" class="top-margin" readonly>
+                <p id="total-expenses-label" class="in-line top-margin"><b>TOTAL EXPENSES: </b></p>
+                <p class='last-dollar-sign total-dollar-sign'>$</p>
+                <input id="total-expenses" name="total-expenses" readonly>
+                {% if not testing %}
+                <button type="submit" id="pay-button" class="in-line top-margin" value="pay" name="btn">PAY</button>
+                {% else %}
+                <button type="submit" id="done-button" class="in-line top-margin" value="done" name="btn">DONE</button>
+                {% endif %}
+            </form>
+            </td>
+        </tr>
+        <tr>
+            <td class="last-row net-row" colspan="5">
+                <p id="net-calc">salary - expenses + miscellaneous earnings = </p>
+                <p id="net-earnings" class="in-line top-margin"><b>NET EARNINGS: </b></p>
+                <p class="last-dollar-sign total-dollar-sign" id="net-dollar-sign">$</p>
+                <input id="net-earnings-val" class="top-margin" readonly>
+            </td>
+        </tr>
+    </table>
+    <script type="text/javascript">
+            salary = parseFloat("{{ player_info.current_salary }}");
+            ttraise = parseFloat("{{ player_info.cur_time_til_raise }}");
+            path = "{{ player_info.path }}";
+            job = "{{ player_info.job }}";
+            if(job == "Teacher")
+                num_yrs_teacher = parseFloat("{{ player_info.num_yrs_teacher }}");
+            if((ttraise == 1) && (path != "military") && (job != "YouTuber") && !(job == "Teacher" && num_yrs_teacher == 15))
+                salary += 1000;  // getting $1000 raise
+            else if((ttraise == 1) && (path == "military"))
+                salary *= 2;  // salary doubles for raise
+            else if((job == "Teacher") && (num_yrs_teacher == 15))
+                salary = 100000
+
+            if(job == "Athlete") {
+                med_prob = "{{ player_info.med_prob }}";
+                if(med_prob.toLowerCase() == "true")
+                    salary *= 0.25  // athlete only get 1/4 of salary if injured
+            }
+
+            // Money
+            taxes = parseFloat(document.getElementById("taxes").innerHTML.replace(/,/g, ''));
+            auto_ins = parseFloat(document.getElementById("auto-ins-val").innerHTML.replace(/,/g, ''));
+            health_ins = parseFloat(document.getElementById("health-ins-val").innerHTML.replace(/,/g, ''));
+            home_ins = parseFloat(document.getElementById("home-ins-val").innerHTML.replace(/,/g, ''));
+            shopping = parseFloat(document.getElementById("shopping").innerHTML.replace(/,/g, ''));
+            car_maintain = parseFloat(document.getElementById("car-maintain").innerHTML.replace(/,/g, ''));
+            maid = parseFloat(document.getElementById("maid").innerHTML.replace(/,/g, ''));
+            utils = parseFloat(document.getElementById("utils").innerHTML.replace(/,/g, ''));
+            dental = parseFloat(document.getElementById("dental").innerHTML.replace(/,/g, ''));
+            eat_ent = parseFloat(document.getElementById("eat-ent").innerHTML.replace(/,/g, ''));
+            gas = parseFloat(document.getElementById("gas").innerHTML.replace(/,/g, ''));
+            misc_fees = parseFloat(document.getElementById("misc-fees").innerHTML.replace(/,/g, ''));
+            tax_prep = parseFloat(document.getElementById("tax-prep").innerHTML.replace(/,/g, ''));
+            tax_break = parseFloat(document.getElementById("tax-break-val").innerHTML.replace(/,/g, ''));
+            college_loans_payment = parseFloat(document.getElementById("pay-college-loans").value.replace(/,/g, ''));
+            loans_payment = parseFloat(document.getElementById("pay-loans").value.replace(/,/g, ''));
+            
+            // do not want expenses calculated with NaN
+            if(isNaN(college_loans_payment))
+                college_loans_payment = 0
+            if(isNaN(loans_payment))
+                loans_payment = 0
+    
+            expenses = taxes + auto_ins + health_ins + home_ins + shopping + car_maintain + maid + utils + dental + eat_ent + gas + misc_fees + tax_prep - tax_break + college_loans_payment + loans_payment;
+        
+            // Points
+            job_stress = parseFloat(document.getElementById("job-stress").innerHTML);
+            house_stress = parseFloat(document.getElementById("house-stress").innerHTML);
+            misc_points = parseFloat(document.getElementById("misc-points").innerHTML);
+            net_points = misc_points - job_stress - house_stress;
+
+            document.getElementById("net-points-val").value = parseFloat(net_points).toLocaleString('en');
+            document.getElementById("total-expenses").value = parseFloat(expenses).toLocaleString('en');
+            document.getElementById("net-earnings-val").value = parseFloat(salary - expenses).toLocaleString('en');
+
+            function updateExpenses() {
+                taxes = parseFloat(document.getElementById("taxes").innerHTML.replace(/,/g, ''));
+                auto_ins = parseFloat(document.getElementById("auto-ins-val").innerHTML.replace(/,/g, ''));
+                health_ins = parseFloat(document.getElementById("health-ins-val").innerHTML.replace(/,/g, ''));
+                home_ins = parseFloat(document.getElementById("home-ins-val").innerHTML.replace(/,/g, ''));
+                shopping = parseFloat(document.getElementById("shopping").innerHTML.replace(/,/g, ''));
+                car_maintain = parseFloat(document.getElementById("car-maintain").innerHTML.replace(/,/g, ''));
+                maid = parseFloat(document.getElementById("maid").innerHTML.replace(/,/g, ''));
+                utils = parseFloat(document.getElementById("utils").innerHTML.replace(/,/g, ''));
+                dental = parseFloat(document.getElementById("dental").innerHTML.replace(/,/g, ''));
+                eat_ent = parseFloat(document.getElementById("eat-ent").innerHTML.replace(/,/g, ''));
+                gas = parseFloat(document.getElementById("gas").innerHTML.replace(/,/g, ''));
+                misc_fees = parseFloat(document.getElementById("misc-fees").innerHTML.replace(/,/g, ''));
+                tax_prep = parseFloat(document.getElementById("tax-prep").innerHTML.replace(/,/g, ''));
+                tax_break = parseFloat(document.getElementById("tax-break-val").innerHTML.replace(/,/g, ''));
+                college_loans_payment = parseFloat(document.getElementById("pay-college-loans").value.replace(/,/g, ''));
+                loans_payment = parseFloat(document.getElementById("pay-loans").value.replace(/,/g, ''));
+                
+                // do not want expenses calculated with NaN
+                if(isNaN(college_loans_payment))
+                    college_loans_payment = 0
+                if(isNaN(loans_payment))
+                    loans_payment = 0
+        
+                expenses = taxes + auto_ins + health_ins + home_ins + shopping + car_maintain + maid + utils + dental + eat_ent + gas + misc_fees + tax_prep - tax_break + college_loans_payment + loans_payment;
+                document.getElementById("total-expenses").value = parseFloat(expenses).toLocaleString('en');
+                document.getElementById("net-earnings-val").value = parseFloat(salary - expenses).toLocaleString('en');
+            }
+
+        cur_age = parseFloat("{{ player_info.age }}");
+        need_loan = "{{ player_info.need_loan }}";
+        turn_num = parseFloat("{{ player_info.turn_num }}");
+        if((cur_age == 65) || (need_loan.toLowerCase() == "true") || (turn_num == -1)) {  // game over or force to get loan or game not started
+            document.querySelectorAll('button').forEach(btn => {
+                btn.disabled = true;
+            });
+        }
+
+        home_ins = "{{ player_info.have_home_ins }}";
+        if(home_ins.toLowerCase() == "true") // currently have home insurance
+            document.getElementById("test-home-ins-checkbox").checked = true;
+
+        auto_ins = "{{ player_info.have_auto_ins }}";
+        if(auto_ins.toLowerCase() == "true") // currently have auto insurance
+            document.getElementById("test-auto-ins-checkbox").checked = true;
+
+        health_ins = "{{ player_info.have_health_ins }}";
+        if(health_ins.toLowerCase() == "true") // currently have health insurance
+            document.getElementById("test-health-ins-checkbox").checked = true;
+        
+        married = "{{ player_info.married }}";
+        if(married.toLowerCase() == "true") // currently have health insurance
+                document.getElementById("test-married-checkbox").checked = true;
+        
+        function updateTestOptions() {
+            home = document.getElementById("house").value;
+            if(home == "None")  // can't get insurance for no home
+                document.getElementById("test-home-ins-checkbox").disabled = true;
+            else
+                document.getElementById("test-home-ins-checkbox").disabled = false;
+
+            car = document.getElementById("car").value;
+            if(car == "None")   // can't get insurance for no car
+                document.getElementById("test-auto-ins-checkbox").disabled = true;
+            else    
+                document.getElementById("test-auto-ins-checkbox").disabled = false;
+        }
+        
+    </script>
+{% endblock %}

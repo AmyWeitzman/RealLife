@@ -1,0 +1,341 @@
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+  
+td {
+    border: 2px solid black;
+    padding: 10px;
+    font-size: 20px;
+    width: 5%;
+    height: 50px;
+}
+
+#sticky-notes {
+    width: 100%;
+}
+
+.sticky-note {
+    border: none;
+    width: 25%;
+}
+
+.save-note-button {
+    background-color: green;
+    color: white;
+    outline: 0;
+    border: none;
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 20px;
+    border-radius: 10px;
+    margin-left: 150px;
+}
+
+.save-note-button:hover {
+    color: lightskyblue;
+}
+
+.field-name {
+    font-weight: bold;
+    text-align: center;
+}
+
+.field-val {
+    text-align: center;
+}
+
+.detail {
+    float: left;
+    margin-right: 20px;
+    font-size: 20px;
+}
+
+#date {
+    font-style: italic;
+}
+
+.announcement {
+    color: red;
+    font-weight: bold;
+}
+
+#ready-button {
+    margin-bottom: 8px;
+    border: none;
+    color: black;
+    background-color: red;
+    border-radius: 15px;
+    padding: 5px;
+}
+
+#ready-button:hover {
+    color: white;
+}
+
+.set-up {
+    color: red;
+}
+
+#pick-card-cell {
+    border: none;
+    text-align: center;
+}
+
+#pick-card-button {
+    padding: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+    font-size: 20px;
+    background-color: indigo;
+    color: white;
+    border: none;
+    border-radius: 15px;
+    outline: 0;
+}
+
+#pick-card-button:hover {
+    color: lightskyblue;
+}
+
+#side-button-cell {
+    border: none;
+    text-align: center !important;
+    vertical-align: middle !important;
+    padding: 0;
+}
+
+#card {
+    border: indigo 2px solid;
+    width: 150px;
+    height: 100px;
+    padding: 5px;
+}
+
+#do-action-button {
+    padding: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+    font-size: 20px;
+    background-color: lightskyblue;
+    color: indigo;
+    border: none;
+    border-radius: 15px;
+    outline: 0;
+    float: left;
+    margin-left: 10px;
+}
+
+#do-action-button:hover {
+    color: white;
+}
+
+#no-action-button {
+    padding: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+    font-size: 20px;
+    background-color: lightskyblue;
+    color: red;
+    border: none;
+    border-radius: 15px;
+    outline: 0;
+    float: right;
+}
+
+#no-action-button:hover {
+    color: black;
+}
+
+#check-stats-button {
+    padding: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+    font-size: 20px;
+    background-color: white;
+    color: indigo;
+    border: 2px black solid;
+    border-radius: 15px;
+    outline: 0;
+}
+
+#check-stats-button:hover {
+    color: lightskyblue;
+}
+
+#end-of-year-button {
+    padding: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+    font-size: 20px;
+    background-color: black;
+    color: lightskyblue;
+    border: none;
+    border-radius: 15px;
+    outline: 0;
+}
+
+#end-of-year-button:hover {
+    color: white;
+}
+
+#notes {
+    margin-top: 25px;
+}
+
+#notes-label {
+    vertical-align: top;
+    font-size: 20px;
+    font-weight: bold;
+    display: inline-block;
+}
+
+textarea {
+    margin-top: 10px;
+    border: none;
+    width: 100%;
+    font-size: 20px;
+    font-family: cursive;
+    padding: 20px;
+    background-color: #fff826;
+    outline: 0;
+    box-shadow: 8px 8px 7px 2px darkgray;
+}
+
+#roll-order-button {
+    border: 3px black solid;
+    color:black;
+    border-radius: 20px;
+    outline: 0;
+}
+
+#roll-order-button:hover {
+    color: lightskyblue;
+}
+
+#reset-button {
+    background-color: red;
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    float: right;
+    outline: 0;
+    border: none;
+    padding: 5px;
+    border-radius: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#reset-button:hover {
+    color: red;
+    background-color: white;
+    border: red 3px solid;
+}
+
+button:disabled {
+    background-color: lightgray !important;
+    color: darkgray !important;
+    border: darkgray 2px solid !important;
+}
+
+.gray {
+    background-color: lightgray;
+}
+
+.green {
+    background-color: rgb(172, 238, 172);
+}
+
+.yellow {
+    background-color: rgb(245, 245, 198);
+}
+
+.blue {
+    background-color: lightblue;
+}
+
+.orange  {
+    background-color: rgb(252, 169, 136);
+}
+
+.purple {
+    background-color: #e1c3f8;
+}
+
+.red {
+    background-color: rgb(240, 152, 152);
+}
+
+.brown {
+    background-color: burlywood;
+}
+
+.pink {
+    background-color: pink;
+}
+
+.negative {
+    color: red;
+}
+
+#get-loan-button {
+    background-color: #58d872;
+    color: green;
+    border: green 3px solid;
+    border-radius: 15px;
+}
+
+#loan-amount {
+    border: black 2px solid;
+    padding: 5px;
+    font-size: 20px;
+    width: 120px;
+    text-align: left;
+    display: inline-block;
+    border-radius: 10px;
+    outline: 0;
+}
+
+#dollar-sign {
+    display: inline-block;
+    font-size: 30px; 
+}
+
+.urgent {
+    color: red !important;
+}
+
+.end_of_year {
+    color: brown !important;
+}
+
+.fyi {
+    color: blue !important;
+}
+
+.turn {
+    color: green !important;
+}
+
+.tooltip-inner {
+    white-space:pre-wrap;
+}
+
+#mil-go-to-college {
+    float: right;
+    margin-right: 30px;
+}
+
+#college-button {
+    font-size: 20px;
+    color: brown;
+    border: brown 3px solid;
+    background-color: rgb(50, 182, 50);
+    font-weight: bold;
+    border-radius: 20px;
+}
+
+#college-button:hover {
+    color: white;
+}

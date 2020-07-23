@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <script src="https://cdn.socket.io/socket.io-1.0.0.js"></script>
+        
+        {% if page_name %}
+        <title>Real Life: {{ page_name }}</title>
+        {% else %}
+        <title>Real Life</title>
+        {% endif %}
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+
+        <script src="https://d3js.org/d3.v4.min.js"></script>
+    </head>
+    <body>
+        <div><a href="{{ url_for('player') }}" class="nav-link">Home</a></div>
+        <div><a href="{{ url_for('player_info', card_text='???') }}" class="nav-link">Player Info</a></div>
+        <div><a href="{{ url_for('cards') }}" class="nav-link">Cards</a></div>
+        <div><a href="{{ url_for('actions') }}" class="nav-link">Actions</a></div>
+        <div><a href="{{ url_for('jobs') }}" class="nav-link">Jobs</a></div>
+        <div><a href="{{ url_for('vehicles') }}" class="nav-link">Vehicles</a></div>
+        <div><a href="{{ url_for('houses') }}" class="nav-link">Houses</a></div>
+        <div><a href="{{ url_for('expenses', testing='false', data='none') }}" class="nav-link">Expenses</a></div>
+        <div><a href="{{ url_for('scoreboard') }}" class="nav-link">Scoreboard</a></div>
+        <div><a href="{{ url_for('stats') }}" class="nav-link">Stats</a></div>
+        <br>
+        <hr>
+        <!--<p id="blah">here</p>
+        <form id="xxx">
+            <input type="text" id="emit_data">
+            <button type="submit">Test</button>
+        </form>-->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                {% if category == "error" %}
+                    <div class="alert alert-danger alert-dismissible fade show justify-content-center" role="alert">
+                    {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                {% elif category == "success" %}
+                    <div class="alert alert-success alert-dismissible fade show justify-content-center" role="alert">
+                    {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                {% elif category == "notice" %}
+                    <div class="alert alert-warning alert-dismissible fade show justify-content-center" role="alert">
+                    {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                {% else %}
+                    <div class="alert alert-primary alert-dismissible fade show justify-content-center" role="alert">
+                    {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                {% endif %}
+            </div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+        
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                window.setTimeout(function() {
+                    $(".alert").fadeTo(1000, 0).slideUp(500, function(){
+                        $(this).remove(); 
+                    });
+                }, 3000);
+            });
+
+            // $(document).ready(function(){
+            //     var socket = io.connect();
+            //     socket.on('my response', function(msg) {
+            //         document.getElementById('blah').innerHTML = msg.data
+            //     });
+            //     socket.on('my turn', function(msg) {
+            //         console.log("asd");
+            //         document.getElementById('blah').innerHTML = msg.data
+            //     });
+            //     $('form#xxx').submit(function(event) {
+            //         console.log(";klfg");
+            //         socket.emit('my turn', {data: $('#emit_data').val()});
+            //         //return false;
+            //     });
+            // $('form#broadcast').submit(function(event) {
+            //     socket.emit('my broadcast event', {data: $('#broadcast_data').val()});
+            //     return false;
+            // });
+        //});
+        </script>
+    </body>
+</html>

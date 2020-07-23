@@ -1,0 +1,33 @@
+<<<<<<< HEAD
+box:
+  id: python:3.7-slim
+  ports:
+    - "5000"
+
+dev:
+  steps:
+    - pip-install
+    - internal/watch:
+        code: python real_life.py
+        reload: true
+
+build:
+  steps:
+    - pip-install
+=======
+box:
+  id: python:3.7-slim
+  ports:
+    - "5000"
+
+dev:
+  steps:
+    - pip-install
+    - internal/watch:
+        code: python real_life.py
+        reload: true
+
+build:
+  steps:
+    - pip-install
+>>>>>>> 9580ff8f17598a3b1cdaa694cb23c530db13a083

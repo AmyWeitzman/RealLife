@@ -1,0 +1,289 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/houses.css') }}">
+    <table>
+        <tr><th id="table-title" colspan="7">HOUSES</th></tr>
+        <tr>
+            <th>Category</th>
+            <th>Type</th>
+            <th>Cost</th>
+            <th>Minus Points/Yr</th>
+            <th>Insurance</th>
+            <th>Maid</th>
+            <th>Sell Price</th>
+        </tr>
+        <tr>
+            <td class="no-family" rowspan=6><b>Single Person</b><br><span id="rent">*Rent per year</span></td>
+            <td>Teepee</td>
+            <td>1,000</td>
+            <td>28</td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+            <td class="buy-button-cell">
+                <form action="{{ url_for('buy_house', house='Teepee') }}">
+                    <button type="submit" id="buy_teepee">BUY</button>
+                </form>
+            </td>
+        </tr>
+        <tr>
+            <td>Tent</td>
+            <td>2,000</td>
+            <td>20</td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+            <td class="buy-button-cell">
+                <form action="{{ url_for('buy_house', house='Tent') }}">
+                    <button type="submit" id="buy_tent">BUY</button>
+                </form>
+            </td>
+        </tr>
+        <tr>
+            <td>Igloo</td>
+            <td>3,000</td>
+            <td>15</td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+            <td class="buy-button-cell">
+                <form action="{{ url_for('buy_house', house='Igloo') }}">
+                    <button type="submit" id="buy_igloo">BUY</button>
+                </form>
+            </td>
+        </tr>
+        <tr>
+            <td>Hut</td>
+            <td>3,000</td>
+            <td>15</td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+            <td class="buy-button-cell">
+                <form action="{{ url_for('buy_house', house='Hut') }}">
+                    <button type="submit" id="buy_hut">BUY</button>
+                </form>
+            </td>
+        </tr>
+        <tr>
+            <td>Tree House</td>
+            <td>5,000</td>
+            <td>8</td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+            <td class="buy-button-cell">
+                <form action="{{ url_for('buy_house', house='Tree House') }}">
+                    <button type="submit" id="buy_tree house">BUY</button>
+                </form>
+            </td>
+        </tr>
+        <tr>
+            <td>Rented Room</td>
+            <td>7,000</td>
+            <td>1</td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+            <td class="buy-button-cell">
+                <form action="{{ url_for('buy_house', house='Rented Room') }}">
+                    <button type="submit" id="buy_rented room">BUY</button>
+                </form>
+            </td>
+        </tr>
+        <tr>
+            <td class="small-family" rowspan=6><b>Small Family</b><br>(max 4 people)<br>Sell for 20% profit</td>
+            <td>Mobile Home</td>
+            <td>80,000</td>
+            <td>60</td>
+            <td>160</td>
+            <td>0</td>
+            <td>96,000</td>
+            <td class="buy-button-cell">
+                <form action="{{ url_for('buy_house', house='Mobile Home') }}">
+                    <button type="submit" id="buy_mobile home">BUY</button>
+                </form>
+            </td>
+        </tr>
+        <tr>
+            <td>Bungalow</td>
+            <td>80,000</td>
+            <td>60</td>
+            <td>160</td>
+            <td>0</td>
+            <td>96,000</td>
+            <td class="buy-button-cell">
+                <form action="{{ url_for('buy_house', house='Bungalow') }}">
+                    <button type="submit" id="buy_bungalow">BUY</button>
+                </form>
+            </td>
+        </tr>
+        <tr>
+            <td>Cottage</td>
+            <td>90,000</td>
+            <td>50</td>
+            <td>180</td>
+            <td>0</td>
+            <td>108,000</td>
+            <td class="buy-button-cell">
+                <form action="{{ url_for('buy_house', house='Cottage') }}">
+                    <button type="submit" id="buy_cottage">BUY</button>
+                </form>
+            </td>
+        </tr>
+        <tr>
+            <td>Apartment</td>
+            <td>90,000</td>
+            <td>50</td>
+            <td>180</td>
+            <td>0</td>
+            <td>108,000</td>
+            <td class="buy-button-cell">
+                <form action="{{ url_for('buy_house', house='Apartment') }}">
+                    <button type="submit" id="buy_apartment">BUY</button>
+                </form>
+            </td>
+        </tr>
+        <tr>
+            <td>Condo</td>
+            <td>100,000</td>
+            <td>40</td>
+            <td>200</td>
+            <td>0</td>
+            <td>120,000</td>
+            <td class="buy-button-cell">
+                <form action="{{ url_for('buy_house', house='Condo') }}">
+                    <button type="submit" id="buy_condo">BUY</button>
+                </form>
+            </td>
+        </tr>
+        <tr>
+            <td>Log Cabin</td>
+            <td>120,000</td>
+            <td>30</td>
+            <td>240</td>
+            <td>0</td>
+            <td>144,000</td>
+            <td class="buy-button-cell">
+                <form action="{{ url_for('buy_house', house='Log Cabin') }}">
+                    <button type="submit" id="buy_log cabin">BUY</button>
+                </form>
+            </td>
+        </tr>
+        <tr>
+            <td class="large-family" rowspan=6><b>Large Family</b><br>Sell for 30% profit</td>
+            <td>Modern Victorian</td>
+            <td>200,000</td>
+            <td>120</td>
+            <td>400</td>
+            <td>1,000</td>
+            <td>260,000</td>
+            <td class="buy-button-cell">
+                <form action="{{ url_for('buy_house', house='Modern Victorian') }}">
+                    <button type="submit" id="buy_modern victorian">BUY</button>
+                </form>
+            </td>
+        </tr>
+        <tr>
+            <td>Mountain Retreat</td>
+            <td>350,000</td>
+            <td>110</td>
+            <td>700</td>
+            <td>1,750</td>
+            <td>455,000</td>
+            <td class="buy-button-cell">
+                <form action="{{ url_for('buy_house', house='Mountain Retreat') }}">
+                    <button type="submit" id="buy_mountain retreat">BUY</button>
+                </form>
+            </td>
+        </tr>
+        <tr>
+            <td>Houseboat</td>
+            <td>500,000</td>
+            <td>100</td>
+            <td>1,000</td>
+            <td>2,500</td>
+            <td>650,000</td>
+            <td class="buy-button-cell">
+                <form action="{{ url_for('buy_house', house='Houseboat') }}">
+                    <button type="submit" id="buy_houseboat">BUY</button>
+                </form>
+            </td>
+        </tr>
+        <tr>
+            <td>Penthouse Suite</td>
+            <td>600,000</td>
+            <td>90</td>
+            <td>1,200</td>
+            <td>3,000</td>
+            <td>780,000</td>
+            <td class="buy-button-cell">
+                <form action="{{ url_for('buy_house', house='Penthouse Suite') }}">
+                    <button type="submit" id="buy_penthouse suite">BUY</button>
+                </form>
+            </td>
+        </tr>
+        <tr>
+            <td>Mansion</td>
+            <td>800,000</td>
+            <td>80</td>
+            <td>1,600</td>
+            <td>4,000</td>
+            <td>1,040,000</td>
+            <td class="buy-button-cell">
+                <form action="{{ url_for('buy_house', house='Mansion') }}">
+                    <button type="submit" id="buy_mansion">BUY</button>
+                </form>
+            </td>
+        </tr>
+        <tr>
+            <td>Castle</td>
+            <td>1,000,000</td>
+            <td>70</td>
+            <td>2,000</td>
+            <td>5,000</td>
+            <td>1,300,000</td>
+            <td class="buy-button-cell">
+                <form action="{{ url_for('buy_house', house='Castle') }}">
+                    <button type="submit" id="buy_castle">BUY</button>
+                </form>
+            </td>
+        </tr>
+    </table>
+    <script type="text/javascript">
+        var owned = ["{{', '.join(disabled) }}"];
+        for(var i = 0; i < owned.length; i++) {  // cannot buy own house
+            if(owned[i] == "")
+                continue;
+            document.getElementById('buy_'+owned[i]).disabled = true
+        }
+
+        var num_people = parseFloat("{{ num_people }}");
+        if(num_people > 1) {
+            document.getElementById('buy_teepee').disabled = true
+            document.getElementById('buy_tent').disabled = true
+            document.getElementById('buy_igloo').disabled = true
+            document.getElementById('buy_hut').disabled = true
+            document.getElementById('buy_tree house').disabled = true
+            document.getElementById('buy_rented room').disabled = true
+        }
+        if(num_people > 4) {
+            document.getElementById('buy_mobile home').disabled = true
+            document.getElementById('buy_bungalow').disabled = true
+            document.getElementById('buy_cottage').disabled = true
+            document.getElementById('buy_apartment').disabled = true
+            document.getElementById('buy_condo').disabled = true
+            document.getElementById('buy_log cabin').disabled = true
+        }
+
+        cur_age = parseFloat("{{ player_info.age }}");
+        need_loan = "{{ player_info.need_loan }}";
+        turn_num = parseFloat("{{ player_info.turn_num }}");
+        if((cur_age == 65) || (need_loan.toLowerCase() == "true") || (turn_num == -1)) {  // game over or force to get loan or game not started
+            document.querySelectorAll('button').forEach(btn => {
+                btn.disabled = true;
+            });
+        }
+    </script>
+{% endblock %}

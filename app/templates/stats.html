@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/stats.css') }}">
+        <script src="https://d3js.org/d3.v4.min.js"></script>
+    </head>
+    <body>
+        <div><a href="{{ url_for('player') }}" class="nav-link">Home</a></div>
+        <div><a href="{{ url_for('player_info', card_text='???') }}" class="nav-link">Player Info</a></div>
+        <div><a href="{{ url_for('cards') }}" class="nav-link">Cards</a></div>
+        <div><a href="{{ url_for('actions') }}" class="nav-link">Actions</a></div>
+        <div><a href="{{ url_for('jobs') }}" class="nav-link">Jobs</a></div>
+        <div><a href="{{ url_for('vehicles') }}" class="nav-link">Vehicles</a></div>
+        <div><a href="{{ url_for('houses') }}" class="nav-link">Houses</a></div>
+        <div><a href="{{ url_for('expenses', testing='false', data='none') }}" class="nav-link">Expenses</a></div>
+        <div><a href="{{ url_for('scoreboard') }}" class="nav-link">Scoreboard</a></div>
+        <div><a href="{{ url_for('stats') }}" class="nav-link">Stats</a></div>
+        <br>
+        <hr>
+        <style>
+            .legend {                                                   
+                font-size: 20px;                                          
+            }                                                           
+            rect {                                                      
+                stroke-width: 2;                                          
+            }                                                                                                                          
+            .tooltip {                                                        
+                background: #eee;                                               
+                box-shadow: 0 0 5px #999999;                                    
+                color: #333;                                                    
+                display: none;                                                  
+                font-size: 15px;                                                
+                left: 30px;                                                     
+                padding: 10px; 
+                margin-top: 10px;                                               
+                position: absolute;                                             
+                text-align: center;                                             
+                top: 95px;                                                      
+                width: 100px;                                                    
+                z-index: 10; 
+                line-height: 20px;                                                
+            } 
+
+            #tooltip-left {
+                margin-left: 5%;
+            }
+
+            #tooltip-right {
+                margin-left: 87%;
+            }
+
+            .chart-title {
+                font-size: 25px;
+                font-weight: bold;
+                margin-bottom: 0;
+            }
+        </style>
+
+        <table id="tbl">
+            <tr>
+                <th class="chart-title">Action Frequency</th>
+                <th class="chart-title">Expenses Breakdown</th>
+            </tr>
+            <tr>
+                <td class="no-border"><div id="action-counts"></div></td>
+                <td class="no-border"><div id="expenses"></div></td>
+            </tr>
+        </table>
+        
+
+        <script>
+            var width = 460;
+            var height = 460;
+            var radius = Math.min(width, height) / 2;
+            var donutWidth = 75; 
+            var legendRectSize = 18;                                  
+            var legendSpacing = 5; 
+
+            var color = d3.scaleOrdinal(d3.schemeCategory10);
+
+            data = [
+                {label: "Travel", count: parseInt("{{ player_info.num_times_travel }}")},
+                {label: "Buy organic", count: parseInt("{{ player_info.num_times_buy_organic }}")},
+                {label: "Invest", count: parseInt("{{ player_info.num_times_invest }}")},
+                {label: "Buy clothes", count: parseInt("{{ player_info.num_times_buy_clothes }}")},
+                {label: "Peace Corps", count: parseInt("{{ player_info.num_times_peace_corps }}")},
+                {label: "Season tickets", count: parseInt("{{ player_info.num_times_season_tickets }}")},
+                {label: "Backpacking", count: parseInt("{{ player_info.num_times_backpacking }}")},
+                {label: "Mission Trip", count: parseInt("{{ player_info.num_times_mission_trip }}")}  
+            ]
+            
+            var svg = d3.select('#action-counts')
+            .append('svg')
+            .attr('width', width)
+            .attr('height', height)
+            .append('g')
+            .attr('transform', 'translate(' + (width / 2) + ',' + (height / 2) + ')');
+
+            var arc = d3.arc()
+            .innerRadius(radius - donutWidth)  
+            .outerRadius(radius);
+
+            var pie = d3.pie()
+            .value(function(d) { return d.count; })
+            .sort(null);
+
+            var tooltip = d3.select('#action-counts')                               
+            .append('div')                                                
+            .attr('class', 'tooltip');                                    
+
+            tooltip.append('div')                                           
+            .attr('class', 'label');                                      
+
+            tooltip.append('div')                                           
+            .attr('class', 'count');                                      
+
+            tooltip.append('div')                                           
+            .attr('class', 'percent');  
+
+            var path = svg.selectAll('path')
+            .data(pie(data))
+            .enter()
+            .append('path')
+            .attr('d', arc)
+            .attr('fill', function(d) {
+                return color(d.data.label);
+            });
+
+            path.on('mouseover', function(d) {                            
+                var total = d3.sum(data.map(function(d) {                
+                return d.count;                                           
+                }));                                                        
+                var percent = Math.round(1000 * d.data.count / total) / 10; 
+                tooltip.attr('id', "tooltip-left")
+                tooltip.select('.label').html(d.data.label).style('font-weight', 'bold');                
+                tooltip.select('.count').html(d.data.count + " time" + (d.data.count > 1 ? 's' : ''));                
+                tooltip.select('.percent').html(percent + '%');             
+                tooltip.style('display', 'block'); 
+                tooltip.style('color', 'white');
+                tooltip.style('background-color', 'black');                         
+            });                                                           
+
+            path.on('mouseout', function() {                              
+                tooltip.style('display', 'none');                           
+            });                                                           
+
+            var legend = svg.selectAll('.legend')                     
+            .data(color.domain())                                   
+            .enter()                                                
+            .append('g')                                            
+            .attr('class', 'legend')                                
+            .attr('transform', function(d, i) {                     
+                var height = legendRectSize + legendSpacing;          
+                var offset =  height * color.domain().length / 2;     
+                var horz = -5 * legendRectSize;                       
+                var vert = i * height - offset;                       
+                return 'translate(' + horz + ',' + vert + ')';        
+            });                                                     
+
+            legend.append('rect')                                     
+            .attr('width', legendRectSize)                          
+            .attr('height', legendRectSize)                         
+            .style('fill', color)                                   
+            .style('stroke', color)                             
+
+            legend.append('text')                                     
+            .attr('x', legendRectSize + legendSpacing)              
+            .attr('y', legendRectSize - legendSpacing)              
+            .text(function(d) { return d; }); 
+        </script>
+
+        <script>
+            var width = 460;
+            var height = 460;
+            var radius = Math.min(width, height) / 2;
+            var donutWidth = 75; 
+            var legendRectSize = 18;                                  
+            var legendSpacing = 5; 
+
+            var color = d3.scaleOrdinal(d3.schemeCategory10);
+
+            data = []
+
+            taxes = parseInt("{{ player_info.total_taxes }}");
+            ins = parseInt("{{ player_info.total_insurance }}");
+            shopping = parseInt("{{ player_info.total_shopping }}");
+            car_main = parseInt("{{ player_info.total_car_maintenance }}");
+            maid = parseInt("{{ player_info.total_maid }}");
+            util = parseInt("{{ player_info.total_utilities }}");
+            dental = parseInt("{{ player_info.total_dental }}");
+            eat_ent = parseInt("{{ player_info.total_eat_ent }}");
+            gas = parseInt("{{ player_info.total_gas }}");
+            tax_prep = parseInt("{{ player_info.total_tax_prep }}");
+            rent = parseInt("{{ player_info.total_rent }}");
+            transit = parseInt("{{ player_info.total_transit }}");
+            organic = parseInt("{{ player_info.total_organic }}");
+            pet = parseInt("{{ player_info.total_pet }}");
+            pool = parseInt("{{ player_info.total_pool }}");
+            depression = parseInt("{{ player_info.total_depression }}");
+            loans = parseInt("{{ player_info.total_loan }}");
+
+            if(taxes > 0)
+                data.push({label: "Taxes", count: taxes});
+            if(ins > 0)
+                data.push({label: "Insurance", count: ins});
+            if(shopping > 0)
+                data.push({label: "Shopping", count: shopping});
+            if(car_main > 0)
+                data.push({label: "Car Maintenance", count: car_main});
+            if(maid > 0)
+                data.push({label: "Maid", count: maid});
+            if(util > 0)
+                data.push({label: "Utilities", count: util});
+            if(dental > 0)
+                data.push({label: "Dental fees", count: dental});
+            if(eat_ent > 0)
+                data.push({label: "Eat-out / Entertainment", count: eat_ent});
+            if(gas > 0)
+                data.push({label: "Gas", count: gas});
+            if(tax_prep > 0)
+                data.push({label: "Tax prep fee", count: tax_prep});
+            if(rent > 0)
+                data.push({label: "Rent", count: rent});
+            if(transit > 0)
+                data.push({label: "Public transit", count: transit});
+            if(organic > 0)
+                data.push({label: "Buying organic", count: organic});
+            if(pet > 0)
+                data.push({label: "Pet fees", count: pet});
+            if(pool > 0)
+                data.push({label: "Pool fees", count: pool});
+            if(depression > 0)
+                data.push({label: "Depression services", count: depression});
+            if(loans > 0)
+                data.push({label: "Min Loan Payments", count: loans});
+            
+            var svg = d3.select('#expenses')
+            .append('svg')
+            .attr('width', width)
+            .attr('height', height)
+            .append('g')
+            .attr('transform', 'translate(' + (width / 2) + ',' + (height / 2) + ')');
+
+            var arc = d3.arc()
+            .innerRadius(radius - donutWidth)  
+            .outerRadius(radius);
+
+            var pie = d3.pie()
+            .value(function(d) { return d.count; })
+            .sort(null);
+
+            var tooltip = d3.select('#expenses')                               
+            .append('div')                                                
+            .attr('class', 'tooltip');  
+
+            tooltip.append('div')                                           
+            .attr('class', 'label');                                      
+
+            tooltip.append('div')                                           
+            .attr('class', 'count');                                      
+
+            tooltip.append('div')                                           
+            .attr('class', 'percent');  
+
+            var path = svg.selectAll('path')
+            .data(pie(data))
+            .enter()
+            .append('path')
+            .attr('d', arc)
+            .attr('fill', function(d) {
+                return color(d.data.label);
+            });
+
+            path.on('mouseover', function(d) {                            
+                var total = d3.sum(data.map(function(d) {                
+                return d.count;                                           
+                }));                                                        
+                var percent = Math.round(1000 * d.data.count / total) / 10; 
+                tooltip.attr('id', 'tooltip-right');
+                tooltip.select('.label').html(d.data.label).style('font-weight', 'bold');                
+                tooltip.select('.count').html('$' + d.data.count.toLocaleString('en'));                
+                tooltip.select('.percent').html(percent + '%');             
+                tooltip.style('display', 'block'); 
+                tooltip.style('color', 'white');
+                tooltip.style('background-color', 'black');                       
+            });                                                           
+
+            path.on('mouseout', function() {                              
+                tooltip.style('display', 'none');                           
+            });                                                           
+
+            var legend = svg.selectAll('.legend')                     
+            .data(color.domain())                                   
+            .enter()                                                
+            .append('g')                                            
+            .attr('class', 'legend')                                
+            .attr('transform', function(d, i) {                     
+                var height = legendRectSize + legendSpacing;          
+                var offset =  height * color.domain().length / 2;     
+                var horz = -5 * legendRectSize;                       
+                var vert = i * height - offset;                       
+                return 'translate(' + horz + ',' + vert + ')';        
+            });                                                     
+
+            legend.append('rect')                                     
+            .attr('width', legendRectSize)                          
+            .attr('height', legendRectSize)                         
+            .style('fill', color)                                   
+            .style('stroke', color)                             
+
+            legend.append('text')                                     
+            .attr('x', legendRectSize + legendSpacing)              
+            .attr('y', legendRectSize - legendSpacing)              
+            .text(function(d) { return d; }); 
+        </script>
+    </body>
+</html>

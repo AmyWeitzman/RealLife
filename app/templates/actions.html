@@ -1,0 +1,494 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/actions.css') }}">
+    <table>
+        <tr><th id="table-title" colspan="4">ACTIONS</th></tr>
+        <tr>
+            <th>Action</th>
+            <th>Details</th>
+            <th>Prerequisites</th>
+            <th>Yrs Wait</th>
+        </tr>
+        <tr>
+            <td class="action-button">
+                <form action="{{ url_for('buy_organic') }}">
+                    <button type="submit" id="buy_organic">Buy organic</button><br>
+                    <label>pay ${{ "{:,.0f}".format(2000 * num_people) }}</label><br>
+                    <label>receive {{ "{:,.0f}".format(50 * num_people) }} points</label>
+                </form>
+            </td>
+            <td>
+                <ul>
+                    <li>yearly shopping cost increased to $2000 (instead of $1000) per person</li>
+                    <li>receive 50 points per person</li>
+                </ul>
+            </td>
+            <td>
+                <ul>
+                    <li>cannot be in college</li>
+                </ul>
+            </td>
+            <td class="center">{{ player_info.yrs_til_buy_organic }}</td>
+        </tr>
+        <tr>
+            <td class="action-button">
+                <form action="{{ url_for('upgrade_appliances') }}">
+                    <button type="submit" id="upgrade_appliances">Upgrade appliances</button><br>
+                    {% if house != "None" %}
+                    <label>pay ${{ "{:,.0f}".format(0.01 * house.cost) }}</label><br>
+                    <label>receive 100 points</label>
+                    {% endif %}
+                </form>
+            </td>
+            <td>
+                <ul>
+                    <li>pay 1% of house cost</li>
+                    <li>receive 100 points</li>
+                    <span class="once">* can only do once per house</span>
+                </ul>
+            </td>
+            <td>
+                <ul>
+                    <li>must have at least small family house</li>
+                </ul>
+            </td>
+            <td></td>
+        </tr>
+        <tr>
+            <td class="action-button">
+                <form action="{{ url_for('change_car') }}">
+                    <button type="submit" id="change_car">Change car</button><br>
+                    {% if car != "None" %}
+                    <label><b>From:</b></label>
+                        <select name="car" id="car-from" class="dropdown" onchange="updateCarPoints()">
+                            <option value="{{ car.name }}" selected>{{ car.name }}</option>
+                            {% for car in cars %}
+                            <option value="{{ car.name }}">{{ car.name }}</option>
+                            {% endfor %}
+                        </select><br>
+                    <label id="label-to"><b>To:</b></label>
+                        <select name="car" id="car-to" class="dropdown" onchange="updateCarPoints()">
+                            <option value="{{ car.name }}" selected>{{ car.name }}</option>
+                            {% for car in cars %}
+                            <option value="{{ car.name }}">{{ car.name }}</option>
+                            {% endfor %}
+                        </select>
+                    <label>receive <span id="car-change-points">0</span> points</label>
+                    {% endif %}
+                </form>
+            </td>
+            <td>
+                <ul>
+                    <li>buy first car (military) OR</li>
+                    <li>buy new car, change in price = | new price - old price |</li>
+                    <li>use following chart to determine points gained/lost</li>
+                    <ul>
+                        <li>change in price <= 10,000: 10 points </li>
+                        <li>change in price <= 20,000: 20 points</li>
+                        <li>change in price <= 50,000: 35 points</li>
+                        <li>change in price <= 80,000: 55 points</li>
+                        <li>change in price > 80,000: 80 points</li>
+                    </ul>
+                </ul>
+            </td>
+            <td>
+            </td>
+            <td class="center">{{ player_info.yrs_til_change_car }}</td>
+        </tr>
+        <tr>
+            <td class="action-button">
+                <form action="{{ url_for('change_house') }}">
+                    <button type="submit" id="change_house">Change house</button>
+                    {% if house != "None" %}
+                    <label><b>From:</b></label>
+                        <select name="house" id="house-from" class="dropdown" onchange="updateHousePoints()">
+                            <option value="{{ house.name }}" selected>{{ house.name }}</option>
+                            {% for house in houses %}
+                            <option value="{{ house.name }}">{{ house.name }}</option>
+                            {% endfor %}
+                        </select><br>
+                    <label id="label-to"><b>To:</b></label>
+                        <select name="house" id="house-to" class="dropdown" onchange="updateHousePoints()">
+                            <option value="{{ house.name }}" selected>{{ house.name }}</option>
+                            {% for house in houses %}
+                            <option value="{{ house.name }}">{{ house.name }}</option>
+                            {% endfor %}
+                        </select>
+                    <label>receive <span id="house-change-points">0</span> points</label>
+                    {% endif %}
+                </form>
+            </td>
+            <td>
+                <ul>
+                    <li>buy first house OR</li>
+                    <li>buy new house, change in price = | new price - old price |</li>
+                    <li>use following chart to determine points gained/lost</li>
+                    <ul>
+                        <li>change in price <= 50,000: 35 points </li>
+                        <li>change in price <= 100,000: 55 points</li>
+                        <li>change in price <= 250,000: 80 points</li>
+                        <li>change in price <= 500,000: 110 points</li>
+                        <li>change in price > 500,000: 150 points</li>
+                    </ul>
+                </ul>
+            </td>
+            <td>
+            </td>
+            <td  class="center">{{ player_info.yrs_til_change_house }}</td>
+        </tr>
+        <tr>
+            <td class="action-button">
+                <form action="{{ url_for('buy_clothes') }}">
+                    <button type="submit" id="buy_clothes">Buy clothes</button><br>
+                    <label>pay ${{ "{:,.0f}".format(0.01 * player_info.current_salary) }}</label><br>
+                    <label>receive {{ "{:,.0f}".format(50 * num_people) }} points</label>
+                </form>
+            </td>
+            <td>
+                <ul>
+                    <li>pay 1% of current salary</li>
+                    <li>receive 50 points per person</li>
+                </ul>
+            </td>
+            <td>
+            </td>
+            <td class="center">{{ player_info.yrs_til_buy_clothes }}</td>
+        </tr>
+        <tr>
+            <td class="action-button">
+                <form action="{{ url_for('travel', loc='local') }}">
+                    <button type="submit" id="local_travel">Local Travel</button><br>
+                    <label>pay ${{ "{:,.0f}".format(500 * num_people) }}</label><br>
+                    <label>receive {{ "{:,.0f}".format(10 + (20 * num_people)) }} points</label>
+                </form>
+                <form action="{{ url_for('travel', loc='domestic') }}">
+                    <button type="submit" id="domestic_travel">Domestic Travel</button><br>
+                    <label>pay ${{ "{:,.0f}".format(1000 * num_people) }}</label><br>
+                    <label>receive {{ "{:,.0f}".format(40 + (30 * num_people)) }} points</label>
+                </form>
+                <form action="{{ url_for('travel', loc='international') }}">
+                    <button type="submit" id="international_travel">International Travel</button><br>
+                    <label>pay ${{ "{:,.0f}".format(5000 * num_people) }}</label><br>
+                    <label>receive {{ "{:,.0f}".format(60 + (40 * num_people)) }} points</label>
+                </form>
+            </td>
+            <td>
+                <ul>
+                    <li>Local: pay $500 per person, receive (10 + 20 per person) points</li>
+                    <li>Domestic: pay $1000 per person, receive (40 + 30 per person) points</li>
+                    <li>International: pay $5000 per person, receive (60 + 40 per person) points</li>
+                </ul>
+            </td>
+            <td>
+            </td>
+            <td class="center">{{ player_info.yrs_til_travel }}</td>
+        </tr>
+        <tr>
+            <td class="action-button">
+                <form action="{{ url_for('change_marriage', type='marriage') }}">
+                    <button type="submit" id="get_married">Get married</button>
+                </form>
+                <form action="{{ url_for('change_marriage', type='divorce') }}">
+                    <button type="submit" id="get_divorced">Get divorced</button>
+                </form>
+            </td>
+            <td>
+                <ul>
+                    <li>get married:</li>
+                        <ul><li>+1 person, +50 points, 50% off taxes</li></ul>
+                    <li>get divorced:</li>
+                        <ul><li>-1 person, pay lawyer $1000, lose 1% of points, 100% taxes</li></ul>
+                </ul>
+            </td>
+            <td>
+                <ul>
+                    <li>get married:</li>
+                        <ul>
+                            <li>must be out of college</li>
+                            <li>must be single</li>
+                            <li>have at least small family house/car</li>
+                        </ul>
+                    <li>get divorced:</li>
+                        <ul><li>must be married</li></ul>
+                </ul>
+            </td>
+            <td class="center">{{ player_info.yrs_til_change_married }}</td>
+        </tr>
+        <tr>
+            <td class="action-button">
+                <form action="{{ url_for('have_kids') }}">
+                    <button type="submit" id="have_kid">Have Kids</button>
+                </form>
+            </td>
+            <td>
+                <ul>
+                    <li>roll: 1-5 = single, 6 = twins</li>
+                    <li>+100 points per child <= 4 kids, otherwise -50 points per child</li>
+                    <li>pay $1500 school fee to the teacher per new child</li>
+                    <li>to have 3rd child, must upgrade house and car</li>
+                    <li>4 years to upgrade if twins after first child</li>
+                </ul>
+            </td>
+            <td>
+                <ul>
+                    <li>must be married</li>
+                    <li>age <= 40</li>
+                </ul>
+            </td>
+            <td class="center">{{ player_info.yrs_til_have_kid }}</td>
+        </tr>
+        <tr>
+            <td class="action-button">
+                <form action="{{ url_for('have_grandkids') }}">
+                    <button type="submit" id="have_grandkid">Have Grandkids</button>
+                </form>
+            </td>
+            <td>
+                <ul>
+                    <li>pick x numbers on die (x = # kids / 2, round up + 1, max=5)<br>if roll #, get grandchild</li>
+                    <li>+200 points per grandchild</li>
+                </ul>
+            </td>
+            <td>
+                <ul>
+                    <li>oldest kids must be at least 18</li>
+                </ul>
+            </td>
+            <td class="center">{{ player_info.yrs_til_have_kid }}</td>
+        </tr>
+        <tr>
+            <td class="action-button">
+                <form action="{{ url_for('buy_pet') }}">
+                    <button type="submit" id="buy_pet">Buy Pet</button>
+                </form>
+            </td>
+            <td>
+                <ul>
+                    <li>pay $100</li>
+                    <li>do not incur minor medical fees</li>
+                    <li>receive 10 points per year</li>
+                    <span class="once">* can only have one pet</span>
+                </ul>
+            </td>
+            <td>
+            </td>
+            <td></td>
+        </tr>
+        <tr>
+            <td class="action-button">
+                <form action="{{ url_for('switch_jobs') }}">
+                    <button type="submit" id="switch_jobs">Switch Jobs</button>
+                </form>
+            </td>
+            <td>
+                <ul>
+                    <li>get job from same category (if none, then move down category)</li>
+                </ul>
+            </td>
+            <td>
+            </td>
+            <td class="center">{{ player_info.yrs_til_switch_jobs }}</td>
+        </tr> 
+        <tr>
+            <td class="action-button">
+                <form action="{{ url_for('peace_corps') }}">
+                    <button type="submit" id="peace_corps">Peace Corps</button>
+                </form>
+            </td>
+            <td>
+                <ul>
+                    <li>pay $1000</li>
+                    <li>receive 75 points</li>
+                </ul>
+            </td>
+            <td>
+                <ul>
+                    <li>must be single</li>
+                    <li>age <= 40</li>
+                </ul>
+            </td>
+            <td class="center">{{ player_info.yrs_til_peace_corps }}</td>
+        </tr>
+        <tr>
+            <td class="action-button">
+                <form action="{{ url_for('mission_trip') }}">
+                    <button type="submit" id="mission_trip">Mission Trip</button>
+                </form>
+            </td>
+            <td>
+                <ul>
+                    <li>pay $10,000</li>
+                    <li>receive 500 points</li>
+                </ul>
+            </td>
+            <td>
+                <ul>
+                    <li>must be single</li>
+                    <li>age > 40</li>
+                </ul>
+            </td>
+            <td class="center">{{ player_info.yrs_til_mission_trip }}</td>
+        </tr>
+        <tr>
+            <td class="action-button">
+                <form action="{{ url_for('pool', type='buy') }}">
+                    <button type="submit" id="buy_pool">Buy Pool</button>
+                </form>
+                <form action="{{ url_for('pool', type='sell') }}">
+                    <button type="submit" id="sell_pool">Sell Pool</button>
+                </form>
+                <form action="{{ url_for('major_donor') }}">
+                    <button type="submit" id="major_donor">Major Donor</button>
+                </form>
+                <form action="{{ url_for('season_tickets') }}">
+                    <button type="submit" id="season_tickets">Season Tickets</button><br>
+                    <label>pay ${{ "{:,.0f}".format(50000 + (10000 * num_people)) }}</label><br>
+                    <label>receive {{ "{:,.0f}".format(200 * num_people) }} points</label>
+                </form>
+                <form action="{{ url_for('backpacking') }}">
+                    <button type="submit" id="backpacking">Backpacking</button><br>
+                    <label>pay ${{ "{:,.0f}".format(5000 * num_people) }}</label><br>
+                    <label>receive {{ 250 }} points</label>
+                </form>
+            </td>
+            <td>
+                <ul>
+                    <li>Buy pool:</li>
+                    <ul>
+                        <li>pay $100,000</li>
+                        <li>receive 250 points per year</li>
+                        <li>pay $20,000 per year for pool maintenance</li>
+                    </ul>
+                    <li>Sell pool:</li>
+                    <ul>
+                        <li>no more pool maintenance payments</li>
+                        <li>no more yearly points for pool</li>
+                    </ul>
+                    <li>Major Donor:</li>
+                    <ul>
+                        <li>pay $1,000,000</li>
+                        <li>receive 5000 points</li>
+                        <p class="once">* can only do once</p>
+                    </ul>
+                    <li>Season Tickets:</li>
+                    <ul>
+                        <li>pay $50,000 + $10,000 per person</li>
+                        <li>receive 200 points per person</li>
+                    </ul>
+                    <li>Backpacking:</li>
+                    <ul>
+                        <li>pay $5000 per person</li>
+                        <li>receive 250 points</li>
+                    </ul>
+                </ul>
+            </td>
+            <td>
+            </td>
+            <td class="center">{{ player_info.yrs_til_rich_action }}</td>
+        </tr>
+        <tr>
+            <td class="action-button">
+                <form action="{{ url_for('invest') }}">
+                    <p id='dollar-sign'>$</p>
+                    <input id="invest-amount" name="amount">
+                    <button type="submit" id="invest">Invest</button>
+                </form>
+            </td>
+            <td>
+                <ul>
+                    <li>choose amount to put in</li>
+                    <li>roll: even = 25% gain, odd = 10% loss</li>
+                </ul>
+            </td>
+            <td>
+            </td>
+            <td class="center">{{ player_info.yrs_til_invest }}</td>
+        </tr>
+    </table>
+    <script type="text/javascript">
+        var gray = JSON.parse('{{ disabled|tojson }}');
+        for(const key in gray) {
+            if(gray[key]) {   // disable action  
+                document.getElementById(key).disabled = true;
+            }
+        }
+
+        function updateCarPoints() {
+            car_from =  document.getElementById("car-from").value;
+            car_to =  document.getElementById("car-to").value;
+            car_prices = JSON.parse('{{ car_costs|tojson }}');
+         
+            change_in_price = car_prices[car_to] - car_prices[car_from];
+            downgrade = 1;
+            if(change_in_price < 0)  // negative: downgrade = minus points
+                downgrade = -1;
+            change_in_price = Math.abs(change_in_price)
+
+            // determine change in points
+            change_in_points = 0
+            if(car_from === car_to)
+            change_in_points = 0;   // cannot switch to current car
+            else if(change_in_price <= 10000)
+                change_in_points = 10 * downgrade;
+            else if(change_in_price <= 20000)
+                change_in_points = 20 * downgrade;
+            else if(change_in_price <= 50000)
+                change_in_points = 35 * downgrade;
+            else if(change_in_price <= 80000)
+                change_in_points = 55 * downgrade;
+            else
+                change_in_points = 80 * downgrade;
+
+            document.getElementById("car-change-points").innerHTML = change_in_points;
+        }
+        
+        function updateHousePoints() {
+            house_from =  document.getElementById("house-from").value;
+            house_to =  document.getElementById("house-to").value;
+            house_prices = JSON.parse('{{ house_costs|tojson }}');
+         
+            change_in_price = house_prices[house_to] - house_prices[house_from];
+            downgrade = 1;
+            if(change_in_price < 0)  // negative: downgrade = minus points
+                downgrade = -1;
+            change_in_price = Math.abs(change_in_price)
+
+            // determine change in points
+            change_in_points = 0
+            if(house_from === house_to)
+            change_in_points = 0;   // cannot switch to current car
+            else if(change_in_price <= 10000)
+                change_in_points = 10 * downgrade;
+            else if(change_in_price <= 20000)
+                change_in_points = 20 * downgrade;
+            else if(change_in_price <= 50000)
+                change_in_points = 35 * downgrade;
+            else if(change_in_price <= 80000)
+                change_in_points = 55 * downgrade;
+            else
+                change_in_points = 80 * downgrade;
+
+            document.getElementById("house-change-points").innerHTML = change_in_points;
+        }
+        
+        cur_age = parseFloat("{{ player_info.age }}");
+        need_loan = "{{ player_info.need_loan }}";
+        turn_num = parseFloat("{{ player_info.turn_num }}");
+        if((cur_age == 65) || (need_loan.toLowerCase() == "true") || (turn_num == -1)) {  // game over or force to get loan or game not started
+            document.querySelectorAll('button').forEach(btn => {
+                btn.disabled = true;
+            });
+        }
+
+        house = "{{ player_info.house }}";
+        path = "{{ player_info.path }}";
+        if((cur_age == 22) && (house == "None") && (path != "military")) {
+            // force to buy house by disabling all other action buttons
+            document.querySelectorAll('button').forEach(btn => {
+                btn.disabled = true;
+            });
+            document.getElementById('change_house').disabled = false;
+        }
+    </script>
+{% endblock %}

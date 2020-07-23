@@ -1,0 +1,257 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/vehicles.css') }}">
+    <table>
+        <tr><th id="table-title" colspan="6">VEHICLES</th></tr>
+        <tr>
+            <th>Category</th>
+            <th>Type</th>
+            <th>Cost</th>
+            <th>Insurance</th>
+            <th>Gas</th>
+            <th>Sell Price</th>
+        </tr>
+        <tr>
+            <td class="no-family" rowspan=3><b>Single Person</b></td>
+            <td id="skateboard">Skateboard</td>
+            <td>100</td>
+            <td>0</td>
+            <td>0</td>
+            <td>100</td>
+            <td class="buy-button-cell">
+                <form action="{{ url_for('buy_car', car='Skateboard') }}">
+                    <button type="submit" id="buy_Skateboard">BUY</button>
+                </form>
+            </td>
+        </tr>
+        <tr>
+            <td id="bike">Bike</td>
+            <td>1,000</td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+            <td class="buy-button-cell">
+                <form action="{{ url_for('buy_car', car='Bike') }}">
+                    <button type="submit" id="buy_Bike">BUY</button>
+                </form>
+            </td>
+        </tr>
+        <tr>
+            <td id="public-transit">Public Transit</td>
+            <td>2,000</td>
+            <td>0</td>
+            <td>0</td>
+            <td>0</td>
+            <td class="buy-button-cell">
+                <form action="{{ url_for('buy_car', car='Public Transit') }}">
+                    <button type="submit" id="buy_Public Transit">BUY</button>
+                </form>
+            </td>
+        </tr>
+        <tr>
+            <td class="small-family" rowspan=4><b>Small Family</b><br>(max 4 people)</td>
+            <td>Mini</td>
+            <td>20,000</td>
+            <td>600</td>
+            <td>1,000</td>
+            <td>10,000</td>
+            <td class="buy-button-cell">
+                <form action="{{ url_for('buy_car', car='Mini') }}">
+                    <button type="submit" id="buy_Mini">BUY</button>
+                </form>
+            </td>
+        </tr>
+        <tr>
+            <td>Sedan</td>
+            <td>30,000</td>
+            <td>900</td>
+            <td>1,500</td>
+            <td>15,000</td>
+            <td class="buy-button-cell">
+                <form action="{{ url_for('buy_car', car='Sedan') }}">
+                    <button type="submit" id="buy_Sedan">BUY</button>
+                </form>
+            </td>
+        </tr>
+        <tr>
+            <td>Station Wagon</td>
+            <td>30,000</td>
+            <td>900</td>
+            <td>1,500</td>
+            <td>15,000</td>
+            <td class="buy-button-cell">
+                <form action="{{ url_for('buy_car', car='Station Wagon') }}">
+                    <button type="submit" id="buy_Station Wagon">BUY</button>
+                </form>
+            </td>
+        </tr>
+        <tr>
+            <td>Hatchback</td>
+            <td>30,000</td>
+            <td>900</td>
+            <td>1,500</td>
+            <td>15,000</td>
+            <td class="buy-button-cell">
+                <form action="{{ url_for('buy_car', car='Hatchback') }}">
+                    <button type="submit" id="buy_Hatchback">BUY</button>
+                </form>
+            </td>
+        </tr>
+        <tr>
+            <td class="large-family" rowspan=9><b>Large Family</b></td>
+            <td>Pickup Truck</td>
+            <td>40,000</td>
+            <td>1,200</td>
+            <td>2,000</td>
+            <td>20,000</td>
+            <td class="buy-button-cell">
+                <form action="{{ url_for('buy_car', car='Pickup Truck') }}">
+                    <button type="submit" id="buy_Pickup Truck">BUY</button>
+                </form>
+            </td>
+        </tr>
+        <tr>
+            <td>SUV</td>
+            <td>40,000</td>
+            <td>1,200</td>
+            <td>2,000</td>
+            <td>20,000</td>
+            <td class="buy-button-cell">
+                <form action="{{ url_for('buy_car', car='SUV') }}">
+                    <button type="submit" id="buy_SUV">BUY</button>
+                </form>
+            </td>
+        </tr>
+        <tr>
+            <td>Minivan</td>
+            <td>40,000</td>
+            <td>1,200</td>
+            <td>2,000</td>
+            <td>20,000</td>
+            <td class="buy-button-cell">
+                <form action="{{ url_for('buy_car', car='Minivan') }}">
+                    <button type="submit" id="buy_Minivan">BUY</button>
+                </form>
+            </td>
+        </tr>
+        <tr>
+            <td>Convertible</td>
+            <td>50,000</td>
+            <td>1,500</td>
+            <td>2,500</td>
+            <td>25,000</td>
+            <td class="buy-button-cell">
+                <form action="{{ url_for('buy_car', car='Convertible') }}">
+                    <button type="submit" id="buy_Convertible">BUY</button>
+                </form>
+            </td>
+        </tr>
+        <tr>
+            <td>Hybrid</td>
+            <td>50,000</td>
+            <td>1,500</td>
+            <td>1,000</td>
+            <td>25,000</td>
+            <td class="buy-button-cell">
+                <form action="{{ url_for('buy_car', car='Hybrid') }}">
+                    <button type="submit" id="buy_Hybrid">BUY</button>
+                </form>
+            </td>
+        </tr>
+        <tr>
+            <td>Electric Car</td>
+            <td>60,000</td>
+            <td>1,800</td>
+            <td>0</td>
+            <td>30,000</td>
+            <td class="buy-button-cell">
+                <form action="{{ url_for('buy_car', car='Electric Car') }}">
+                    <button type="submit" id="buy_Electric Car">BUY</button>
+                </form>
+            </td>
+        </tr>
+        <tr>
+            <td>Sports Car</td>
+            <td>80,000</td>
+            <td>2,400</td>
+            <td>4,000</td>
+            <td>40,000</td>
+            <td class="buy-button-cell">
+                <form action="{{ url_for('buy_car', car='Sports Car') }}">
+                    <button type="submit" id="buy_Sports Car">BUY</button>
+                </form>
+            </td>
+        </tr>
+        <tr>
+            <td>Tesla</td>
+            <td>100,000</td>
+            <td>3,000</td>
+            <td>0</td>
+            <td>50,000</td>
+            <td class="buy-button-cell">
+                <form action="{{ url_for('buy_car', car='Tesla') }}">
+                    <button type="submit" id="buy_Tesla">BUY</button>
+                </form>
+            </td>
+        </tr>
+        <tr>
+            <td>Limo</td>
+            <td>100,000</td>
+            <td>3,000</td>
+            <td>5,000</td>
+            <td>50,000</td>
+            <td class="buy-button-cell">
+                <form action="{{ url_for('buy_car', car='Limo') }}">
+                    <button type="submit" id="buy_Limo">BUY</button>
+                </form>
+            </td>
+        </tr>
+    </table>
+    <table id="asterisk-table">
+        <tr>
+            <td id="skateboard" class="asterisk-cell">*only in college, must not have job</td>
+            <td id="bike" class="asterisk-cell">*only in college, can have job</td>
+            <td id="public-transit" class="asterisk-cell">*yearly payment</td>
+        </tr>
+    </table>
+    <script type="text/javascript">
+        var car_name = "{{ player_info.car }}";
+        if(car_name.toLowerCase() !== "none") {  // cannot buy own car
+            document.getElementById('buy_'+car_name).disabled = true
+        }
+
+        var num_people = parseFloat("{{ num_people }}");
+        var path = "{{ player_info.path }}";
+        var job = "{{ player_info.job }}";
+        if(path != "college") {  // cannot have college vehicle
+            document.getElementById('buy_Skateboard').disabled = true
+            document.getElementById('buy_Bike').disabled = true
+        }
+        if((path == "college") && (job != "None")) {  // only in college, cannot have job
+            document.getElementById('buy_Skateboard').disabled = true
+        }
+
+        if(num_people > 1) {
+            document.getElementById('buy_Skateboard').disabled = true
+            document.getElementById('buy_Bike').disabled = true
+            document.getElementById('buy_Public Transit').disabled = true
+        }
+        if(num_people > 4) {
+            document.getElementById('buy_Mini').disabled = true
+            document.getElementById('buy_Sedan').disabled = true
+            document.getElementById('buy_Station Wagon').disabled = true
+            document.getElementById('buy_Hatchback').disabled = true
+        }
+
+        cur_age = parseFloat("{{ player_info.age }}");
+        need_loan = "{{ player_info.need_loan }}";
+        turn_num = parseFloat("{{ player_info.turn_num }}");
+        if((cur_age == 65) || (need_loan.toLowerCase() == "true") || (turn_num == -1)) {  // game over or force to get loan or game not started
+            document.querySelectorAll('button').forEach(btn => {
+                btn.disabled = true;
+            });
+        }
+    </script>
+{% endblock %}

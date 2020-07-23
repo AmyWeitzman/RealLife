@@ -1,0 +1,242 @@
+#jobs-table {
+    display: inline-block;
+}
+
+#legend-table {
+    float: right;
+    width: 14%;
+}
+
+#job-picker-cell {
+    border: none;
+}
+
+#pick-job-button {
+    font-size: 20px;
+    font-weight: bold;
+    background-color: black;
+    color: white;
+    border: none;
+    padding: 5px;
+    outline: 0;
+    margin-bottom: 15px;
+}
+
+#pick-job-button:hover {
+    color: lightskyblue;
+}
+
+#job-dropdown {
+    padding: 5px;
+    font-size: 20px;
+    outline: 0;
+    border: black 2px solid;
+    text-align-last: center;
+}
+
+#radio-buttons {
+    text-align: left;
+    font-size: 20px;
+}
+
+#select-job-button {
+    margin-top: 10px;
+    font-size: 20px;
+    background-color: lightskyblue;
+    color: white;
+    border: 3px indigo solid;
+    border-radius: 10px;
+    padding: 5px;
+    font-weight: bold;
+    outline: 0;
+}
+
+#select-job-button:hover {
+    color: black;
+}
+
+table {
+    margin-top: 25px;
+    border-collapse: collapse;
+    width: 85%;
+}
+  
+td {
+    border: 2px solid black;
+    padding: 10px;
+    font-size: 25px;
+    text-align: center;
+}
+
+#table-title {
+    font-size: 25px !important;
+    font-weight: bold;
+    margin: 10px;
+    text-align: center;
+    background-color: white;
+    border: none;
+}
+
+th {
+    font-size: 25px !important; 
+    border: black 2px solid;
+    padding: 5px;
+    background-color: lightgray;
+    text-align: center !important;
+}
+
+.legend {
+    font-size: 20px;
+    font-weight: bold;
+    padding: 0 !important;
+}
+
+.col-picked {
+    width: 5%;
+}
+
+.col-job {
+    width: 15%;
+}
+
+.col-salary {
+    width: 15%;
+}
+
+.col-attrs {
+    width: 50%;
+    font-size: 20px;
+    text-align: left;
+}
+
+.picked-field {
+    font-size: 50px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.filter-dropdown {
+    padding: 5px;
+    border: 2px black solid;
+    font-size: 20px;
+    text-align-last: center;
+}
+
+#legend-title {
+    background-color: black;
+    color: white;
+}
+
+button:disabled {
+    background-color: lightgray;
+    color: darkgray;
+    border: darkgray 2px solid;
+}
+
+.military {
+    background-color: burlywood;
+}
+
+.regular {
+    background-color: #77c98d;
+}
+
+.job-in-college {
+    background-color: lightcoral;
+}
+
+.college-grad {
+    background-color: lightskyblue;
+}
+
+.grad-school-1 {
+    background-color: #fff28c;
+}
+
+.grad-school-2 {
+    background-color: #e0b8ff;
+}
+
+.grad-school-6 {
+    background-color: lightsalmon;
+}
+
+.spacer {
+    border: none;
+    color: white;
+    background-color: white;
+    font-size: 20px;
+    padding: 8px;
+}
+
+#filter-cell {
+    background-color: white;
+    border: none;
+    padding-bottom: 0;
+    padding-top: 0;
+}
+
+#top-legend {
+    width: 100%;
+}
+
+#filter-label {
+    font-size: 20px;
+    float: left;
+    font-weight: bold;
+    margin: 0;
+}
+
+#jobs-dropdown {
+    float: right;
+}
+
+#tax-brackets-table {
+    margin-top: 5px;
+    width: 39%;
+    float: left;
+}
+
+.bw-label {
+    color: white;
+    background-color: black;
+}
+
+#pay-raises-table {
+    margin-top: 5px;
+    width: 60%;
+    float: right;
+}
+
+.once {
+    color: red;
+}
+
+
+.job-details {
+    line-height: 20px;
+}
+
+.small {
+    font-size: 22px;
+}
+
+.raise-time {
+    color: blue;
+}
+
+.tax-10{
+    color: darkgoldenrod;
+}
+
+.tax-20 {
+    color: orange
+}
+
+.tax-30 {
+    color: darkorange;
+}
+
+.tax-40 {
+    color: red;
+}

@@ -1,0 +1,52 @@
+table {
+    margin-top: 25px;
+    border-collapse: collapse;
+    width: 45%;
+}
+  
+td {
+    border: 2px solid black;
+    padding: 10px;
+    font-size: 20px;
+    width: 5%;
+    text-align: center;
+}
+
+.card-type {
+    font-size: 25px;
+    font-weight: bold;
+    margin: 10px;
+    text-align: center;
+    background-color: white;
+    border: none;
+}
+
+th {
+    font-size: 25px;
+    border: black 2px solid;
+    padding: 5px;
+    background-color: lightskyblue;
+    text-align: center;
+}
+
+#regular {
+    display: inline-block;
+    margin-left: 50px;
+}
+
+#college {
+    float: right;
+    margin-right: 50px;
+}
+
+.bad-card {
+    background-color: rgb(240, 152, 152);
+}
+
+.good-card {
+    background-color: rgb(172, 238, 172);
+}
+
+.neutral-card {
+    background-color: rgb(245, 245, 198);
+}

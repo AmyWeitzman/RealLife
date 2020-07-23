@@ -1,0 +1,752 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/jobs.css') }}">
+    <table id="top-legend">
+        <tr>
+            <td class="job-in-college legend">job in college</td>
+            <td class="regular legend">regular</td>
+            <td class="college-grad legend">college graduate</td>
+            <td class="grad-school-1 legend">grad school (1 yr)</td>
+            <td class="grad-school-2 legend">grad school (2 yrs)</td>
+            <td class="grad-school-6 legend">grad school (6 yrs)</td>
+            <td id="filter-cell">
+                <p id="filter-label">Filter: </p>
+                <form action="{{ url_for('filter_jobs') }}">
+                    <select name="job-types" id="jobs-dropdown" class="filter-dropdown" onchange="this.form.submit()">
+                        <option value="all" id="type-all">all</option>
+                        <option value="job-in-college" id="type-job-in-college">job in college</option>
+                        <option value="regular" id="type-regular">regular</option>
+                        <option value="college-grad" id="type-college-grad">college grad</option>
+                        <option value="grad-school-1" id="type-grad-school-1">grad school (1 yr)</option>
+                        <option value="grad-school-2" id="type-grad-school-2">grad school (2 yrs)</option>
+                        <option value="grad-school-6" id="type-grad-school-6">grad school (6 yrs)</option>
+                    </select>
+                </form>
+            </td>
+        </tr>
+    </table>
+    <table id="jobs-table">
+        <tr><th id="table-title" colspan="4">JOBS</th></tr>
+        <tr>
+            <th class="col-picked">Picked</th>
+            <th class="col-job">Job Title</th>
+            <th class="col-salary">Base Salary</th>
+            <th class="col-attrs">Attributes</th>
+        </tr>
+        {% if category == "all" %}
+        <tr>
+            <td class="col-picked picked-field">{{ "X" if picked["Military"] else "" }}</td>
+            <td class="col-job military">Military</td>
+            <td class="col-salary">
+                <p class="job-details"><b>$5,000</b></p>
+                <p class="job-details small">raise every <span class="raise-time">4</span> years</p>
+                <p class="job-details small">taxed @ <span class="tax-10">10%</span></p>
+            </td>
+            <td class="col-attrs">
+                <ul>
+                    <li>join at beginning of game</li>
+                    <li>must remain in military for at least 2 years</li>
+                    <li class="once">salary doubles every 4 years up to 5 raises</li>
+                    <li>if lose job, demoted; if at min salary and lose job again, kicked out of military and must pick regular job</li>
+                    <li>once reach 2 years, options:
+                        <ul>
+                            <li>go to college:
+                                <ul>
+                                    <li>free tuition for 4 years</li>
+                                    <li>after graduation, eligible for benefits for # yrs served</li>
+                                </ul>
+                            </li>
+                            <li>stay in military:
+                                <ul>
+                                    <li>lifetime benefits</li>
+                                    <li>no need to buy house/car until married</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>benefits:
+                        <ul>
+                            <li>free health insurance</li>
+                            <li>2 people free for local travel</li>
+                            <li>50% off yearly entertainment expenses</li>
+                        </ul>
+                    </li>
+                </ul>
+            </td>
+        </tr>
+        {% endif %}
+        {% if ((job_options != None and "YouTuber" in job_option_titles) or (job_options == None and category in ["regular", "all"])) %}
+        <tr>
+            <td class="col-picked picked-field">{{ "X" if picked["YouTuber"] else "" }}</td>
+            <td class="col-job regular">YouTuber</td>
+            <td class="col-salary">
+                <p class="job-details"><b>$15,000</b></p>
+                <p class="job-details small">raise <span class="raise-time">every</span> year</p>
+                <p class="job-details small">taxed @ <span class="tax-10">10%</span></p>
+            </td>
+            <td class="col-attrs">
+                <ul>
+                    <li>
+                        salary based on gain/lose subscribers: every year, 
+                        <ul>
+                            <li>roll even: salary + $15,000</li>
+                            <li>roll odd: salary - $15,000</li>
+                        </ul>
+                    </li>
+                </ul>
+            </td>
+        </tr>
+        {% endif %}
+        {% if category in ["job-in-college", "all"] %}
+        <tr>
+            <td class="col-picked picked-field">{{ "X" if picked["Cashier"] else "" }}</td>
+            <td class="col-job job-in-college">Cashier</td>
+            <td class="col-salary">
+                <p class="job-details"><b>$10,000</b></p>
+                <p class="job-details small"><span class="once">* no pay raises</span></p>
+                <p class="job-details small">taxed @ <span class="tax-10">10%</span></p>
+            </td>
+            <td class="col-attrs">
+                <ul>
+                    <li>
+                        get 50% off yearly eat-out/entertainment expenses
+                    </li>
+                </ul>
+            </td>
+        </tr>
+        {% endif %}
+        {% if category in ["job-in-college", "all"] %}
+        <tr>
+            <td class="col-picked picked-field">{{ "X" if picked["Barista"] else "" }}</td>
+            <td class="col-job job-in-college">Barista</td>
+            <td class="col-salary">
+                <p class="job-details"><b>$10,000</b></p>
+                <p class="job-details small"><span class="once">* no pay raises</span></p>
+                <p class="job-details small">taxed @ <span class="tax-10">10%</span></p>
+            </td>
+            <td class="col-attrs">
+                <ul>
+                    <li>
+                        get 50% off yearly eat-out/entertainment expenses
+                    </li>
+                </ul>
+            </td>
+        </tr>
+        {% endif %}
+        {% if ((job_options != None and "Hair Stylist" in job_option_titles) or (job_options == None and category in ["regular", "all"])) %}
+        <tr>
+            <td class="col-picked picked-field">{{ "X" if picked["Hair Stylist"] else "" }}</td>
+            <td class="col-job regular">Hair Stylist</td>
+            <td class="col-salary">
+                <p class="job-details"><b>$25,000</b></p>
+                <p class="job-details small">raise <span class="raise-time">every</span> year</p>
+                <p class="job-details small">taxed @ <span class="tax-10">10%</span></p>
+            </td>
+            <td class="col-attrs">
+                <ul>
+                    <li>
+                        when players draw certain event cards, collect specified amount from all players for hair styling services
+                    </li>
+                </ul>
+            </td>
+        </tr>   
+        {% endif %}
+        {% if category in ["job-in-college", "all"] %}
+        <tr>
+            <td class="col-picked picked-field">{{ "X" if picked["Waiter"] else "" }}</td>
+            <td class="col-job job-in-college">Waiter</td>
+            <td class="col-salary">
+                <p class="job-details"><b>$13,000</b></p>
+                <p class="job-details small"><span class="once">* no pay raises</span></p>
+                <p class="job-details small">taxed @ <span class="tax-10">10%</span></p>
+            </td>
+            <td class="col-attrs">
+                <ul>
+                    <li>
+                        get $2000 per year in tips
+                    </li>
+                </ul>
+            </td>
+        </tr>
+        {% endif %}
+        {% if ((job_options != None and "Baker" in job_option_titles) or (job_options == None and category in ["regular", "all"])) %}
+        <tr>
+            <td class="col-picked picked-field">{{ "X" if picked["Baker"] else "" }}</td>
+            <td class="col-job regular">Baker</td>
+            <td class="col-salary">
+                <p class="job-details"><b>$30,000</b></p>
+                <p class="job-details small">raise <span class="raise-time">every</span> year</p>
+                <p class="job-details small">taxed @ <span class="tax-10">10%</span></p>
+            </td>
+            <td class="col-attrs">
+                <ul>
+                    <li>if release cookbook, collect $10,000 + $10 per player</li>
+                    <li>if hold bake sale: collect $10,000 + $10 per player</li>
+                    <li>if open new bakery: collect $10,000 + $10 per player</li>
+                    </li>
+                </ul>
+            </td>
+        </tr>
+        {% endif %}
+        {% if ((job_options != None and "Animal Trainer" in job_option_titles) or (job_options == None and category in ["regular", "all"])) %}
+        <tr>
+            <td class="col-picked picked-field">{{ "X" if picked["Animal Trainer"] else "" }}</td>
+            <td class="col-job regular">Animal Trainer</td>
+            <td class="col-salary">
+                <p class="job-details"><b>$30,000</b></p>
+                <p class="job-details small">raise <span class="raise-time">every</span> year</p>
+                <p class="job-details small">taxed @ <span class="tax-10">10%</span></p>
+            </td>
+            <td class="col-attrs">
+                <ul>
+                    <li>if win pet competition: collect $10,000 + $10 per player</li>
+                    <li>if do pet food commercial: $10,000 + $10 per player</li>
+                    <li>if do county fair show: $10,000 + $10 per player</li>
+                </ul>
+            </td>
+        </tr>
+        {% endif %}
+        {% if category in ["job-in-college", "all"] %}
+        <tr>
+            <td class="col-picked picked-field">{{ "X" if picked["Janitor"] else "" }}</td>
+            <td class="col-job job-in-college">Janitor</td>
+            <td class="col-salary">
+                <p class="job-details"><b>$15,000</b></p>
+                <p class="job-details small"><span class="once">* no pay raises</span></p>
+                <p class="job-details small">taxed @ <span class="tax-10">10%</span></p>
+            </td>
+            <td class="col-attrs">
+                <ul>
+                    <li>learn cleaning skills so don't hire maid when get house</li>
+                </ul>
+            </td>
+        </tr>
+        {% endif %}
+        {% if ((job_options != None and "Exterminator" in job_option_titles) or (job_options == None and category in ["regular", "all"])) %}
+        <tr>
+            <td class="col-picked picked-field">{{ "X" if picked["Exterminator"] else "" }}</td>
+            <td class="col-job regular">Exterminator</td>
+            <td class="col-salary">
+                <p class="job-details"><b>$35,000</b></p>
+                <p class="job-details small">raise <span class="raise-time">every</span> year</p>
+                <p class="job-details small">taxed @ <span class="tax-10">10%</span></p>
+            </td>
+            <td class="col-attrs">
+                <ul>
+                    <li>don't pay for pest problems</li>
+                    <li>collect $5000 when other players have pest problems</li>
+                </ul>
+            </td>
+        </tr>
+        {% endif %}
+        {% if ((job_options != None and "Mechanic" in job_option_titles) or (job_options == None and category in ["regular", "all"])) %}
+        <tr>
+            <td class="col-picked picked-field">{{ "X" if picked["Mechanic"] else "" }}</td>
+            <td class="col-job regular">Mechanic</td>
+            <td class="col-salary">
+                <p class="job-details"><b>$40,000</b></p>
+                <p class="job-details small">raise <span class="raise-time">every</span> year</p>
+                <p class="job-details small">taxed @ <span class="tax-20">20%</span></p>
+            </td>
+            <td class="col-attrs">
+                <ul>
+                    <li>free auto insurance</li>
+                    <li>collect $5000 when other players have car acccident</li>
+                    <li>don't pay yearly car maintenance expense</li>
+                </ul>
+            </td>
+        </tr>
+        {% endif %}
+        {% if ((job_options != None and "Plumber" in job_option_titles) or (job_options == None and category in ["regular", "all"])) %}
+        <tr>
+            <td class="col-picked picked-field">{{ "X" if picked["Plumber"] else "" }}</td>
+            <td class="col-job regular">Plumber</td>
+            <td class="col-salary">
+                <p class="job-details"><b>$40,000</b></p>
+                <p class="job-details small">raise <span class="raise-time">every</span> years</p>
+                <p class="job-details small">taxed @ <span class="tax-20">20%</span></p>
+            </td>
+            <td class="col-attrs">
+                <ul>
+                    <li>50% off yearly utilties expense</li>
+                </ul>
+            </td>
+        </tr>
+        {% endif %}
+        {% if category in ["grad-school-1", "all"] %}
+        <tr>
+            <td class="col-picked picked-field">{{ "X" if picked["Teacher"] else "" }}</td>
+            <td class="col-job grad-school-1">Teacher</td>
+            <td class="col-salary">
+                <p class="job-details"><b>$40,000</b></p>
+                <p class="job-details small">raise <span class="raise-time">every</span> years</p>
+                <p class="job-details small">taxed @ <span class="tax-20">20%</span></p>
+            </td>
+            <td class="col-attrs">
+                <ul>
+                    <li>don't pay school fees</li>
+                    <li>collect school fees from other players</li>
+                    <li>+100 points per year for teacher appreciation</li>
+                    <li>after 15 yrs, promoted to principal with salary = $100,000</li>
+                </ul>
+            </td>
+        </tr>
+        {% endif %}
+        {% if ((job_options != None and "Reporter" in job_option_titles) or (job_options == None and category in ["regular", "all"])) %}
+        <tr>
+            <td class="col-picked picked-field">{{ "X" if picked["Reporter"] else "" }}</td>
+            <td class="col-job regular">Reporter</td>
+            <td class="col-salary">
+                <p class="job-details"><b>$45,000</b></p>
+                <p class="job-details small">raise every <span class="raise-time">2</span> years</p>
+                <p class="job-details small">taxed @ <span class="tax-20">20%</span></p>
+            </td>
+            <td class="col-attrs">
+                <ul>
+                    <li>if write breaking news, collect $10,000 + $10 per player</li>
+                </ul>
+            </td>
+        </tr>
+        {% endif %}
+        {% if ((job_options != None and "Carpenter" in job_option_titles) or (job_options == None and category in ["regular", "all"])) %}
+        <tr>
+            <td class="col-picked picked-field">{{ "X" if picked["Carpenter"] else "" }}</td>
+            <td class="col-job regular">Carpenter</td>
+            <td class="col-salary">
+                <p class="job-details"><b>$50,000</b></p>
+                <p class="job-details small">raise every <span class="raise-time">2</span> years</p>
+                <p class="job-details small">taxed @ <span class="tax-20">20%</span></p>
+            </td>
+            <td class="col-attrs">
+                <ul>
+                    <li>25% off house cost </li>
+                    <li>collect $5000 for other players' earthquake damage</li>
+                </ul>
+            </td>
+        </tr>
+        {% endif %}
+        {% if ((job_options != None and "Truck Driver" in job_option_titles) or (job_options == None and category in ["regular", "all"])) %}
+        <tr>
+            <td class="col-picked picked-field">{{ "X" if picked["Truck Driver"] else "" }}</td>
+            <td class="col-job regular">Truck Driver</td>
+            <td class="col-salary">
+                <p class="job-details"><b>$50,000</b></p>
+                <p class="job-details small">raise every <span class="raise-time">2</span> years</p>
+                <p class="job-details small">taxed @ <span class="tax-20">20%</span></p>
+            </td>
+            <td class="col-attrs">
+                <ul>
+                    <li>free gas</li>
+                </ul>
+            </td>
+        </tr>
+        {% endif %}
+        {% if ((job_options != None and "Firefighter" in job_option_titles) or (job_options == None and category in ["regular", "all"])) %}
+        <tr>
+            <td class="col-picked picked-field">{{ "X" if picked["Firefighter"] else "" }}</td>
+            <td class="col-job regular">Firefighter</td>
+            <td class="col-salary">
+                <p class="job-details"><b>$50,000</b></p>
+                <p class="job-details small">raise every <span class="raise-time">2</span> years</p>
+                <p class="job-details small">taxed @ <span class="tax-20">20%</span></p>
+            </td>
+            <td class="col-attrs">
+                <ul>
+                    <li>free home insurance</li>
+                    <li>don't pay for fire damage</li>
+                    <li>collect $5000 when other players have fire damage</li>
+                </ul>
+            </td>
+        </tr>
+        {% endif %}
+        {% if ((job_options != None and "Flight Attendant" in job_option_titles) or (job_options == None and category in ["regular", "all"])) %}
+        <tr>
+            <td class="col-picked picked-field">{{ "X" if picked["Flight Attendant"] else "" }}</td>
+            <td class="col-job regular">Flight Attendant</td>
+            <td class="col-salary">
+                <p class="job-details"><b>$50,000</b></p>
+                <p class="job-details small">raise every <span class="raise-time">2</span> years</p>
+                <p class="job-details small">taxed @ <span class="tax-20">20%</span></p>
+            </td>
+            <td class="col-attrs">
+                <ul>
+                    <li>2 people free for local travel</li>
+                </ul>
+            </td>
+        </tr>
+        {% endif %}
+        {% if ((job_options != None and "Electrician" in job_option_titles) or (job_options == None and category in ["college-grad", "all"])) %}
+        <tr>
+            <td class="col-picked picked-field">{{ "X" if picked["Electrician"] else "" }}</td>
+            <td class="col-job college-grad">Electrician</td>
+            <td class="col-salary">
+                <p class="job-details"><b>$50,000</b></p>
+                <p class="job-details small">raise every <span class="raise-time">2</span> years</p>
+                <p class="job-details small">taxed @ <span class="tax-20">20%</span></p>
+            </td>
+            <td class="col-attrs">
+                <ul>
+                    <li>50% off yearly utilties expense</li>
+                </ul>
+            </td>
+        </tr>
+        {% endif %}
+        {% if ((job_options != None and "Police Officer" in job_option_titles) or (job_options == None and category in ["regular", "all"])) %}
+        <tr>
+            <td class="col-picked picked-field">{{ "X" if picked["Police Officer"] else "" }}</td>
+            <td class="col-job regular">Police Officer</td>
+            <td class="col-salary">
+                <p class="job-details"><b>$60,000</b></p>
+                <p class="job-details small">raise every <span class="raise-time">2</span> years</p>
+                <p class="job-details small">taxed @ <span class="tax-20">20%</span></p>
+            </td>
+            <td class="col-attrs">
+                <ul>
+                    <li>if another player is caught speeding, collect $100 fine</li>
+                </ul>
+            </td>
+        </tr>
+        {% endif %}
+        {% if ((job_options != None and "Accountant" in job_option_titles) or (job_options == None and category in ["college-grad", "all"])) %}
+        <tr>
+            <td class="col-picked picked-field">{{ "X" if picked["Accountant"] else "" }}</td>
+            <td class="col-job college-grad">Accountant</td>
+            <td class="col-salary">
+                <p class="job-details"><b>$60,000</b></p>
+                <p class="job-details small">raise every <span class="raise-time">2</span> years</p>
+                <p class="job-details small">taxed @ <span class="tax-20">20%</span></p>
+            </td>
+            <td class="col-attrs">
+                <ul>
+                    <li>don't pay tax preparation fee</li>
+                    <li>collect other players' tax preparation fees</li>
+                </ul>
+            </td>
+        </tr>
+        {% endif %}
+        {% if ((job_options != None and "Author" in job_option_titles) or (job_options == None and category in ["college-grad", "all"])) %}
+        <tr>
+            <td class="col-picked picked-field">{{ "X" if picked["Author"] else "" }}</td>
+            <td class="col-job college-grad">Author</td>
+            <td class="col-salary">
+                <p class="job-details"><b>$60,000</b></p>
+                <p class="job-details small">raise every <span class="raise-time">2</span> years</p>
+                <p class="job-details small">taxed @ <span class="tax-20">20%</span></p>
+            </td>
+            <td class="col-attrs">
+                <ul>
+                    <li>if write best-selling book, get $10,000 + $10 per player</li>
+                </ul>
+            </td>
+        </tr>
+        {% endif %}
+        {% if category in ["grad-school-2", "all"] %}
+        <tr>
+            <td class="col-picked picked-field">{{ "X" if picked["Chiropractor"] else "" }}</td>
+            <td class="col-job grad-school-2">Chiropractor</td>
+            <td class="col-salary">
+                <p class="job-details"><b>$70,000</b></p>
+                <p class="job-details small">raise every <span class="raise-time">2</span> years</p>
+                <p class="job-details small">taxed @ <span class="tax-20">20%</span></p>
+            </td>
+            <td class="col-attrs">
+                <ul>
+                    <li>if player has car accident, collect $50 per person</li>
+                </ul>
+            </td>
+        </tr>
+        {% endif %}
+        {% if ((job_options != None and "Psychologist" in job_option_titles) or (job_options == None and category in ["college-grad", "all"])) %}
+        <tr>
+            <td class="col-picked picked-field">{{ "X" if picked["Psychologist"] else "" }}</td>
+            <td class="col-job college-grad">Psychologist</td>
+            <td class="col-salary">
+                <p class="job-details"><b>$70,000</b></p>
+                <p class="job-details small">raise every <span class="raise-time">2</span> years</p>
+                <p class="job-details small">taxed @ <span class="tax-20">20%</span></p>
+            </td>
+            <td class="col-attrs">
+                <ul>
+                    <li>if player depressed, collect $1000 per year until cured</li>
+                </ul>
+            </td>
+        </tr>
+        {% endif %}
+        {% if ((job_options != None and "Farmer" in job_option_titles) or (job_options == None and category in ["regular", "all"])) %}
+        <tr>
+            <td class="col-picked picked-field">{{ "X" if picked["Farmer"] else "" }}</td>
+            <td class="col-job regular">Farmer</td>
+            <td class="col-salary">
+                <p class="job-details"><b>$75,000</b></p>
+                <p class="job-details small">raise every <span class="raise-time">2</span> years</p>
+                <p class="job-details small">taxed @ <span class="tax-20">20%</span></p>
+            </td>
+            <td class="col-attrs">
+                <ul>
+                    <li>25% off buying organic</li>
+                </ul>
+            </td>
+        </tr>
+        {% endif %}
+        {% if ((job_options != None and "Realtor" in job_option_titles) or (job_options == None and category in ["regular", "all"])) %}
+        <tr>
+            <td class="col-picked picked-field">{{ "X" if picked["Realtor"] else "" }}</td>
+            <td class="col-job regular">Realtor</td>
+            <td class="col-salary">
+                <p class="job-details"><b>$80,000</b></p>
+                <p class="job-details small">raise every <span class="raise-time">2</span> years</p>
+                <p class="job-details small">taxed @ <span class="tax-30">30%</span></p>
+            </td>
+            <td class="col-attrs">
+                <ul>
+                    <li>10% off house cost </li>
+                </ul>
+            </td>
+        </tr>
+        {% endif %}
+        {% if category in ["grad-school-1", "all"] %}
+        <tr>
+            <td class="col-picked picked-field">{{ "X" if picked["Veterinarian"] else "" }}</td>
+            <td class="col-job grad-school-1">Veterinarian</td>
+            <td class="col-salary">
+                <p class="job-details"><b>$80,000</b></p>
+                <p class="job-details small">raise every <span class="raise-time">2</span> years</p>
+                <p class="job-details small">taxed @ <span class="tax-30">30%</span></p>
+            </td>
+            <td class="col-attrs">
+                <ul>
+                    <li>don't pay for yearly pet fees</li>
+                    <li>collect other players' yearly pet fees ($100 per pet)</li>
+                </ul>
+            </td>
+        </tr>
+        {% endif %}
+        {% if ((job_options != None and "Athlete" in job_option_titles) or (job_options == None and category in ["regular", "all"])) %}
+        <tr>
+            <td class="col-picked picked-field">{{ "X" if picked["Athlete"] else "" }}</td>
+            <td class="col-job regular">Athlete</td>
+            <td class="col-salary">
+                <p class="job-details"><b>$100,000</b></p>
+                <p class="job-details small">raise every <span class="raise-time">3</span> years</p>
+                <p class="job-details small">taxed @ <span class="tax-30">30%</span></p>
+            </td>
+            <td class="col-attrs">
+                <ul>
+                    <li>if medical problem during year, get only 1/4 of salary</li>
+                    <li>if win championship, collect $50,000 + $10 per player</li>
+                </ul>
+            </td>
+        </tr>
+        {% endif %}
+        {% if ((job_options != None and "Singer" in job_option_titles) or (job_options == None and category in ["regular", "all"])) %}
+        <tr>
+            <td class="col-picked picked-field">{{ "X" if picked["Singer"] else "" }}</td>
+            <td class="col-job regular">Singer</td>
+            <td class="col-salary">
+                <p class="job-details"><b>$100,000</b></p>
+                <p class="job-details small">raise every <span class="raise-time">3</span> years</p>
+                <p class="job-details small">taxed @ <span class="tax-30">30%</span></p>
+            </td>
+            <td class="col-attrs">
+                <ul>
+                    <li>if perform at concert, collect $10,000 + $10 per player</li>
+                </ul>
+            </td>
+        </tr>
+        {% endif %}
+        {% if ((job_options != None and "Actor" in job_option_titles) or (job_options == None and category in ["regular", "all"])) %}
+        <tr>
+            <td class="col-picked picked-field">{{ "X" if picked["Actor"] else "" }}</td>
+            <td class="col-job regular">Actor</td>
+            <td class="col-salary">
+                <p class="job-details"><b>$100,000</b></p>
+                <p class="job-details small">raise every <span class="raise-time">3</span> years</p>
+                <p class="job-details small">taxed @ <span class="tax-30">30%</span></p>
+            </td>
+            <td class="col-attrs">
+                <ul>
+                    <li>if star in new movie, collect $10,000 + $10 per player</li>
+                </ul>
+            </td>
+        </tr>
+        {% endif %}
+        {% if ((job_options != None and "Software Developer" in job_option_titles) or (job_options == None and category in ["college-grad", "all"])) %}
+        <tr>
+            <td class="col-picked picked-field">{{ "X" if picked["Software Developer"] else "" }}</td>
+            <td class="col-job college-grad">Software Developer</td>
+            <td class="col-salary">
+                <p class="job-details"><b>$100,000</b></p>
+                <p class="job-details small">raise every <span class="raise-time">3</span> years</p>
+                <p class="job-details small">taxed @ <span class="tax-30">30%</span></p>
+            </td>
+            <td class="col-attrs">
+                <ul>
+                    <li>don't pay for tech problems</li>
+                    <li>collect when other players have tech problems</li>
+                </ul>
+            </td>
+        </tr>
+        {% endif %}
+        {% if ((job_options != None and "Engineer" in job_option_titles) or (job_options == None and category in ["college-grad", "all"])) %}
+        <tr>
+            <td class="col-picked picked-field">{{ "X" if picked["Engineer"] else "" }}</td>
+            <td class="col-job college-grad">Engineer</td>
+            <td class="col-salary">
+                <p class="job-details"><b>$100,000</b></p>
+                <p class="job-details small">raise every <span class="raise-time">3</span> years</p>
+                <p class="job-details small">taxed @ <span class="tax-30">30%</span></p>
+            </td>
+            <td class="col-attrs">
+                <ul>
+                    <li>if create new invention, collect $10,000 + $10 per player</li>
+                </ul>
+            </td>
+        </tr>
+        {% endif %}
+        {% if category in ["grad-school-1", "all"] %}
+        <tr>
+            <td class="col-picked picked-field">{{ "X" if picked["Pilot"] else "" }}</td>
+            <td class="col-job grad-school-1">Pilot</td>
+            <td class="col-salary">
+                <p class="job-details"><b>$100,000</b></p>
+                <p class="job-details small">raise every <span class="raise-time">3</span> years</p>
+                <p class="job-details small">taxed @ <span class="tax-30">30%</span></p>
+            </td>
+            <td class="col-attrs">
+                <ul>
+                    <li>2 people free for local travel</li>
+                </ul>
+            </td>
+        </tr>
+        {% endif %}
+        {% if category in ["grad-school-2", "all"] %}
+        <tr>
+            <td class="col-picked picked-field">{{ "X" if picked["Lawyer"] else "" }}</td>
+            <td class="col-job grad-school-2">Lawyer</td>
+            <td class="col-salary">
+                <p class="job-details"><b>$150,000</b></p>
+                <p class="job-details small">raise every <span class="raise-time">3</span> years</p>
+                <p class="job-details small">taxed @ <span class="tax-30">30%</span></p>
+            </td>
+            <td class="col-attrs">
+                <ul>
+                    <li>don't pay for lawsuits</li>
+                    <li>collect $1000 when a player gets divorced</li>
+                    <li>collect 50% of other players' lawsuit money</li>
+                </ul>
+            </td>
+        </tr>
+        {% endif %}
+        {% if category in ["grad-school-2", "all"] %}
+        <tr>
+            <td class="col-picked picked-field">{{ "X" if picked["Dentist"] else "" }}</td>
+            <td class="col-job grad-school-2">Dentist</td>
+            <td class="col-salary">
+                <p class="job-details"><b>$170,000</b></p>
+                <p class="job-details small">raise every <span class="raise-time">3</span> years</p>
+                <p class="job-details small">taxed @ <span class="tax-30">30%</span></p>
+            </td>
+            <td class="col-attrs">
+                <ul>
+                    <li>don't pay for dental fees</li>
+                    <li>collect dental fees from other players</li>
+                </ul>
+            </td>
+        </tr>{% endif %}
+        {% if category in ["grad-school-6", "all"] %}
+        <tr>
+            <td class="col-picked picked-field">{{ "X" if picked["Doctor"] else "" }}</td>
+            <td class="col-job grad-school-6">Doctor</td>
+            <td class="col-salary">
+                <p class="job-details"><b>$300,000</b></p>
+                <p class="job-details small">raise every <span class="raise-time">4</span> years</p>
+                <p class="job-details small">taxed @ <span class="tax-40">40%</span></p>
+            </td>
+            <td class="col-attrs">
+                <ul>
+                    <li>10% off health insurance</li>
+                </ul>
+            </td>
+        </tr>
+        {% endif %}
+    </table>
+    <table id="legend-table">
+        <tr><td class="spacer">Spacer</td></tr>
+        <tr>
+            <td id="job-picker-cell">
+                <form action="{{ url_for('get_job_options') }}">
+                    <div id="job-picker">
+                        <select name="job-dropdown" id="job-dropdown">
+                            <option value="default" selected disabled hidden>Choose type...</option>
+                            {% if player_info.age == 18 and player_info.path != "military" %}
+                            <option value="military">Military</option>
+                            {% endif %}
+                            {% if player_info.path == "college" and player_info.age_grad == 0 %}
+                            <option value="job-in-college">Job in College</option>
+                            {% endif %}
+                            {% if (not player_info.ready) or (player_info.path != "college") %}
+                            <option value="regular">Regular</option>
+                            {% endif %}
+                            {% if ((player_info.path == "college") or (player_info.grad_school)) and (player_info.age_grad != 0) %}
+                                <option value="college-grad">College Graduate</option>
+                                {% if player_info.num_yrs_college >= 5 %}
+                                <option value="grad-school-1">Grad School (1 yr)</option>
+                                {% elif player_info.num_yrs_college >= 6 %}
+                                <option value="grad-school-2">Grad School (2 yr)</option>
+                                {% elif player_info.num_yrs_college >= 10 %}
+                                <option value="grad-school-6">Grad School (6 yr)</option>
+                                {% endif %}
+                            {% endif %}
+                        </select>
+                        <button type="submit" id="pick-job-button">Choose Job</button>
+                    </div>
+                </form>
+                <form action="{{ url_for('pick_job_from_options') }}" id="radio-buttons">
+                    {% for job in jobs %}
+                        <input type="radio" name="jobs" value="{{ job.title }}" id="{{ job.title }}" class="radio-button">
+                        <label for="{{ job.title }}">{{ job.title }}</label><br>
+                    {% endfor %}
+                    {% if jobs %}
+                        <button type="submit" id="select-job-button">SELECT</button>
+                    {% endif %}
+                </form>
+            </td>
+        </tr>
+    </table>
+    <script type="text/javascript">
+        category = '{{ category }}';
+        switch(category) {
+            case "job-in-college":
+                document.getElementById("type-job-in-college").selected = 'selected';
+                break;
+            case "regular":
+                document.getElementById("type-regular").selected = 'selected';
+                break;
+            case "college-grad":
+                document.getElementById("type-college-grad").selected = 'selected';
+                break;
+            case "grad-school-1":
+                document.getElementById("type-grad-school-1").selected = 'selected';
+                break;
+            case "grad-school-2":
+                document.getElementById("type-grad-school-2").selected = 'selected';
+                break;
+            case "grad-school-6":
+                document.getElementById("type-grad-school-6").selected = 'selected';
+                break;
+            default:  // "all"
+                document.getElementById("type-all").selected = 'selected';
+                break;
+        }
+
+        cur_age = parseFloat("{{ player_info.age }}");
+        need_loan = "{{ player_info.need_loan }}";
+        turn_num = parseFloat("{{ player_info.turn_num }}");
+        if((cur_age == 65) || (need_loan.toLowerCase() == "true") || (turn_num == -1)) {  // game over or force to get loan or game not started
+            document.querySelectorAll('button').forEach(btn => {
+                btn.disabled = true;
+            });
+        }
+    </script>
+{% endblock %}

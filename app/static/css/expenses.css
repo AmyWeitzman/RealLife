@@ -1,0 +1,358 @@
+table {
+    margin-top: 25px;
+    border-collapse: collapse;
+    width: 100%;
+}
+  
+td {
+    border: 2px solid black;
+    font-size: 20px;
+    text-align: center;
+    padding: 5px;
+}
+
+th {
+    font-size: 25px; 
+    border: black 2px solid;
+    padding: 5px;
+    background-color: lightskyblue;
+    text-align: center;
+}
+
+#table-title {
+    font-size: 25px;
+    font-weight: bold;
+    margin: 10px;
+    text-align: center;
+    background-color: white;
+    border: none;
+}
+
+.total-col {
+    border: 3px black solid;
+}
+
+button {
+    font-size: 20px;
+    padding: 10px;
+    outline: 0;
+    border-radius: 10px;
+    font-weight: bold;
+    outline: 0;
+    margin: 5px;
+}
+button:hover {
+    color: black !important;
+}
+
+button:disabled {
+    background-color: gray !important;
+    color: darkgray !important;
+    border: darkgray 3px solid !important;
+}
+
+.once {
+    color: red;
+}
+
+.italic {
+    font-style: italic;
+}
+
+.details {
+    text-align: left;
+    width: 490px;
+}
+
+p {
+    margin-bottom: 2px;
+}
+
+.type {
+    width: 150px;
+    background-color: lightgray;
+    font-weight: bold;
+}
+
+.amount {
+    width: 180px;
+    background-color: lightgray;
+    border: 3px black solid;
+}
+
+.tax-break {
+    background-color: lightsteelblue;
+}
+
+button:disabled {
+    background-color: lightgray;
+    color: darkgray;
+    border: darkgray 2px solid;
+}
+
+.textbox {
+    border: 2px black solid;
+    text-align: center;
+    padding: 5px;
+    width: 80%;
+    margin-left: 22px !important;
+    margin-bottom: 0 !important;
+    margin-top: 5px !important;
+}
+
+.top-margin {
+    margin-top: 5px !important;
+}
+
+.checkbox {
+    width: 20px;
+    height: 20px;
+    text-align: center !important;
+}
+
+.ins-checkbox {
+    width: 20px;
+    height: 20px;
+    text-align: center !important;
+    margin-top: 20px !important;
+    margin-left: 80px !important;
+}
+
+.checkbox-label {
+    margin-left: 5px !important;
+    margin-right: 500px !important;
+}
+
+.college-loans-bg {
+    background-color: rgb(172, 238, 172);
+}
+
+.loans-bg {
+    background-color: #e1c3f8;
+}
+
+.auto-ins-bg {
+    background-color: rgb(240, 152, 152);
+}
+
+.health-ins-bg {
+    background-color: rgb(245, 245, 198);
+}
+
+.home-ins-bg {
+    background-color: rgb(252, 169, 136);
+}
+
+.blank {
+    border: none;
+    background-color: white;
+}
+
+#net-points {
+    background-color: lightskyblue;
+    color: black;
+    float: left;
+    padding: 10px;
+    border-radius: 20px;
+    margin-top: 0;
+    margin-right: 50px;
+}
+
+#net-earnings {
+    background-color: lightskyblue;
+    color: black;
+    float: left;
+    padding: 10px;
+    border-radius: 20px;
+    margin-top: 0;
+    margin-left: 50px;
+}
+
+#net-calc {
+    float: left;
+    padding-top: 20px;
+}
+
+#total-expenses-label {
+    background-color: black;
+    color: white;
+    text-align: right;
+    float: left;
+    margin-left: 50px;
+    margin-right: 10px;
+    padding: 10px;
+    border-radius: 20px;
+}
+
+.total-dollar-sign {
+    margin-left: 30px !important;
+    margin-top: 10px !important;
+}
+
+#total-expenses {
+    font-weight: bold;
+    float: left;
+    width: 150px;
+    text-align: center;
+    font-size: 30px;
+    border: none;
+    padding: 10px;
+    margin-left: 8px;
+    background-color: black;
+    color: white;
+    border-radius: 20px;
+}
+
+.last-row {
+    border: none;
+    border-top: 1px black solid;
+    padding-left: 150px;
+    font-size: 25px;
+    padding-top: 0;
+}
+
+.net-row {
+    border-top: 5px black solid;
+    padding-left: 150px;
+}
+
+#pay-button {
+    background-color: red;
+    color: white;
+    border: none;
+    width: 100px;
+    outline: 0;
+}
+
+#pay-button:hover {
+    color: black;
+}
+
+#done-button {
+    background-color: brown;
+    color: white;
+    border: none;
+    width: 100px;
+    outline: 0;
+}
+
+#done-button:hover {
+    color: lightskyblue;
+}
+
+option {
+    text-align: center;
+}
+
+.dropdown {
+    padding: 5px;
+    border: 2px black solid;
+}
+
+.test {
+    background-color: darkgray;
+    text-align: left;
+}
+
+#test-title {
+    text-align: center;
+}
+
+.left-radio {
+    margin-right: 20px;
+}
+
+#dollar-sign {
+    display: inline-block;
+}
+
+.last-dollar-sign {
+    float: left;
+    width: 10px;
+    padding-left: 10px;
+    margin-right: 15px;
+    margin-bottom: 0;
+    font-weight: bold;
+    font-size: 30px;
+    margin-left: 65px !important;
+}
+
+#net-dollar-sign {
+    margin-left: 20px !important;
+}
+
+#start-test-button {
+    background-color: green;
+    color: white;
+    border: none;
+    margin-left: 35%;
+    outline: 0;
+}
+
+#net-points-val {
+    float: left;
+    width: 120px;
+    margin-left: 5px;
+    text-align: center;
+    padding: 10px;
+    margin-right: 70px;
+    border: none;
+    font-weight: bold;
+    background-color: lightskyblue;
+    border-radius: 20px;
+}
+
+#net-earnings-val {
+    float: left;
+    width: 200px;
+    margin-left: 5px;
+    text-align: center;
+    padding: 10px;
+    margin-right: 70px;
+    border: none;
+    font-weight: bold;
+    background-color: lightskyblue;
+    border-radius: 20px;
+}
+
+.input-label {
+    width: 37%;
+    float: left;
+    margin-right: 50px;
+    padding: 10px;
+}
+
+.pad-bottom {
+    padding-bottom: 5px;
+}
+
+.in-line {
+    float: left;
+    margin: 10px;
+    margin-left: 50px;
+}
+
+#pay-college-loans {
+    width: 180px;
+}
+
+
+#pay-loans {
+    width: 180px;
+}
+
+.loans-cur-val {
+    border: none;
+    text-align: center;
+    padding-left: 5px;
+    width: 150px;
+    margin-left: 50px !important;
+}
+
+.gain {
+    color: green;
+}
+
+.loss {
+    color: red;
+}

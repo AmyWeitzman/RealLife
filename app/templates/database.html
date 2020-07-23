@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/database.css') }}">
+    <table id="index">
+        <tr>
+            <td onClick="location.href='#players-table'">Player</td>
+            <td onClick="location.href='#games-table'">Games</td>
+            <td onClick="location.href='#cards-table'">Cards</td>
+            <td onClick="location.href='#jobs-table'">Jobs</td>
+            <td onClick="location.href='#vehicles-table'">Vehicles</td>
+            <td onClick="location.href='#houses-table'">Houses</td>
+        </tr>
+    </table>
+    <table id="players-table">
+        <h2 >PLAYERS</h2>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Cur Game</th>
+        </tr>
+        {% for player in players %}
+            <tr>
+                <td>{{ player.id }}</td>
+                <td>{{ player.name }}</td>
+                <td>{{ player.cur_game }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+    <table id="games-table">
+        <h2>GAMES</h2>
+        <tr>
+            <th>ID</th>
+            <th>Date Started</th>
+            <th>Finished</th>
+            <th>Date Finished</th>
+        </tr>
+        {% for game in games %}
+            <tr>
+                <td>{{ game.id }}</td>
+                <td>{{ game.date_started }}</td>
+                <td>{{ game.finished }}</td>
+                <td>{{ game.date_finished }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+    <table id="cards-table">
+        <h2>CARDS</h2>
+        <tr>
+            <th>ID</th>
+            <th>Regular</th>
+            <th>Text</th>
+            <th>Affects Points</th>
+            <th>Amount</th>
+        </tr>
+        {% for card in cards %}
+            <tr>
+                <td>{{ card.id }}</td>
+                <td>{{ card.regular }}</td>
+                <td>{{ card.text }}</td>
+                <td>{{ card.affects_points }}</td>
+                <td>{{ card.amount }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+    <table id="jobs-table">
+        <h2>JOBS</h2>
+        <tr>
+            <th>ID</th>
+            <th>Category</th>
+            <th>Path</th>
+            <th>Picked</th>
+            <th>Title</th>
+            <th>Base Salary</th>
+            <th>Default TTRaise</th>
+        </tr>
+        {% for job in jobs %}
+            <tr>
+                <td>{{ job.id }}</td>
+                <td>{{ job.category }}</td>
+                <td>{{ job.path }}</td>
+                <td>{{ job.picked }}</td>
+                <td>{{ job.title }}</td>
+                <td>{{ job.base_salary }}</td>
+                <td>{{ job.default_time_til_raise }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+    <table id="vehicles-table">
+        <h2>VEHICLES</h2>
+        <tr>
+            <th>ID</th>
+            <th>Category</th>
+            <th>Name</th>
+            <th>Cost</th>
+            <th>Insurance</th>
+            <th>Gas</th>
+            <th>Sell Price</th>
+        </tr>
+        {% for vehicle in vehicles %}
+            <tr>
+                <td>{{ vehicle.id }}</td>
+                <td>{{ vehicle.category }}</td>
+                <td>{{ vehicle.name }}</td>
+                <td>{{ vehicle.cost }}</td>
+                <td>{{ vehicle.insurance }}</td>
+                <td>{{ vehicle.gas }}</td>
+                <td>{{ vehicle.sell_price }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+    <table id="houses-table">
+        <h2>HOUSES</h2>
+        <tr>
+            <th>ID</th>
+            <th>Category</th>
+            <th>Name</th>
+            <th>Cost</th>
+            <th>Minus Points</th>
+            <th>Insurance</th>
+            <th>Maid</th>
+            <th>Sell Price</th>
+        </tr>
+        {% for house in houses %}
+            <tr>
+                <td>{{ house.id }}</td>
+                <td>{{ house.category }}</td>
+                <td>{{ house.name }}</td>
+                <td>{{ house.cost }}</td>
+                <td>{{ house.minus_points }}</td>
+                <td>{{ house.insurance }}</td>
+                <td>{{ house.maid }}</td>
+                <td>{{ house.sell_price }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

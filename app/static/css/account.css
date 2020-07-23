@@ -1,0 +1,135 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 25px;
+}
+
+.game {
+    border: 3px indigo solid;
+    padding: 10px;
+    border-radius: 25px;
+    width: 100%;
+    height: 12%;
+    text-align: center;
+    background-color: lightskyblue;
+    color: indigo;
+    margin: 10px;
+    line-height: 2px;
+}
+
+.game:hover {
+    border: 5px indigo solid;
+}
+
+a {
+    text-decoration: none;
+}
+
+#player-name {
+    color: indigo;
+}
+
+.play-button {
+    border: 3px indigo solid;
+    color: indigo;
+    background-color: lightskyblue;
+    border-radius: 25px;
+    font-size: 20px;
+    padding: 10px;
+    font-weight: bold;
+    margin: 10px;
+    display: inline-block;
+    outline: 0;
+}
+
+.play-button:hover {
+    color: white;
+}
+
+.game-id-field {
+    font-size: 20px;
+}
+
+.date-field {
+    font-style: italic;
+}
+
+label {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+#game_id {
+    text-align: center;
+    font-size: 20px;
+    color: black;
+    width: 120px;
+    border: 3px black solid;
+    border-radius: 25px;
+    padding: 10px;
+    outline: 0;
+}
+
+input:focus::placeholder {
+    color: transparent;
+}
+
+#join-game-form {
+    float: right;
+    margin-right: 10px;
+}
+
+#start-game-button {
+    margin-left: 150px;
+}
+
+.text {
+    font-size: 25px;
+    color: black;
+}
+
+#page-title {
+    display: inline-block;
+}
+
+hr {
+    border: indigo 2px solid;
+}
+
+.message-flash {
+    color: red;
+    font-weight: bold;
+}
+
+.hidden-message {
+    color: transparent;
+    font-weight: bold;
+}
+
+#flashes {
+    margin-right: 300px;
+    float: right;
+    margin-top: 25px;
+}
+
+.remove-game {
+    color: red;
+    margin-top: 0;
+    margin-left: 30px;
+    float: left;
+}
+
+.remove-game:hover {
+    text-decoration: underline;
+}
+
+.delete-game {
+    float: right;
+    margin-left: 10px;
+}
+
+.game-block {
+    display: inline-block;
+    width: 10%;
+    text-align: right;
+    margin-right: 50px;
+}

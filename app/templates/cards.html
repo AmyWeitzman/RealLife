@@ -1,0 +1,582 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/cards.css') }}">
+    <table id="regular">
+        <tr><th class="card-type" colspan="2">REGULAR CARDS</th></tr>
+        <tr>
+            <th>Card</th>
+            <th>Result</th>
+        </tr>
+        <tr>
+            <td class="good-card" id="Volunteer as crossing guard">Volunteer as crossing guard</td>
+            <td>+50 points</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Donate to goodwill">Donate to goodwill</td>
+            <td>+50 points</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Volunteer at soup kitchen">Volunteer at soup kitchen</td>
+            <td>+50 points</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Read to local senior citizens">Read to local senior citizens</td>
+            <td>+50 points</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Coach children's sports team">Coach children's sports team</td>
+            <td>+50 points</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Take an art class">Take an art class</td>
+            <td>+50 points</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Learn new language">Learn new language</td>
+            <td>+50 points</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Learn new skill">Learn new skill</td>
+            <td>+50 points</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Learn to play instrument">Learn to play instrument</td>
+            <td>+50 points</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Learn new recipe">Learn new recipe</td>
+            <td>+50 points</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Go camping">Go camping</td>
+            <td>+50 points</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Sew blankets for the homeless">Sew blankets for the homeless</td>
+            <td>+50 points</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Make emergency preparedness plan">Make emergency preparedness plan</td>
+            <td>+50 points</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Plant a garden">Plant a garden</td>
+            <td>+50 points</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Join a gym">Join a gym</td>
+            <td>+50 points</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Help a friend move">Help a friend move</td>
+            <td>+50 points</td>
+        </tr>
+        <tr>
+            <td class="bad-card" id="Bad hair day">Bad hair day</td>
+            <td>-50 points</td>
+        </tr>
+        <tr>
+            <td class="bad-card" id="Family issue">Family issue</td>
+            <td>pay $5000 to psychologist</td>
+        </tr>
+        <tr>
+            <td class="bad-card" id="Mugged">Mugged</td>
+            <td>-250 points</td>
+        </tr>
+        <tr>
+            <td class="bad-card" id="Mental illness">Mental illness</td>
+            <td>pay $5000 to psychologist</td>
+        </tr>
+        <tr>
+            <td class="bad-card" id="Stuck in traffic">Stuck in traffic</td>
+            <td>-100 points</td>
+        </tr>
+        <tr>
+            <td class="bad-card">Stuck in traffic</td>
+            <td>-100 points</td>
+        </tr>
+        <tr>
+            <td class="bad-card">Stuck in traffic</td>
+            <td>-100 points</td>
+        </tr>
+        <tr>
+            <td class="bad-card">Stuck in traffic</td>
+            <td>-100 points</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Win lottery">Win lottery</td>
+            <td>+ $100,000</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Garage sale">Garage sale</td>
+            <td>+ $500</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Sell items on eBay">Sell items on eBay</td>
+            <td>+ $1000</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Donate to charity">Donate to charity</td>
+            <td>Collect $500 for tax credit</td>
+        </tr>
+        <tr>
+            <td class="bad-card" id="Car accident">Car accident</td>
+            <td>pay $50,000<br>
+                * $5000 goes to mechanic<br>
+                pay chiropractor $50 per person
+            </td>
+        </tr>
+        <tr>
+            <td class="bad-card" id="Earthquake damage">Earthquake damage</td>
+            <td>pay $50,000<br>
+                * $5000 goes to firefighter
+            </td>
+        </tr>
+        <tr>
+            <td class="bad-card" id="Pest problem">Pest problem</td>
+            <td>pay $5,000 to exterminator</td>
+        </tr>
+        <tr>
+            <td class="bad-card" id="Tech problems">Tech problems</td>
+            <td>pay $100 to software developer</td>
+        </tr>
+        <tr>
+            <td class="bad-card">Tech problems</td>
+            <td>pay $100 to software developer</td>
+        </tr>
+        <tr>
+            <td class="bad-card">Tech problems</td>
+            <td>pay $100 to software developer</td>
+        </tr>
+        <tr>
+            <td class="bad-card">Tech problems</td>
+            <td>pay $100 to software developer</td>
+        </tr>
+        <tr>
+            <td class="bad-card">Tech problems</td>
+            <td>pay $100 to software developer</td>
+        </tr>
+        <tr>
+            <td class="bad-card" id="Lawsuit">Lawsuit</td>
+            <td>pay $500 x roll<br>
+                * 50% goes to lawyer
+            </td>
+        </tr>
+        <tr>
+            <td class="neutral-card" id="Speeding">Speeding</td>
+            <td>pay $100 fine to police officer<br>
+                roll: even=accident then pay $50,000<br>
+                * $5000 goes to mechanic<br>
+                pay chiropractor $50 per person
+            </td>
+        </tr>
+        <tr>
+            <td class="neutral-card">Speeding</td>
+            <td>pay $100 fine to police officer<br>
+                roll: even=accident then pay $50,000<br>
+                * $5000 goes to mechanic<br>
+                pay chiropractor $50 per person
+            </td>
+        </tr>
+        <tr>
+            <td class="neutral-card">Speeding</td>
+            <td>pay $100 fine to police officer<br>
+                roll: even=accident then pay $50,000<br>
+                * $5000 goes to mechanic<br>
+                pay chiropractor $50 per person
+            </td>
+        </tr>
+        <tr>
+            <td class="neutral-card">Speeding</td>
+            <td>pay $100 fine to police officer<br>
+                roll: even=accident then pay $50,000<br>
+                * $5000 goes to mechanic<br>
+                pay chiropractor $50 per person
+            </td>
+        </tr>
+        <tr>
+            <td class="neutral-card">Speeding</td>
+            <td>pay $100 fine to police officer<br>
+                roll: even=accident then pay $50,000<br>
+                * $5000 goes to mechanic<br>
+                pay chiropractor $50 per person
+            </td>
+        </tr>
+        <tr>
+            <td class="bad-card" id="Minor Medical Problems ($50)">Minor Medical Problems ($50)</td>
+            <td>pay $50</td>
+        </tr>
+        <tr>
+            <td class="bad-card" id="Major medical problems ($50k)">Major Medical Problems ($50k)</td>
+            <td>pay $50,000</td>
+        </tr>
+        <tr>
+            <td class="bad-card" id="Minor Medical Problems ($150)">Minor Medical Problems ($150)</td>
+            <td>pay $150</td>
+        </tr>
+        <tr>
+            <td class="bad-card"  id="Major Medical Problems ($100k)">Major Medical Problems ($100k)</td>
+            <td>pay $100,000</td>
+        </tr>
+        <tr>
+            <td class="bad-card" id="Car repairs">Car repairs</td>
+            <td>pay $500</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Found money">Found money</td>
+            <td>collect $100</td>
+        </tr>
+        <tr>
+            <td class="bad-card" id="Lost your phone">Lost your phone</td>
+            <td>-250 points</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Take martial arts class">Take martial arts class</td>
+            <td>+50 points</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Take swimming class">Take swimming class</td>
+            <td>+50 points</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Take photography class">Take photography class</td>
+            <td>+50 points</td>
+        </tr>
+        <tr>
+            <td class="neutral-card" id="Baker releases cookbook">Baker releases cookbook</td>
+            <td>baker receives $10,000<br>
+                everyone else pays baker $10
+            </td>
+        </tr>
+        <tr>
+            <td class="neutral-card" id="Baker holds bake sale">Baker holds bake sale</td>
+            <td>baker receives $10,000<br>
+                everyone else pays baker $10
+            </td>
+        </tr>
+        <tr>
+            <td class="neutral-card" id="Baker opens new bakery">Baker opens new bakery</td>
+            <td>baker receives $10,000<br>
+                everyone else pays baker $10
+            </td>
+        </tr>
+        <tr>
+            <td class="neutral-card" id="Animal trainer wins pet competition">Animal trainer wins pet competition</td>
+            <td>animal trainer receives $10,000<br>
+                everyone else pays animal trainer $10
+            </td>
+        </tr>
+        <tr>
+            <td class="neutral-card" id="Animal trainer does pet food commercial">Animal trainer does pet food commercial</td>
+            <td>animal trainer receives $10,000<br>
+                everyone else pays animal trainer $10
+            </td>
+        </tr>
+        <tr>
+            <td class="neutral-card" id="Animal trainer does county fair show">Animal trainer does county fair show</td>
+            <td>animal trainer receives $10,000<br>
+                everyone else pays animal trainer $10
+            </td>
+        </tr>
+        <tr>
+            <td class="neutral-card" id="Reporter writes breaking news story">Reporter writes breaking news story</td>
+            <td>reporter receives $10,000<br>
+                everyone else pays reporter $10
+            </td>
+        </tr>
+        <tr>
+            <td class="neutral-card">Reporter writes breaking news story</td>
+            <td>reporter receives $10,000<br>
+                everyone else pays reporter $10
+            </td>
+        </tr>
+        <tr>
+            <td class="neutral-card" id="Author writes best-selling novel">Author writes best-selling novel</td>
+            <td>author receives $10,000<br>
+                everyone else pays author $10
+            </td>
+        </tr>
+        <tr>
+            <td class="neutral-card">Author writes best-selling novel</td>
+            <td>author receives $10,000<br>
+                everyone else pays author $10
+            </td>
+        </tr>
+        <tr>
+            <td class="neutral-card" id="Singer performs at concert">Singer performs at concert</td>
+            <td>singer receives $10,000<br>
+                everyone else pays singer $10
+            </td>
+        </tr>
+        <tr>
+            <td class="neutral-card" id="Actor has new movie out">Actor has new movie out</td>
+            <td>actor receives $10,000<br>
+                everyone else pays actor $10
+            </td>
+        </tr>
+        <tr>
+            <td class="neutral-card" id="Engineer creates new invention">Engineer creates new invention</td>
+            <td>engineer receives $10,000<br>
+                everyone else pays engineer $10
+            </td>
+        </tr>
+        <tr>
+            <td class="neutral-card" id="Athlete wins championship">Athlete wins championship</td>
+            <td>athlete receives $50,000<br>
+                everyone else pays athlete $10
+            </td>
+        </tr>
+        <tr>
+            <td class="bad-card" id="Lose job">Lose job</td>
+            <td>if college graduate, pick college graduate job<br>
+                otherwise, pick regular job
+            </td>
+        </tr>
+        <tr>
+            <td class="bad-card">Lose job</td>
+            <td>if college graduate, pick college graduate job<br>
+                otherwise, pick regular job
+            </td>
+        </tr>
+        <tr>
+            <td class="neutral-card" id="Birthday party">Birthday party</td>
+            <td>everyone pays hair stylist $20</td>
+        </tr>
+        <tr>
+            <td class="neutral-card">Birthday party</td>
+            <td>everyone pays hair stylist $20</td>
+        </tr>
+        <tr>
+            <td class="neutral-card" id="Graduation party">Graduation party</td>
+            <td>everyone pays hair stylist $100</td>
+        </tr>
+        <tr>
+            <td class="neutral-card">Graduation party</td>
+            <td>everyone pays hair stylist $100</td>
+        </tr>
+        <tr>
+            <td class="neutral-card" id="Anniversary party">Anniversary party</td>
+            <td>everyone pays hair stylist $100</td>
+        </tr>
+        <tr>
+            <td class="neutral-card">Anniversary party</td>
+            <td>everyone pays hair stylist $100</td>
+        </tr>
+        <tr>
+            <td class="neutral-card" id="Work dinner">Work dinner</td>
+            <td>everyone pays hair stylist $50</td>
+        </tr>
+        <tr>
+            <td class="neutral-card">Work dinner</td>
+            <td>everyone pays hair stylist $50</td>
+        </tr>
+        <tr>
+            <td class="neutral-card" id="Wedding">Wedding</td>
+            <td>everyone pays hair stylist $150</td>
+        </tr>
+        <tr>
+            <td class="neutral-card">Wedding</td>
+            <td>everyone pays hair stylist $150</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Run a marathon">Run a marathon</td>
+            <td>+50 points</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Go scuba diving">Go scuba diving</td>
+            <td>+50 points</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Go skiing">Go skiing</td>
+            <td>+25 points</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Go hiking">Go hiking</td>
+            <td>+25 points</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Go horseback riding">Go horseback riding</td>
+            <td>+25 points</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Go skydiving">Go skydiving</td>
+            <td>+50 points</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Go mountain climbing">Go mountain climbing</td>
+            <td>+50 points</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Do karaoke">Do karaoke</td>
+            <td>+25 points</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Hot air balloon ride">Hot air balloon ride</td>
+            <td>+50 points</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Stargaze">Stargaze</td>
+            <td>+25 points</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Go on a picnic">Go on a picnic</td>
+            <td>+25 points</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Go to museum">Go to museum</td>
+            <td>+25 points</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Go to zoo">Go to zoo</td>
+            <td>+25 points</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Donate blood">Donate blood</td>
+            <td>+50 points</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Go bowling">Go bowling</td>
+            <td>+25 points</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Go roller skating">Go roller skating</td>
+            <td>+25 points</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Play mini golf">Play mini golf</td>
+            <td>+25 points</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Go birdwatching">Go birdwatching</td>
+            <td>+25 points</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Go kayaking">Go kayaking</td>
+            <td>+25 points</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Have movie marathon">Have movie marathon</td>
+            <td>+25 points</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Forgot a birthday">Forgot a birthday</td>
+            <td>-50 points</td>
+        </tr>
+    </table>
+    <table id="college">
+        <tr><th class="card-type" colspan="2">COLLEGE CARDS</th></tr>
+        <tr>
+            <th>Card</th>
+            <th>Result</th>
+        </tr>
+        <tr>
+            <td class="good-card" id="Go to career fair">Go to career fair</td>
+            <td>+50 points</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Go to conference">Go to conference</td>
+            <td>+50 points</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Study abroad">Study abroad</td>
+            <td>+50 points</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Learn to budget">Learn to budget</td>
+            <td>+50 points</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Join a campus club">Join a campus club</td>
+            <td>+50 points</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Make Dean's List">Make Dean's List</td>
+            <td>+50 points</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Summer internship">Summer internship</td>
+            <td>+50 points</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Attend Homecoming celebration">Attend Homecoming celebration</td>
+            <td>+50 points</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Make new friends">Make new friends</td>
+            <td>+50 points</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Volunteer at animal shelter">Volunteer at animal shelter</td>
+            <td>+50 points</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Volunteer at hospital">Volunteer at hospital</td>
+            <td>+50 points</td>
+        </tr>
+        <tr>
+            <td class="bad-card" id="Bad roommate">Bad roommate</td>
+            <td>-100 points</td>
+        </tr>
+        <tr>
+            <td class="bad-card" id="Pull an all-nighter">Pull an all-nighter</td>
+            <td>-100 points</td>
+        </tr>
+        <tr>
+            <td class="bad-card" id="Dumped by significant other">Dumped by significant other</td>
+            <td>-100 points</td>
+        </tr>
+        <tr>
+            <td class="bad-card" id="Required class is full">Required class is full</td>
+            <td>-250 points</td>
+        </tr>
+        <tr>
+            <td class="bad-card" id="Bed bugs in dorm">Bed bugs in dorm</td>
+            <td>-250 points</td>
+        </tr>
+        <tr>
+            <td class="bad-card" id="Fail exam">Fail exam</td>
+            <td>-500 points</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Sell used textbooks">Sell used textbooks</td>
+            <td>+ $100</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Babysit">Babysit</td>
+            <td>+ $5000</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Lifeguard">Lifeguard</td>
+            <td>+ $5000</td>
+        </tr>
+        <tr>
+            <td class="good-card" id="Tutoring">Tutoring</td>
+            <td>+ $5000</td>
+        </tr>
+        <tr>
+            <td class="bad-card" id="Go to amusement park">Go to amusement park</td>
+            <td>- $100</td>
+        </tr>
+        <tr>
+            <td class="bad-card" id="Go to beach">Go to beach</td>
+            <td>- $50</td>
+        </tr>
+        <tr>
+            <td class="bad-card" id="Buy school spirit gear">Buy school spirit gear</td>
+            <td>- $100</td>
+        </tr>
+        <tr>
+            <td class="bad-card" id="Buy school supplies">Buy school supplies</td>
+            <td>- $50</td>
+        </tr>
+        <tr>
+            <td class="bad-card" id="Buy textbooks">Buy textbooks</td>
+            <td>- $150</td>
+        </tr>
+        <tr>
+            <td class="bad-card" id="Slept in; missed class">Slept in; missed class</td>
+            <td>-50 points</td>
+        </tr>
+    </table>
+{% endblock %}

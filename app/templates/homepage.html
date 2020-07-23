@@ -1,0 +1,29 @@
+<html>
+    <head>
+        <meta http-equiv="Content-Security-Policy" content="default-src 'self'">
+        <title>Real Life</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/homepage.css') }}">
+    </head>
+    <body>
+        <h1 id="welcome">Welcome to <span id="game-name">Real Life</span>!</h1>
+        <form action="" method="post" novalidate>
+            {{ form.hidden_tag() }}
+            <p>
+                {{ form.name.label(class='name-label') }}
+                {{ form.name(size=32, class='player-name') }}
+                    {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        {% for message in messages %}
+                            <p class="flash-message">{{ message }}</p>
+                        {% endfor %}
+                    {% endif %}
+                    {% endwith %}
+                <br>
+                {% for error in form.name.errors %}
+                    <span style="color: darkred; font-size: 1rem; font-weight: bold; text-align: right;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+            <p>{{ form.submit(class='login-button') }}</p>
+        </form>
+    </body>
+</html>

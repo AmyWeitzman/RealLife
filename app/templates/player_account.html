@@ -1,0 +1,67 @@
+<html>
+    <head>
+        <title>Real Life of {{ player.name }}</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/account.css') }}">
+        {{ moment.include_jquery() }}
+        {{ moment.include_moment() }}
+        <div id="flashes">
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="message-flash">{{ message }}</div>
+                    {% endfor %}
+                {% else %}
+                    <div class="hidden-message">Invalid Game ID</div>
+                {% endif %}
+                
+            {% endwith %}
+        </div>
+    </head>
+    <body>
+        <h1 id="page-title">Real Life of <span id='player-name'>{{ player.name }}</span></h1>
+        {% if player.name == "Test" %}
+            <a href="{{ url_for('database') }}">Database</a>
+        {% endif %}
+        <a href="{{ url_for('start_game') }}">
+            <input type="button" value="Start new game" id="start-game-button" class="play-button">
+        </a>
+        <div id="join-game-form">
+            <form action="{{ url_for('join_game') }}">
+                <label for="game_id">Join Game:</label>
+                <input type="text" id="game_id" name="game_id" placeholder="Game ID">
+                <input type="submit" value="Play" class="play-button">
+            </form>
+        </div>
+        <hr>
+        <h3 class="text">In-Progress Games ({{ num_incomplete }})</h3>
+        {% for game in games %}
+        {% if not game.finished %}
+        <a href="{{ url_for('resume_game', game_id=game.id) }}">   
+            <div class="game-block">   
+                <div class="game">
+                    <h4 class="game-id-field">Game ID: {{ game.id }}</h4>
+                    <h4 class="date-field">Started: {{ moment(game.date_started).format('MM/DD/YY') }}</h4>
+                </div>
+                <a href="{{ url_for('remove_game', game_id=game.id) }}">
+                    <p class="remove-game">Remove</p>
+                </a>
+                <a href="{{ url_for('delete_game', game_id=game.id) }}">
+                    <p class="remove-game delete-game">Delete</p>
+                </a>
+            </div>
+        </a>
+        {% endif %}
+        {% endfor %}
+        <h3 class="text">Finished Games ({{ num_complete }})</h3>
+        {% for game in games %}
+        {% if game.finished %}
+        <a href="{{ url_for('view_game', game_id=game.id) }}">
+            <div class="game">
+                <h4 class="game-id-field">Game ID: {{ game.id }}</h4>
+                <h4 class="date-field">Finished: {{ moment(game.date_finished).format('MM/DD/YY') }}</h4>
+            </a>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </body>
+</html>

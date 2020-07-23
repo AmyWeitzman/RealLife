@@ -1,0 +1,61 @@
+body {
+    background-color: lightskyblue;
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%);
+    font-family: Arial, Helvetica, sans-serif;
+    color: white;
+}
+
+#welcome {
+    font-size: 4rem;
+}
+
+#game-name {
+    color: indigo;
+}
+
+form {
+    font-size: 3rem;
+    text-align: center;
+}
+
+.player-name {
+    text-align: center;
+    height: 50px;
+    width: 300px;
+    color: indigo;
+    border: indigo 3px solid;
+    font-size: 2rem;
+    padding: 5px;
+}
+
+.login-button {
+    background-color: indigo;
+    color: white;
+    width: 150px;
+    height: 50px;
+    font-size: 2rem;
+    padding: 2px;
+    border-radius: 25px;
+    border: None;
+    outline: 0;
+}
+
+.login-button:hover {
+    color: lightskyblue
+}
+
+.name-label {
+    color: indigo;
+}
+
+.flash-message {
+    color: red !important;
+    text-align: center !important;
+    font-weight: bold;
+    font-size: 20px !important;
+}

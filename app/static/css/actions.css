@@ -1,0 +1,228 @@
+table {
+    margin-top: 25px;
+    border-collapse: collapse;
+    width: 100%;
+}
+  
+td {
+    border: 2px solid black;
+    font-size: 20px;
+    text-align: left;
+    padding-top: 10px;
+}
+
+caption {
+    font-size: 25px;
+    font-weight: bold;
+}
+
+th {
+    font-size: 25px; 
+    border: black 2px solid;
+    padding: 5px;
+    background-color: lightgray;
+    text-align: center;
+}
+
+#table-title {
+    font-size: 25px;
+    font-weight: bold;
+    margin: 10px;
+    text-align: center;
+    background-color: white;
+    border: none;
+}
+
+.action-button {
+    text-align: center;
+    margin: auto;
+}
+
+button {
+    font-size: 20px;
+    padding: 10px;
+    outline: 0;
+    border-radius: 10px;
+    font-weight: bold;
+    outline: 0;
+    margin: 5px;
+}
+button:hover {
+    color: black !important;
+}
+
+button:disabled {
+    background-color: gray !important;
+    color: darkgray !important;
+    border: darkgray 3px solid !important;
+}
+
+#get-divorced-button:hover {
+    color: white !important;
+}
+
+.once {
+    color: red;
+
+}
+
+#buy_organic {
+    background-color: orange;
+    color: green;
+    border: green 3px solid;
+}
+
+#upgrade_appliances {
+    background-color: #791cb8;
+    color: lightgray;
+    border: lightgray 3px solid;
+}
+
+#change_car {
+    background-color: white;
+    color: red;
+    border: black 3px solid;
+}
+
+#change_house {
+    background-color: #ffeeb3;
+    color: #5996ff;
+    border: #5996ff 3px solid;
+}
+
+#buy_clothes {
+    background-color: #ffeeb3;
+    color: #d40000;
+    border: #d40000 3px solid;
+}
+
+#local_travel {
+    background-color: #cce6dc;
+    color: green;
+    border: #5996ff 3px solid;
+}
+
+#domestic_travel {
+    background-color: #cce6dc;
+    color: orange;
+    border: #5996ff 3px solid;
+}
+
+#international_travel {
+    background-color: #cce6dc;
+    color: #d40000;
+    border: #5996ff 3px solid;
+}
+
+#get_married {
+    background-color: #ffcfe4;
+    color: #d40000;
+    border: #d40000 3px solid;
+}
+
+#get_divorced {
+    background-color: lightgray;
+    color: black;
+    border: black 3px solid;
+}
+
+#have_kid {
+    background-color: #ffeeb3;
+    color: green;
+    border: green 3px solid;
+}
+
+#have_grandkid {
+    background-color: #317af7;
+    color: indigo;
+    border: indigo 3px solid;
+}
+
+#buy_pet {
+    background-color: #9e6c00;
+    color: #ffeeb3;
+    border: #ffeeb3 3px solid;
+}
+
+#switch_jobs {
+    background-color: #9ec4db;
+    color: #2e8ec9;
+    border: #2e8ec9 3px solid;
+}
+
+#peace_corps {
+    background-color: #0221ab;
+    color: white;
+    border: #d40000 3px solid;
+}
+
+#mission_trip {
+    background-color: #ffba82;
+    color: #961700;
+    border: #961700 3px solid;
+}
+
+#buy_pool {
+    background-color: #005eb5;
+    color: #3da2ff;
+    border: #3da2ff 3px solid;
+}
+
+#sell_pool {
+    background-color: #3da2ff;
+    color: #005eb5;
+    border: #005eb5 3px solid;
+}
+
+#major_donor {
+    background-color: rgb(216, 216, 216);
+    color: #dfca11;
+    border: #dfca11 3px solid;
+}
+
+#season_tickets {
+    background-color: #7dbaf0;
+    color: #d40000;
+    border: #d40000 3px solid;
+}
+
+#backpacking {
+    background-color: green;
+    color: #ffeeb3;
+    border: #ffeeb3 3px solid;
+}
+
+#invest {
+    background-color: #2abe47;
+    color: rgb(192, 30, 30);
+    border: rgb(192, 30, 30) 3px solid;
+}
+
+#invest-amount {
+    border: black 2px solid;
+    padding: 5px;
+    font-size: 20px;
+    width: 120px;
+    text-align: left;
+    display: inline-block;
+    border-radius: 10px;
+    outline: 0;
+}
+
+#dollar-sign {
+    display: inline-block;
+    font-size: 30px; 
+}
+
+.center {
+    text-align: center;
+}
+
+.dropdown {
+    padding: 5px;
+    border: 2px black solid;
+}
+
+#label-to {
+    padding-left: 20px;
+}
