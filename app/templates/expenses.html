@@ -441,6 +441,8 @@
                     <input type="checkbox" name="auto-ins" class="ins-checkbox in-line" value="auto-ins" id="new-auto-ins" disabled>
                 {% elif (player_info.yrs_til_change_car != 3) and (player_info.have_auto_ins) %}
                     <input type="checkbox" name="auto-ins" class="ins-checkbox in-line" value="auto-ins" id="new-auto-ins" checked>
+                {% else %}
+                    <input type="checkbox" name="auto-ins" class="ins-checkbox in-line" value="auto-ins" id="new-auto-ins">
                 {% endif %}
                 <label for="auto-ins" class="in-line checkbox-label">${{ '{:,.0f}'.format(new_auto_ins) }}</label>
 
@@ -449,6 +451,8 @@
                     <input type="checkbox" name="health-ins" class="ins-checkbox in-line" value="health-ins" id="new-health-ins" disabled checked>
                 {% elif player_info.have_health_ins %}
                     <input type="checkbox" name="health-ins" class="ins-checkbox in-line" value="health-ins" id="new-health-ins" checked>
+                {% else %}
+                    <input type="checkbox" name="health-ins" class="ins-checkbox in-line" value="health-ins" id="new-health-ins">
                 {% endif %}
                 <label for="health-ins" class="in-line checkbox-label" >${{ '{:,.0f}'.format(new_health_ins) }}</label>
                 
@@ -457,6 +461,8 @@
                     <input type="checkbox" name="home-ins" class="ins-checkbox in-line" value="home-ins" id="new-home-ins" disabled>
                 {% elif (player_info.yrs_til_change_house != 3) and (player_info.have_home_ins) %}
                     <input type="checkbox" name="home-ins" class="ins-checkbox in-line" value="home-ins" id="new-home-ins" checked>
+                {% else %}
+                    <input type="checkbox" name="home-ins" class="ins-checkbox in-line" value="home-ins" id="new-home-ins">
                 {% endif %}
                 <label for="home-ins" class="in-line checkbox-label">${{ '{:,.0f}'.format(new_home_ins) }}</label>
                 

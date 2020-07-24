@@ -56,11 +56,13 @@
         {% for game in games %}
         {% if game.finished %}
         <a href="{{ url_for('view_game', game_id=game.id) }}">
-            <div class="game">
-                <h4 class="game-id-field">Game ID: {{ game.id }}</h4>
-                <h4 class="date-field">Finished: {{ moment(game.date_finished).format('MM/DD/YY') }}</h4>
-            </a>
-        </div>
+            <div class="game-block">
+                <div class="game">
+                    <h4 class="game-id-field">Game ID: {{ game.id }}</h4>
+                    <h4 class="date-field">Finished: {{ moment(game.date_finished).format('MM/DD/YY') }}</h4>
+                </div>
+            </div>
+        </a>
         {% endif %}
         {% endfor %}
     </body>

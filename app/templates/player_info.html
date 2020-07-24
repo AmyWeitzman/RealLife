@@ -56,12 +56,12 @@
             <td class="field-name gray">Name</td><td class="field-val">{{ name }}</td>
             <td class="field-name gray">Age</td><td class="field-val">{{ player_info.age }}</td>
             {% if player_info.points < 0 %}
-            <td class="field-name green negative">Points</td><td class="field-val">{{ "{:,.0f}".format(player_info.points) }}</td>
+            <td class="field-name green">Points</td><td class="field-val negative">{{ "{:,.0f}".format(player_info.points) }}</td>
             {% else %}
             <td class="field-name green">Points</td><td class="field-val">{{ "{:,.0f}".format(player_info.points) }}</td>
             {% endif %}
             {% if player_info.money < 0 %}
-            <td class="field-name green negative">$$$</td><td class="field-val">{{ "{:,.0f}".format(player_info.money) }}</td>
+            <td class="field-name green">$$$</td><td class="field-val negative">{{ "{:,.0f}".format(player_info.money) }}</td>
             {% else %}
             <td class="field-name green">$$$</td><td class="field-val">{{ "{:,.0f}".format(player_info.money) }}</td>
             {% endif %}
@@ -69,6 +69,7 @@
                 <form action="{{ url_for('go_to_card') }}" id="card-form">
                     <input hidden name="card" value="{{ player_info.last_card }}">
                     <button type="submit" id="card">{{ player_info.last_card }}</button>
+                    <button>TEST</button>
                 </form>
             </td>
         </tr>

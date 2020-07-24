@@ -203,7 +203,7 @@ def pick_card(game_id):
     elif(card.text == "Car accident"):
         # since can't get insurance for car bought at beginning of game, no accidents
         if((player_info.age > 18) and (player_info.car != "None") and (not player_info.path == "college")):  # must have car/not in college for car accident
-            num_people = get_num_people(player_info.is_married, player_info.num_kids)
+            num_people = get_num_people(player_info.married, player_info.num_kids)
             if(not player_info.have_auto_ins):
                 player_info.money -= 50000  # pay $50,000
             else:
@@ -265,7 +265,7 @@ def pick_card(game_id):
                 roll = simulateRoll()
                 if((roll % 2) == 0):  # even: car accident
                     flash("You were in a CAR ACCIDENT.", "info")
-                    num_people = get_num_people(player_info.is_married, player_info.num_kids)
+                    num_people = get_num_people(player_info.married, player_info.num_kids)
                     if(not player_info.have_auto_ins):
                         player_info.money -= 50000  # pay $50,000
                     else:
@@ -440,7 +440,7 @@ def actions():  # actions can only be done every x yrs
     if(player_info.upgrade_over_40 == 0):  # not stuck in upgrade over 40
         if((player_info.path == "college") or (player_info.buying_organic == True) or (player_info.yrs_til_buy_organic > 0)):
             disabled["buy_organic"] = True  # cannot buy organic in college
-        if((player_info.house.lower() == "none") or (house.category == "no-family") or(player_info.yrs_til_upgrade_appliances > 0) or (player_info.bought_appliances)):
+        if((player_info.house.lower() == "none") or (house.category == "no-family") or (player_info.yrs_til_upgrade_appliances > 0) or (player_info.bought_appliances)):
             disabled["upgrade_appliances"] = True  # must have at least small family house to upgrade appliances
         if(player_info.yrs_til_change_car > 0):
             disabled["change_car"] = True
@@ -461,7 +461,7 @@ def actions():  # actions can only be done every x yrs
         if((player_info.oldest_child_age < 18) or (player_info.yrs_til_have_grandkid > 0)):
             disabled["have_grandkid"] = True  # oldest child must be at least 18 to try for grandchild
         if(player_info.have_pet):   # can only have one pet so no need to keep track of years since action done
-            disabled["have_pet"] = True  
+            disabled["buy_pet"] = True  
         if((player_info.job.lower() == "none") or (player_info.yrs_til_switch_jobs > 0)): 
             disabled["switch_jobs"] = True  # must have job for x yrs to switch jobs
         if((player_info.house.lower() == "none") or (player_info.have_pool) or (player_info.yrs_til_rich_action > 0)):
@@ -482,7 +482,7 @@ def actions():  # actions can only be done every x yrs
     else:  # stuck in upgrade over 40, ineligible to do action
         action_options = ["buy_organic", "upgrade_appliances", "change_car", "change_house", "buy_clothes", "local_travel", "domestic_travel", "international_travel", "get_married", "get_divorced", "have_kid", "have_grandkid", "buy_pet", "switch_jobs", "buy_pool", "sell_pool", "major_donor", "season_tickets", "backpacking", "peace_corps", "mission_trip", "invest"]
         disabled = {action: True for action in action_options}
-    
+ 
     num_people = get_num_people(player_info.married, player_info.num_kids)
     
     house = "None"
@@ -1266,7 +1266,7 @@ def major_donor():
 @login_required
 def season_tickets():
     player, player_info = get_cur_player_info()
-    num_people = get_num_people(player_info.is_married, player_info.num_kids)
+    num_people = get_num_people(player_info.married, player_info.num_kids)
     player_info.money -= (50000 - (10000 * num_people))
     player_info.points += (20  * num_people)
     player_info.yrs_til_rich_action = wait_yrs
@@ -1315,7 +1315,7 @@ def mission_trip():
 @login_required
 def backpacking():
     player, player_info = get_cur_player_info()
-    num_people = get_num_people(player_info.is_married, player_info.num_kids)
+    num_people = get_num_people(player_info.married, player_info.num_kids)
     player_info.money -= (5000 * num_people)
     player_info.points += 250
     player_info.yrs_til_rich_action = wait_yrs
@@ -1502,7 +1502,7 @@ def get_announcements(player_info):
     if(game.first().cur_turn == -1):  # game not started yet, no announcements
         return announcements
     else:
-        if(player_info.money < 0):  # automatically need to get a loan
+        if(player_info.need_loan):  # automatically need to get a loan
             announcements["NEED TO GET A LOAN"] = "urgent"
             player_info.need_loan = True
 
@@ -1636,7 +1636,7 @@ def end_of_year():
         player_info.loans -= int(loans_payment)
 
     # update pay raises: check time til raise b/c grad school = regular path, but can have job in college
-    if((player_info.path == "college") or (player_info.job == "YouTuber") or (player_info.cur_time_til_raise == 0)):
+    if((player_info.path == "college") or (player_info.cur_time_til_raise == 0)):
         pass  # no pay raises in college, YouTuber have different pay raise system
     elif(player_info.path == "military"):  # different pay raise schedule: salary double every 4 yrs up to 5 raises
         if((player_info.num_pay_raises < 5) and (player_info.cur_time_til_raise == 1)):  # time for raise: double salary
@@ -1719,9 +1719,6 @@ def end_of_year():
         extras += get_all_pet_fees(player.cur_game)
 
     player_info.money += (salary - expenses + extras)
-
-    player_info.buying_organic = False  # reset
-    player_info.med_prob = False  # reset
 
     player_info.age += 1
     if(player_info.num_kids >= 1):

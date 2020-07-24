@@ -408,8 +408,10 @@
     </table>
     <script type="text/javascript">
         var gray = JSON.parse('{{ disabled|tojson }}');
+        console.log(gray);
         for(const key in gray) {
             if(gray[key]) {   // disable action  
+                console.log(key);
                 document.getElementById(key).disabled = true;
             }
         }
