@@ -226,3 +226,11 @@ button:disabled {
 #label-to {
     padding-left: 20px;
 }
+
+.can-afford {
+    box-shadow: 0px 0px 10px 5px green;
+}
+
+.cannot-afford {
+    box-shadow: 0px 0px 10px 5px red;
+}

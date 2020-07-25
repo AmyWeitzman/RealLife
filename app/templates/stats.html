@@ -14,8 +14,8 @@
         <div><a href="{{ url_for('vehicles') }}" class="nav-link">Vehicles</a></div>
         <div><a href="{{ url_for('houses') }}" class="nav-link">Houses</a></div>
         <div><a href="{{ url_for('expenses', testing='false', data='none') }}" class="nav-link">Expenses</a></div>
+        <div><a href="{{ url_for('stats') }}" class="nav-link">Analysis</a></div>
         <div><a href="{{ url_for('scoreboard') }}" class="nav-link">Scoreboard</a></div>
-        <div><a href="{{ url_for('stats') }}" class="nav-link">Stats</a></div>
         <br>
         <hr>
         <style>
@@ -59,11 +59,11 @@
 
         <table id="tbl">
             <tr>
-                <th class="chart-title">Action Frequency</th>
+                <th class="chart-title">Salary Allotment</th>
                 <th class="chart-title">Expenses Breakdown</th>
             </tr>
             <tr>
-                <td class="no-border"><div id="action-counts"></div></td>
+                <td class="no-border"><div id="expenses-savings"></div></td>
                 <td class="no-border"><div id="expenses"></div></td>
             </tr>
         </table>
@@ -77,20 +77,14 @@
             var legendRectSize = 18;                                  
             var legendSpacing = 5; 
 
-            var color = d3.scaleOrdinal(d3.schemeCategory10);
-
             data = [
-                {label: "Travel", count: parseInt("{{ player_info.num_times_travel }}")},
-                {label: "Buy organic", count: parseInt("{{ player_info.num_times_buy_organic }}")},
-                {label: "Invest", count: parseInt("{{ player_info.num_times_invest }}")},
-                {label: "Buy clothes", count: parseInt("{{ player_info.num_times_buy_clothes }}")},
-                {label: "Peace Corps", count: parseInt("{{ player_info.num_times_peace_corps }}")},
-                {label: "Season tickets", count: parseInt("{{ player_info.num_times_season_tickets }}")},
-                {label: "Backpacking", count: parseInt("{{ player_info.num_times_backpacking }}")},
-                {label: "Mission Trip", count: parseInt("{{ player_info.num_times_mission_trip }}")}  
+                {label: "Expenses", count: parseInt("{{ player_info.expenses }}")},
+                {label: "Savings", count: parseInt("{{ player_info.income - player_info.expenses }}")}
             ]
+
+            var color = d3.scaleOrdinal().range(["red", "green"])
             
-            var svg = d3.select('#action-counts')
+            var svg = d3.select('#expenses-savings')
             .append('svg')
             .attr('width', width)
             .attr('height', height)
@@ -105,7 +99,7 @@
             .value(function(d) { return d.count; })
             .sort(null);
 
-            var tooltip = d3.select('#action-counts')                               
+            var tooltip = d3.select('#expenses-savings')                               
             .append('div')                                                
             .attr('class', 'tooltip');                                    
 
@@ -134,7 +128,7 @@
                 var percent = Math.round(1000 * d.data.count / total) / 10; 
                 tooltip.attr('id', "tooltip-left")
                 tooltip.select('.label').html(d.data.label).style('font-weight', 'bold');                
-                tooltip.select('.count').html(d.data.count + " time" + (d.data.count > 1 ? 's' : ''));                
+                tooltip.select('.count').html('$' + d.data.count.toLocaleString('en'));                
                 tooltip.select('.percent').html(percent + '%');             
                 tooltip.style('display', 'block'); 
                 tooltip.style('color', 'white');

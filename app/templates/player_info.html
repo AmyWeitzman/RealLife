@@ -20,11 +20,7 @@
         <form action="{{ url_for('set_ready') }}">
             <p class="detail set-up"><b>Set up:</b></p>
             <label for="pick-job" class="detail set-up">Pick Job</label>
-            <input type="checkbox" id="pick-job" class="detail ready-checkbox">
-
             <label for="pick-car" class="detail set-up">Pick Vehicle</label>
-            <input type="checkbox" id="pick-car" class="detail ready-checkbox">
-
             <button type="submit" id="ready-button" class="detail">READY</button>
         </form>
         {% endif %}
@@ -60,7 +56,7 @@
             {% else %}
             <td class="field-name green">Points</td><td class="field-val">{{ "{:,.0f}".format(player_info.points) }}</td>
             {% endif %}
-            {% if player_info.money < 0 %}
+            {% if (player_info.money < 0) or ((player_info.money - loans_int) < 0) %}
             <td class="field-name green">$$$</td><td class="field-val negative">{{ "{:,.0f}".format(player_info.money) }}</td>
             {% else %}
             <td class="field-name green">$$$</td><td class="field-val">{{ "{:,.0f}".format(player_info.money) }}</td>
@@ -69,7 +65,6 @@
                 <form action="{{ url_for('go_to_card') }}" id="card-form">
                     <input hidden name="card" value="{{ player_info.last_card }}">
                     <button type="submit" id="card">{{ player_info.last_card }}</button>
-                    <button>TEST</button>
                 </form>
             </td>
         </tr>
@@ -95,7 +90,7 @@
             <td class="field-name blue">Married</td><td class="field-val">{{ "yes" if player_info.married else "no" }}</td>
             <td class="field-name blue"># Kids</td><td class="field-val">{{ player_info.num_kids }}</td>
             <td class="field-name blue"># People</td><td class="field-val">{{ num_people }}</td>
-            <td class="field-name blue">Oldest Child Age</td><td class="field-val">{{ player_info.oldest_child_age }}</td>
+            <td class="field-name blue">Kids' Ages</td><td class="field-val">{{ ", ".join(player_info.kids_ages.split(";")) }}</td>
             <td id="side-button-cell" colspan="2">
                 <form action="{{ url_for('actions') }}">
                     <button type="submit" id="do-action-button">Action</button>

@@ -8,7 +8,7 @@
             <th>Category</th>
             <th>Type</th>
             <th>Cost</th>
-            <th>Minus Points/Yr</th>
+            <th>House Stress</th>
             <th>Insurance</th>
             <th>Maid</th>
             <th>Sell Price</th>
@@ -16,7 +16,7 @@
         <tr>
             <td class="no-family" rowspan=6><b>Single Person</b><br><span id="rent">*Rent per year</span></td>
             <td>Teepee</td>
-            <td>1,000</td>
+            <td class="cost">1,000</td>
             <td>28</td>
             <td>0</td>
             <td>0</td>
@@ -29,7 +29,7 @@
         </tr>
         <tr>
             <td>Tent</td>
-            <td>2,000</td>
+            <td class="cost">2,000</td>
             <td>20</td>
             <td>0</td>
             <td>0</td>
@@ -42,7 +42,7 @@
         </tr>
         <tr>
             <td>Igloo</td>
-            <td>3,000</td>
+            <td class="cost">3,000</td>
             <td>15</td>
             <td>0</td>
             <td>0</td>
@@ -55,7 +55,7 @@
         </tr>
         <tr>
             <td>Hut</td>
-            <td>3,000</td>
+            <td class="cost">3,000</td>
             <td>15</td>
             <td>0</td>
             <td>0</td>
@@ -68,7 +68,7 @@
         </tr>
         <tr>
             <td>Tree House</td>
-            <td>5,000</td>
+            <td class="cost">5,000</td>
             <td>8</td>
             <td>0</td>
             <td>0</td>
@@ -81,7 +81,7 @@
         </tr>
         <tr>
             <td>Rented Room</td>
-            <td>7,000</td>
+            <td class="cost">7,000</td>
             <td>1</td>
             <td>0</td>
             <td>0</td>
@@ -95,7 +95,7 @@
         <tr>
             <td class="small-family" rowspan=6><b>Small Family</b><br>(max 4 people)<br>Sell for 20% profit</td>
             <td>Mobile Home</td>
-            <td>80,000</td>
+            <td class="cost">80,000</td>
             <td>60</td>
             <td>160</td>
             <td>0</td>
@@ -108,7 +108,7 @@
         </tr>
         <tr>
             <td>Bungalow</td>
-            <td>80,000</td>
+            <td class="cost">80,000</td>
             <td>60</td>
             <td>160</td>
             <td>0</td>
@@ -121,7 +121,7 @@
         </tr>
         <tr>
             <td>Cottage</td>
-            <td>90,000</td>
+            <td class="cost">90,000</td>
             <td>50</td>
             <td>180</td>
             <td>0</td>
@@ -134,7 +134,7 @@
         </tr>
         <tr>
             <td>Apartment</td>
-            <td>90,000</td>
+            <td class="cost">90,000</td>
             <td>50</td>
             <td>180</td>
             <td>0</td>
@@ -147,7 +147,7 @@
         </tr>
         <tr>
             <td>Condo</td>
-            <td>100,000</td>
+            <td class="cost">100,000</td>
             <td>40</td>
             <td>200</td>
             <td>0</td>
@@ -160,7 +160,7 @@
         </tr>
         <tr>
             <td>Log Cabin</td>
-            <td>120,000</td>
+            <td class="cost">120,000</td>
             <td>30</td>
             <td>240</td>
             <td>0</td>
@@ -174,7 +174,7 @@
         <tr>
             <td class="large-family" rowspan=6><b>Large Family</b><br>Sell for 30% profit</td>
             <td>Modern Victorian</td>
-            <td>200,000</td>
+            <td class="cost">200,000</td>
             <td>120</td>
             <td>400</td>
             <td>1,000</td>
@@ -187,7 +187,7 @@
         </tr>
         <tr>
             <td>Mountain Retreat</td>
-            <td>350,000</td>
+            <td class="cost">350,000</td>
             <td>110</td>
             <td>700</td>
             <td>1,750</td>
@@ -200,7 +200,7 @@
         </tr>
         <tr>
             <td>Houseboat</td>
-            <td>500,000</td>
+            <td class="cost">500,000</td>
             <td>100</td>
             <td>1,000</td>
             <td>2,500</td>
@@ -213,7 +213,7 @@
         </tr>
         <tr>
             <td>Penthouse Suite</td>
-            <td>600,000</td>
+            <td class="cost">600,000</td>
             <td>90</td>
             <td>1,200</td>
             <td>3,000</td>
@@ -226,7 +226,7 @@
         </tr>
         <tr>
             <td>Mansion</td>
-            <td>800,000</td>
+            <td class="cost">800,000</td>
             <td>80</td>
             <td>1,600</td>
             <td>4,000</td>
@@ -239,7 +239,7 @@
         </tr>
         <tr>
             <td>Castle</td>
-            <td>1,000,000</td>
+            <td class="cost">1,000,000</td>
             <td>70</td>
             <td>2,000</td>
             <td>5,000</td>
@@ -259,6 +259,13 @@
             document.getElementById('buy_'+owned[i]).disabled = true
         }
 
+        var money = parseFloat("{{ player_info.money }}");
+        document.querySelectorAll('.cost').forEach(el => {
+            if(money - parseFloat(el.innerHTML.replace(/,/g, '')) < 0) { // cannot afford
+                el.classList.add('neg');
+            }
+        });
+        
         var num_people = parseFloat("{{ num_people }}");
         if(num_people > 1) {
             document.getElementById('buy_teepee').disabled = true

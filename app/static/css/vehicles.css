@@ -90,3 +90,7 @@ button:disabled {
 .tooltip-inner {
     font-size: 20px !important;
 }
+
+.neg {
+    color: red;
+}

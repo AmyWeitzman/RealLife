@@ -42,10 +42,12 @@
                         <option value="{{ house.name }}">{{ house.name }}</option>
                         {% endfor %}
                     </select><br>
-                    {% if player_info.house != "None" %}
-                        <input type="checkbox" name="test-home-ins" class="checkbox" value="test-home-ins" id="test-home-ins-checkbox">
-                    {% else %}
+                    {% if player_info.house == "None" %}
                         <input type="checkbox" name="test-home-ins" class="checkbox" value="test-home-ins" id="test-home-ins-checkbox" disabled>
+                    {% elif player_info.have_home_ins %}
+                        <input type="checkbox" name="test-home-ins" class="checkbox" value="test-home-ins" id="test-home-ins-checkbox" checked>
+                    {% else %}
+                        <input type="checkbox" name="test-home-ins" class="checkbox" value="test-home-ins" id="test-home-ins-checkbox">
                     {% endif %}
                         <label for="test-home-ins" class="once">w/ home insurance</label><br>
 
@@ -56,10 +58,12 @@
                         <option value="{{ car.name }}">{{ car.name }}</option>
                         {% endfor %}
                     </select><br>
-                    {% if player_info.house != "None" %}
-                        <input type="checkbox" name="test-auto-ins" class="checkbox" value="test-auto-ins" id=test-auto-ins-checkbox>
-                    {% else %}
+                    {% if player_info.car == "None" %}
                         <input type="checkbox" name="test-auto-ins" class="checkbox" value="test-auto-ins" id=test-auto-ins-checkbox disabled>
+                    {% elif player_info.have_auto_ins %}
+                        <input type="checkbox" name="test-auto-ins" class="checkbox" value="test-auto-ins" id=test-auto-ins-checkbox checked>
+                    {% else %}
+                        <input type="checkbox" name="test-auto-ins" class="checkbox" value="test-auto-ins" id=test-auto-ins-checkbox>
                     {% endif %}
                         <label for="test-auto-ins" class="once">w/ auto insurance</label><br>
 
@@ -311,7 +315,7 @@
             <td class="type">Miscellaneous $$$</td>
             <td class="details">
                 {% if rent != 0 %}
-                <p>Rent: No-family houses are for annual rent</p>
+                <p>Rent: Single person houses are for annual rent</p>
                 {% endif %}
                 {% if car == "Public Transit" %}
                 <p>Public Transit: cost is annual fee</p>
@@ -379,7 +383,7 @@
                 <p class="loss">Depression: $1000</p>
                 {% endif %}
                 {% if my_loans > 0 %}
-                <p class="loss">Loans: ${{ "{:,.0f}".format(0.005 * loans_int) }}</p>
+                <p class="loss">Loans: ${{ "{:,.0f}".format(mandatory_loans) }}</p>
                 {% endif %}
                 {% if my_job == "Accountant" %}
                 <p class="gain">Tax prep: ${{ all_tax_prep_fees }}</p>
@@ -429,7 +433,7 @@
                 {% endif %}
           
                 <p class="loans-bg input-label"><b>Loans + Interest</b></p>
-                <p class="in-line loans-cur-val">${{ '{:,.0f}'.format(loans_int) }}</p>
+                <p class="in-line loans-cur-val">${{ '{:,.0f}'.format(loans_int - mandatory_loans) }}</p>
                 {% if my_loans == 0 %}
                     <b class="last-dollar-sign in-line">$</b> <input type="text" class="textbox in-line loans-bg" name="loans-amount" id="pay-loans" value="0" readonly>
                 {% else %}
@@ -489,10 +493,14 @@
         </tr>
     </table>
     <script type="text/javascript">
+            money = parseFloat("{{ player_info.money }}");
             salary = parseFloat("{{ player_info.current_salary }}");
             ttraise = parseFloat("{{ player_info.cur_time_til_raise }}");
             path = "{{ player_info.path }}";
             job = "{{ player_info.job }}";
+            college_loans = parseFloat("{{ player_info.college_loans }}");
+            real_loans = parseFloat("{{ player_info.real_loans }}");
+            mandatory_loans = parseFloat("{{ mandatory_loans }}");
             if(job == "Teacher")
                 num_yrs_teacher = parseFloat("{{ player_info.num_yrs_teacher }}");
             if((ttraise == 1) && (path != "military") && (job != "YouTuber") && !(job == "Teacher" && num_yrs_teacher == 15))
@@ -525,13 +533,19 @@
             tax_break = parseFloat(document.getElementById("tax-break-val").innerHTML.replace(/,/g, ''));
             college_loans_payment = parseFloat(document.getElementById("pay-college-loans").value.replace(/,/g, ''));
             loans_payment = parseFloat(document.getElementById("pay-loans").value.replace(/,/g, ''));
-            
-            // do not want expenses calculated with NaN
+
+            salary -= misc_fees;
+
+            // do not want expenses calculated with NaN, cannot pay more than current money for total loan payments
             if(isNaN(college_loans_payment))
-                college_loans_payment = 0
+                college_loans_payment = 0;
             if(isNaN(loans_payment))
-                loans_payment = 0
-    
+                loans_payment = 0;
+            if(college_loans_payment > college_loans) 
+                loanPaymentError(true);
+            if(loans_payment > (real_loans - mandatory_loans))
+                loanPaymentError(false);
+      
             expenses = taxes + auto_ins + health_ins + home_ins + shopping + car_maintain + maid + utils + dental + eat_ent + gas + misc_fees + tax_prep - tax_break + college_loans_payment + loans_payment;
         
             // Points
@@ -540,9 +554,16 @@
             misc_points = parseFloat(document.getElementById("misc-points").innerHTML);
             net_points = misc_points - job_stress - house_stress;
 
+            net_earnings = salary - expenses;
+
             document.getElementById("net-points-val").value = parseFloat(net_points).toLocaleString('en');
             document.getElementById("total-expenses").value = parseFloat(expenses).toLocaleString('en');
-            document.getElementById("net-earnings-val").value = parseFloat(salary - expenses).toLocaleString('en');
+            document.getElementById("net-earnings-val").value = parseFloat(net_earnings).toLocaleString('en');
+
+            if((college_loans_payment + loans_payment) > (money + net_earnings)) {
+                loanPaymentError(true);
+                loanPaymentError(false);
+            }
 
             function updateExpenses() {
                 taxes = parseFloat(document.getElementById("taxes").innerHTML.replace(/,/g, ''));
@@ -562,16 +583,53 @@
                 college_loans_payment = parseFloat(document.getElementById("pay-college-loans").value.replace(/,/g, ''));
                 loans_payment = parseFloat(document.getElementById("pay-loans").value.replace(/,/g, ''));
                 
+                salary -= misc_fees;
+
                 // do not want expenses calculated with NaN
                 if(isNaN(college_loans_payment))
-                    college_loans_payment = 0
+                    college_loans_payment = 0;
                 if(isNaN(loans_payment))
-                    loans_payment = 0
-        
+                    loans_payment = 0;
+                if(college_loans_payment > college_loans) 
+                    loanPaymentError(true);
+                else
+                    noLoanPaymentError(true, false);
+                if(loans_payment > (real_loans - mandatory_loans))
+                    loanPaymentError(false);
+                else
+                    noLoanPaymentError(false, true);
+    
                 expenses = taxes + auto_ins + health_ins + home_ins + shopping + car_maintain + maid + utils + dental + eat_ent + gas + misc_fees + tax_prep - tax_break + college_loans_payment + loans_payment;
+                net_earnings = salary - expenses;
+                
                 document.getElementById("total-expenses").value = parseFloat(expenses).toLocaleString('en');
-                document.getElementById("net-earnings-val").value = parseFloat(salary - expenses).toLocaleString('en');
+                document.getElementById("net-earnings-val").value = parseFloat(net_earnings).toLocaleString('en');
+            
+                if((college_loans_payment + loans_payment) > (money + net_earnings)) {
+                    loanPaymentError(true);
+                    loanPaymentError(false);
+                }
+                else {
+                    noLoanPaymentError(true, true);
+                }
             }
+
+        function loanPaymentError(is_college) {
+            if(is_college) 
+                document.getElementById("pay-college-loans").setAttribute('style', 'border: red solid 3px;');
+            else 
+                document.getElementById("pay-loans").setAttribute('style', 'border: red solid 3px;');
+            document.getElementById('pay-button').disabled = true;
+        }
+
+        function noLoanPaymentError(college, loan) {
+            if(college) 
+                document.getElementById("pay-college-loans").setAttribute('style', 'border: black solid 2px;');
+            if(loan)
+                document.getElementById("pay-loans").setAttribute('style', 'border: black solid 2px;');
+            if(college && loan)
+                document.getElementById('pay-button').disabled = false;
+        }
 
         cur_age = parseFloat("{{ player_info.age }}");
         need_loan = "{{ player_info.need_loan }}";
@@ -599,15 +657,25 @@
                 document.getElementById("test-married-checkbox").checked = true;
         
         function updateTestOptions() {
-            home = document.getElementById("house").value;
-            if(home == "None")  // can't get insurance for no home
+            cur_home = "{{ player_info.house }}";
+            test_home = document.getElementById("house").value;
+            if(test_home == "None")  // can't get insurance for no home
                 document.getElementById("test-home-ins-checkbox").disabled = true;
+            else if((test_home == cur_home) && home_ins) {
+                document.getElementById("test-home-ins-checkbox").disabled = false;
+                document.getElementById("test-home-ins-checkbox").checked = true;
+            }
             else
                 document.getElementById("test-home-ins-checkbox").disabled = false;
 
-            car = document.getElementById("car").value;
-            if(car == "None")   // can't get insurance for no car
+            cur_car = "{{ player_info.car }}";
+            test_car = document.getElementById("car").value;
+            if(test_car == "None")   // can't get insurance for no car
                 document.getElementById("test-auto-ins-checkbox").disabled = true;
+            else if((test_car == cur_car) && auto_ins) {
+                document.getElementById("test-auto-ins-checkbox").disabled = false;
+                document.getElementById("test-auto-ins-checkbox").checked = true;
+            }
             else    
                 document.getElementById("test-auto-ins-checkbox").disabled = false;
         }

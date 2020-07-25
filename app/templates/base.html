@@ -24,8 +24,8 @@
         <div><a href="{{ url_for('vehicles') }}" class="nav-link">Vehicles</a></div>
         <div><a href="{{ url_for('houses') }}" class="nav-link">Houses</a></div>
         <div><a href="{{ url_for('expenses', testing='false', data='none') }}" class="nav-link">Expenses</a></div>
+        <div><a href="{{ url_for('stats') }}" class="nav-link">Analysis</a></div>
         <div><a href="{{ url_for('scoreboard') }}" class="nav-link">Scoreboard</a></div>
-        <div><a href="{{ url_for('stats') }}" class="nav-link">Stats</a></div>
         <br>
         <hr>
         <!--<p id="blah">here</p>
@@ -48,7 +48,7 @@
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
-                {% elif category == "notice" %}
+                {% elif category == "warning" %}
                     <div class="alert alert-warning alert-dismissible fade show justify-content-center" role="alert">
                     {{ message }}
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">

@@ -16,7 +16,7 @@
         <tr>
             <td class="no-family" rowspan=3><b>Single Person</b></td>
             <td id="skateboard">Skateboard</td>
-            <td>100</td>
+            <td class="cost">100</td>
             <td>0</td>
             <td>0</td>
             <td>100</td>
@@ -28,7 +28,7 @@
         </tr>
         <tr>
             <td id="bike">Bike</td>
-            <td>1,000</td>
+            <td class="cost">1,000</td>
             <td>0</td>
             <td>0</td>
             <td>0</td>
@@ -40,7 +40,7 @@
         </tr>
         <tr>
             <td id="public-transit">Public Transit</td>
-            <td>2,000</td>
+            <td class="cost">2,000</td>
             <td>0</td>
             <td>0</td>
             <td>0</td>
@@ -53,7 +53,7 @@
         <tr>
             <td class="small-family" rowspan=4><b>Small Family</b><br>(max 4 people)</td>
             <td>Mini</td>
-            <td>20,000</td>
+            <td class="cost">20,000</td>
             <td>600</td>
             <td>1,000</td>
             <td>10,000</td>
@@ -65,7 +65,7 @@
         </tr>
         <tr>
             <td>Sedan</td>
-            <td>30,000</td>
+            <td class="cost">30,000</td>
             <td>900</td>
             <td>1,500</td>
             <td>15,000</td>
@@ -77,7 +77,7 @@
         </tr>
         <tr>
             <td>Station Wagon</td>
-            <td>30,000</td>
+            <td class="cost">30,000</td>
             <td>900</td>
             <td>1,500</td>
             <td>15,000</td>
@@ -89,7 +89,7 @@
         </tr>
         <tr>
             <td>Hatchback</td>
-            <td>30,000</td>
+            <td class="cost">30,000</td>
             <td>900</td>
             <td>1,500</td>
             <td>15,000</td>
@@ -102,7 +102,7 @@
         <tr>
             <td class="large-family" rowspan=9><b>Large Family</b></td>
             <td>Pickup Truck</td>
-            <td>40,000</td>
+            <td class="cost">40,000</td>
             <td>1,200</td>
             <td>2,000</td>
             <td>20,000</td>
@@ -114,7 +114,7 @@
         </tr>
         <tr>
             <td>SUV</td>
-            <td>40,000</td>
+            <td class="cost">40,000</td>
             <td>1,200</td>
             <td>2,000</td>
             <td>20,000</td>
@@ -126,7 +126,7 @@
         </tr>
         <tr>
             <td>Minivan</td>
-            <td>40,000</td>
+            <td class="cost">40,000</td>
             <td>1,200</td>
             <td>2,000</td>
             <td>20,000</td>
@@ -138,7 +138,7 @@
         </tr>
         <tr>
             <td>Convertible</td>
-            <td>50,000</td>
+            <td class="cost">50,000</td>
             <td>1,500</td>
             <td>2,500</td>
             <td>25,000</td>
@@ -150,7 +150,7 @@
         </tr>
         <tr>
             <td>Hybrid</td>
-            <td>50,000</td>
+            <td class="cost">50,000</td>
             <td>1,500</td>
             <td>1,000</td>
             <td>25,000</td>
@@ -162,7 +162,7 @@
         </tr>
         <tr>
             <td>Electric Car</td>
-            <td>60,000</td>
+            <td class="cost">60,000</td>
             <td>1,800</td>
             <td>0</td>
             <td>30,000</td>
@@ -174,7 +174,7 @@
         </tr>
         <tr>
             <td>Sports Car</td>
-            <td>80,000</td>
+            <td class="cost">80,000</td>
             <td>2,400</td>
             <td>4,000</td>
             <td>40,000</td>
@@ -186,7 +186,7 @@
         </tr>
         <tr>
             <td>Tesla</td>
-            <td>100,000</td>
+            <td class="cost">100,000</td>
             <td>3,000</td>
             <td>0</td>
             <td>50,000</td>
@@ -198,7 +198,7 @@
         </tr>
         <tr>
             <td>Limo</td>
-            <td>100,000</td>
+            <td class="cost">100,000</td>
             <td>3,000</td>
             <td>5,000</td>
             <td>50,000</td>
@@ -233,6 +233,13 @@
             document.getElementById('buy_Skateboard').disabled = true
         }
 
+        var money = parseFloat("{{ player_info.money }}");
+        document.querySelectorAll('.cost').forEach(el => {
+            if(money - parseFloat(el.innerHTML.replace(/,/g, '')) < 0) { // cannot afford
+                el.classList.add('neg');
+            }
+        });
+
         if(num_people > 1) {
             document.getElementById('buy_Skateboard').disabled = true
             document.getElementById('buy_Bike').disabled = true
@@ -243,6 +250,12 @@
             document.getElementById('buy_Sedan').disabled = true
             document.getElementById('buy_Station Wagon').disabled = true
             document.getElementById('buy_Hatchback').disabled = true
+        }
+
+        yrs_college = parseFloat("{{ player_info.num_yrs_college }}");
+        if(yrs_college in [3, 4] && car_name in ["Bike", "Skateboard"]) {  // need to get non-college vehicle
+            document.getElementById('buy_Skateboard').disabled = true
+            document.getElementById('buy_Bike').disabled = true
         }
 
         cur_age = parseFloat("{{ player_info.age }}");

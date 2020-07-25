@@ -7,6 +7,7 @@ from random import randint, sample, shuffle
 import math
 from datetime import datetime
 import json
+from functools import cmp_to_key
 
 wait_yrs = 3
 
@@ -113,6 +114,9 @@ def delete_game(game_id):
 @app.route('/view_game/<game_id>')
 @login_required
 def view_game(game_id):
+    player = get_cur_player()
+    player.cur_game = game_id
+    db.session.commit()
     return redirect(url_for('player_info'))
 
 @app.route('/player_info')
@@ -134,7 +138,8 @@ def player_info():
     announcements = get_announcements(player_info)
 
     if((player_info.mil_to_college) and (player_info.mil_start_college == 0)):
-        flash("You have enrolled. You may get a job in college if desired.")
+        flash("You have enrolled. You may get a job in college if desired. You must buy a vehicle.", "success")
+        return redirect(url_for('vehicle'))
     return render_template('player_info.html', page_name='Player Info', 
             game=game, name=current_user.name, player_info=player_info, job=job,
             taxes=taxes, benefits=benefits, num_people=num_people, college_loan_int=college_loan_int,
@@ -193,9 +198,9 @@ def pick_card(game_id):
     if(card.text in ["Family issue", "Mental illness"]):
         if(not player_info.have_health_ins):
             player_info.money -= 5000 # pay $5000 to psychologist
-            flash("Not covered by health insurance", "info")
+            flash("Not covered by health insurance", "error")
         else:
-            flash("Covered by health insurance", "info")
+            flash("Covered by health insurance", "success")
         job = get_job("Psychologist")
         if(job.picked):  # someone is the psychologist, gets paid $5000
             psychologist = get_player_with_job(game_id, job)
@@ -207,11 +212,11 @@ def pick_card(game_id):
             if(not player_info.have_auto_ins):
                 player_info.money -= 50000  # pay $50,000
             else:
-                flash("Covered by auto insurance.", "info")
+                flash("Covered by auto insurance.", "success")
             if(not player_info.have_health_ins):
                 player_info.money -= (50 * num_people)
             else:
-                flash("Chiropractor fees covered by health insurance.", "info")
+                flash("Chiropractor fees covered by health insurance.", "success")
             job = get_job("Mechanic")
             if(job.picked):  # someone is the mechanic, gets paid $5000
                 mechanic = get_player_with_job(game_id, job)
@@ -251,8 +256,8 @@ def pick_card(game_id):
             developer.money += 100 
     elif(card.text == "Lawsuit"):
         roll = simulateRoll()
-        flash("You rolled a " + str(roll), "info")
         payment = (500 * roll)  # pay $500 * roll
+        flash("You have been sued for $" + str(payment) + ".", "error")
         player_info.money -= payment
         job = get_job("Lawyer")
         if(job.picked):  # someone is the lawyer, gets paid 50% of payment
@@ -264,16 +269,16 @@ def pick_card(game_id):
             if(car.category != "no-family"):  # must have at least small family car for speeding
                 roll = simulateRoll()
                 if((roll % 2) == 0):  # even: car accident
-                    flash("You were in a CAR ACCIDENT.", "info")
+                    flash("You were in a CAR ACCIDENT.", "error")
                     num_people = get_num_people(player_info.married, player_info.num_kids)
                     if(not player_info.have_auto_ins):
                         player_info.money -= 50000  # pay $50,000
                     else:
-                        flash("Covered by auto insurance.", "info")
+                        flash("Covered by auto insurance.", "success")
                     if(not player_info.have_health_ins):
                         player_info.money -= (50 * num_people)
                     else:
-                        flash("Chiropractor fees covered by health insurance.", "info")
+                        flash("Chiropractor fees covered by health insurance.", "success")
                     job = get_job("Mechanic")
                     if(job.picked):  # someone is the mechanic, gets paid $5000
                         mechanic = get_player_with_job(game_id, job)
@@ -283,9 +288,9 @@ def pick_card(game_id):
                         chiro = get_player_with_job(game_id, job)
                         chiro.money += (50 * num_people)
                 else:
-                    flash("Ineligible vehicle for speeding","info")
+                    flash("Ineligible vehicle for speeding", "info")
         else:
-            flash("You were NOT in a car accident", "info")
+            flash("You were NOT in a car accident", "success")
     elif(card.text[:5] == "Baker"):  # baker cards
         player_infos = get_all_player_infos(game_id)
         for player_info in player_infos:
@@ -354,17 +359,19 @@ def pick_card(game_id):
         if(player_info.path == "military"):  # demoted
             job = get_job("Military")
             if(player_info.current_salary == player_info.base_salary):
-                flash("You have been kicked out of the military!", "info")
+                flash("You have been kicked out of the military!", "error")
+                player_info.picked_card = True
                 db.session.commit()
                 return redirect(url_for('jobs')) # kicked out of military
             else:  # demoted
-                flash("You have been demoted!", "info")
+                flash("You have been demoted!", "warning")
                 player_info.num_pay_raises -= 1
                 player_info.current_salary /= 2  # b/c salary doubles each raise, previous salary was half of current
                 player_info.cur_time_til_raise = job.default_time_til_raise
         else:
             if(player_info.job == "Teacher"):
                 player_info.num_yrs_teacher = 0  # no longer teacher, make sure not get promoted to principal
+            player_info.picked_card = True
             db.session.commit()
             return redirect(url_for('jobs'))
     elif(card.text == "Birthday party"): 
@@ -416,7 +423,7 @@ def pick_card(game_id):
         if((not player_info.have_health_ins) and (not player_info.path == "college")):
             player_info.money += card.amount
         else:
-            flash("Covered by health insurance", "info")
+            flash("Covered by health insurance", "success")
     else: # normal, simple card
         if(card.affects_points):
             player_info.points += card.amount
@@ -432,12 +439,15 @@ def pick_card(game_id):
 @login_required
 def actions():  # actions can only be done every x yrs
     player, player_info = get_cur_player_info()
+
+    action_options = ["buy_organic", "upgrade_appliances", "change_car", "change_house", "buy_clothes", "local_travel", "domestic_travel", "international_travel", "get_married", "get_divorced", "have_kid", "have_grandkid", "buy_pet", "switch_jobs", "buy_pool", "sell_pool", "major_donor", "season_tickets", "backpacking", "peace_corps", "mission_trip", "invest"]
+
     if(player_info.house != "None"):
         house = get_house(player_info.house)
     if(player_info.car != "None"):
         car = get_car(player_info.car)
     disabled = {}  # keep track of which actions player is not eligible to do and disable the button for them
-    if(player_info.upgrade_over_40 == 0):  # not stuck in upgrade over 40
+    if((player_info.upgrade_over_40 == 0)):  # not stuck in upgrade over 40
         if((player_info.path == "college") or (player_info.buying_organic == True) or (player_info.yrs_til_buy_organic > 0)):
             disabled["buy_organic"] = True  # cannot buy organic in college
         if((player_info.house.lower() == "none") or (house.category == "no-family") or (player_info.yrs_til_upgrade_appliances > 0) or (player_info.bought_appliances)):
@@ -456,7 +466,7 @@ def actions():  # actions can only be done every x yrs
             disabled["get_married"] = True  # must have at least small family house/car to get married
         if((not player_info.married) or (player_info.yrs_til_change_married > 0)):
             disabled["get_divorced"] = True  # must be married to get divorced
-        if((not player_info.married) or (player_info.age > 40) or (player_info.yrs_til_have_kid > 0)):
+        if((not player_info.married) or (player_info.age > 45) or (player_info.yrs_til_have_kid > 0)):
             disabled["have_kid"] = True  # must be married to have kids and under 40
         if((player_info.oldest_child_age < 18) or (player_info.yrs_til_have_grandkid > 0)):
             disabled["have_grandkid"] = True  # oldest child must be at least 18 to try for grandchild
@@ -473,16 +483,24 @@ def actions():  # actions can only be done every x yrs
         if(player_info.yrs_til_rich_action > 0):
             disabled["season_tickets"] = True
             disabled["backpacking"] = True
-        if((player_info.married) or (player_info.age > 40) or (player_info.yrs_til_peace_corps > 0)):
-            disabled["peace_corps"] = True  # must be single and <= 40 to do peace corps
-        if((player_info.married) or (player_info.age <= 40) or (player_info.yrs_til_mission_trip > 0)):
-            disabled["mission_trip"] = True  # must be single and over 40 to do mission trip
+        if((player_info.married) or (player_info.age > 45) or (player_info.yrs_til_peace_corps > 0)):
+            disabled["peace_corps"] = True  # must be single and <= 45 to do peace corps
+        if((player_info.married) or (player_info.age <= 45) or (player_info.yrs_til_mission_trip > 0)):
+            disabled["mission_trip"] = True  # must be single and over 45 to do mission trip
         if(player_info.yrs_til_invest > 0):
             disabled["invest"] = True
     else:  # stuck in upgrade over 40, ineligible to do action
-        action_options = ["buy_organic", "upgrade_appliances", "change_car", "change_house", "buy_clothes", "local_travel", "domestic_travel", "international_travel", "get_married", "get_divorced", "have_kid", "have_grandkid", "buy_pet", "switch_jobs", "buy_pool", "sell_pool", "major_donor", "season_tickets", "backpacking", "peace_corps", "mission_trip", "invest"]
         disabled = {action: True for action in action_options}
- 
+
+    if(player_info.num_yrs_college == 3 and player_info.house == "None" and player_info.car in ["Bike", "Skateboard"]):
+        disabled = {action: True for action in action_options if action not in ["change_car", "change_house"]}
+
+    if(player_info.num_yrs_college == 4): 
+        if(player_info.house == "None"):  # need to buy a house
+            disabled = {action: True for action in action_options if action != "change_house"}
+        elif(player_info.car in ["Bike", "Skateboard"]):  # need to buy a non-college vehicle
+            disabled = {action: True for action in action_options if action != "change_car"}
+
     num_people = get_num_people(player_info.married, player_info.num_kids)
     
     house = "None"
@@ -492,6 +510,7 @@ def actions():  # actions can only be done every x yrs
         house = get_house(player_info.house)
         houses = House.query.filter(House.name != house.name)
         house_costs = {house.name: house.cost for house in houses}
+        house_costs[house.name] = house.cost
     
     car = "None"
     cars = []
@@ -500,8 +519,11 @@ def actions():  # actions can only be done every x yrs
         car = get_car(player_info.car)
         cars = Vehicle.query.filter(Vehicle.name != car.name)
         car_costs = {car.name: car.cost for car in cars}
+        car_costs[car.name] = car.cost
+
+    loans_int = get_loan_int(player_info.loans)
   
-    return render_template('actions.html', page_name='Actions', player_info=player_info, disabled=disabled, num_people=num_people, house=house, houses=houses, house_costs=house_costs, car=car, cars=cars, car_costs=car_costs)
+    return render_template('actions.html', page_name='Actions', player_info=player_info, disabled=disabled, num_people=num_people, house=house, houses=houses, house_costs=house_costs, car=car, cars=cars, car_costs=car_costs, loans_int=loans_int)
 
 @app.route('/no_action')
 @login_required
@@ -523,6 +545,8 @@ def jobs():
     else:
         jobs = Job.query.filter_by(category=player_info.jobs_page_type)  # allow player to filter jobs by category
         picked = {job.title.lower(): job.picked for job in jobs}  # mark picked jobs so can't be chosen by others
+    if(player_info.last_card == "Lose job"):
+        flash("You lost your job.", "error")
     return render_template('jobs.html', page_name='Jobs', player_info=player_info, category=player_info.jobs_page_type, picked=picked, job_options=None)
 
 @app.route('/filter_jobs')
@@ -558,12 +582,12 @@ def get_job_options():
         return redirect(url_for("pick_job", job="Doctor"))
     elif(job_type == "regular"):
         # get 2 options
-        job_options = sample(jobs, 2)  # randomly pick 2 jobs
+        job_options = sorted(sample(jobs, 2), key=cmp_to_key(lambda x, y: 1 if x.id > y.id else -1))  # randomly pick 2 jobs
         job_option_titles = [j.title for j in job_options]
         return  render_template('jobs.html', page_name='Jobs', jobs=job_options, picked=picked, job_option_titles=job_option_titles, category="regular", player_info=player_info)  # show options
     elif(job_type == "college-grad"):
         # get 3 options
-        job_options = sample(jobs, 3)  # randomly pick 3 jobs
+        job_options = sorted(sample(jobs, 3), key=cmp_to_key(lambda x, y: 1 if x.id > y.id else -1))  # randomly pick 3 jobs
         job_option_titles = [j.title for j in job_options]
         return  render_template('jobs.html', page_name='Jobs', jobs=job_options, job_option_titles=job_option_titles, picked=picked, category="college-grad", player_info=player_info)  # show options
     else:   # problem!
@@ -639,7 +663,9 @@ def buy_car(car):
             player_info.upgrade_over_40 = wait_yrs
     player_info.yrs_til_change_car = wait_yrs
 
-    if(player_info.ready):  # doing an action
+    if(player_info.mil_to_college and (player_info.mil_start_college == 0)):  # required to get vehicle, not count as action
+        pass
+    elif(player_info.ready):  # doing an action
         game = get_game(player.cur_game)
         player_info.done_action = True
         switch_turn(game)
@@ -935,9 +961,10 @@ def expenses(testing, data):
     all_depression_fees = get_all_depression_fees(player.cur_game)
 
     loan_pts = math.ceil(my_loans / 10000)
+    mandatory_loans = loans_int * 0.005  # must pay 0.5% of loans + interest back every year
 
     db.session.commit()
-    return render_template('expenses.html', page_name='Expenses', player_info=player_info, job=job, job_stress=job_stress, house=house, house_stress=house_stress, car=car, jobs=jobs, taxes=taxes, num_people=num_people, houses=houses, cars=cars, college_loans_int=college_loans_int, loans_int=loans_int, auto_ins=auto_ins, health_ins= health_ins, home_ins=home_ins, shopping=shopping, car_maintenance=car_maintenance, maid=maid, utilities=utilities, dental_fees=dental_fees, eat_ent=eat_ent, gas=gas, new_auto_ins=new_auto_ins, new_home_ins=new_home_ins, new_health_ins=new_health_ins, misc_points=misc_points, misc_fees=misc_fees, rent=rent, transit_fee=transit_fee, no_fam_car=no_fam_car, no_fam_house=no_fam_house, benefits=benefits, all_dental_fees=all_dental_fees, all_pet_fees=all_pet_fees, all_depression_fees=all_depression_fees, tax_prep=tax_prep, all_tax_prep_fees=all_tax_prep_fees, my_job=my_job, cur_house=my_house, cur_car=my_car, my_home_ins=my_home_ins, my_auto_ins=my_auto_ins, my_health_ins=my_health_ins, my_married=my_married, my_num_kids=my_num_kids, my_loans=my_loans, my_path=my_path, testing=is_testing, loan_pts=loan_pts)
+    return render_template('expenses.html', page_name='Expenses', player_info=player_info, job=job, job_stress=job_stress, house=house, house_stress=house_stress, car=car, jobs=jobs, taxes=taxes, num_people=num_people, houses=houses, cars=cars, college_loans_int=college_loans_int, loans_int=loans_int, auto_ins=auto_ins, health_ins= health_ins, home_ins=home_ins, shopping=shopping, car_maintenance=car_maintenance, maid=maid, utilities=utilities, dental_fees=dental_fees, eat_ent=eat_ent, gas=gas, new_auto_ins=new_auto_ins, new_home_ins=new_home_ins, new_health_ins=new_health_ins, misc_points=misc_points, misc_fees=misc_fees, rent=rent, transit_fee=transit_fee, no_fam_car=no_fam_car, no_fam_house=no_fam_house, benefits=benefits, all_dental_fees=all_dental_fees, all_pet_fees=all_pet_fees, all_depression_fees=all_depression_fees, tax_prep=tax_prep, all_tax_prep_fees=all_tax_prep_fees, my_job=my_job, cur_house=my_house, cur_car=my_car, my_home_ins=my_home_ins, my_auto_ins=my_auto_ins, my_health_ins=my_health_ins, my_married=my_married, my_num_kids=my_num_kids, my_loans=my_loans, my_path=my_path, testing=is_testing, loan_pts=loan_pts, mandatory_loans=mandatory_loans)
 
 @app.route('/test_expenses')
 @login_required
@@ -980,10 +1007,15 @@ def stats():
 def get_loan():
     player, player_info = get_cur_player_info()
     amount = request.args.get('amount')
-    if(not amount.isnumeric()):
+    if(not amount.isnumeric()):  
         flash("You must specify a numeric amount.", "error")
         return redirect(url_for('player_info'))
-    player_info.loans += int(amount)
+    amount = int(amount)
+    if((amount + player_info.money) < 0): # need large enough loan to cover negative money
+        flash("Loan must be enough to make money positive.", "error")
+        return redirect(url_for('player_info'))
+    player_info.loans += amount
+    player_info.money += amount
     player_info.need_loan = False
     db.session.commit()
     return redirect(url_for('player_info'))
@@ -1043,7 +1075,6 @@ def buy_organic():
     player, player_info = get_cur_player_info()
     player_info.buying_organic = True
     player_info.yrs_til_buy_organic = wait_yrs
-    player_info.num_times_buy_organic += 1
 
     game = get_game(player.cur_game)
     player_info.done_action = True
@@ -1088,7 +1119,6 @@ def buy_clothes():
     player_info.money -= cost
     player_info.points += (50 * get_num_people(player_info.married, player_info.num_kids))  # get 50 points per person
     player_info.yrs_til_buy_clothes = wait_yrs
-    player_info.num_times_buy_clothes += 1
 
     game = get_game(player.cur_game)
     player_info.done_action = True
@@ -1121,7 +1151,6 @@ def travel(loc):
     player_info.money -= cost
     player_info.points += points  
     player_info.yrs_til_travel = wait_yrs
-    player_info.num_times_travel += 1
 
     game = get_game(player.cur_game)
     player_info.done_action = True
@@ -1130,7 +1159,7 @@ def travel(loc):
     db.session.commit()
     return redirect(url_for('player_info'))
 
-@app.route('/change_marriage/<type>')
+@app.route('/change_marriage/<mtype>')
 @login_required
 def change_marriage(mtype):
     player, player_info = get_cur_player_info()
@@ -1161,12 +1190,21 @@ def change_marriage(mtype):
 @login_required
 def have_kids():
     player, player_info = get_cur_player_info()
+    if(player_info.age <= 35):  
+        had_child = True  # 100% chance of child
+    elif((player_info.age > 35) and (player_info.age <= 40)):
+        had_child = randint(1, 4) in [1, 2, 3]   # 75% chance of child
+    else:  # age 41-45
+        had_child = simulateRoll() in [1, 2, 3]  # 50% chance of child
+    if(not had_child):
+        flash("You did NOT have a child.", "error")
+        redirect(url_for('player_info'))
     roll = simulateRoll()
     num_babies = 1 if roll < 6 else 2
     points = (100 * num_babies) if (player_info.num_kids + num_babies) <= 4 else (-50 * num_babies) if (player_info.num_kids + num_babies) >= 6 else -50 if (num_babies == 1) else 50  # last one is for twins where one is +50 and one is -50
     school_fees = 1500 * num_babies
     job = get_job(player_info.job)
-    if(job.lower() == "teacher"):
+    if(job.title.lower() == "teacher"):
         school_fees = 0  # teacher doesn't pay school fees
     
     # teacher collect all school fees
@@ -1180,12 +1218,21 @@ def have_kids():
     player_info.money -= school_fees
     player_info.yrs_til_have_kid = wait_yrs
 
+    if(player_info.kids_ages != "None"):
+        kids_ages = player_info.kids_ages.split(";")
+        new_babies_ages = ['0'] * num_babies
+        kids_ages.extend(new_babies_ages)
+        kids_ages = ";".join(kids_ages)  # add new kid(s) ages
+    else:
+        kids_ages = "0"
+    player_info.kids_ages = kids_ages
+
     game = get_game(player.cur_game)
     player_info.done_action = True
     switch_turn(game)
 
     db.session.commit()
-    flash("You had " + ("a single child." if num_babies == 1 else "twins!"), "info")
+    flash("You had " + ("a single child." if num_babies == 1 else "twins!"), "success")
     return redirect(url_for('player_info'))
 
 @app.route('/have_grandkids')
@@ -1193,13 +1240,14 @@ def have_kids():
 def have_grandkids():
     player, player_info = get_cur_player_info()
     roll = simulateRoll()
-    nums_needed = (player_info.num_kids / 2) + 1
+    num_kids_over_18 = len(list(map(lambda x: int(x) > 18, player_info.kids_ages.split(";"))))
+    nums_needed = (num_kids_over_18 / 2) + 1
     if(nums_needed > 5): nums_needed = 5  # max of 5 nums on die
     if(roll <= nums_needed):  # had grandchild
         player_info.points += 200
-        flash("You had a grandchild!", "info")
+        flash("You had a grandchild!", "success")
     else:  # no grandchild
-        flash("You did not have a grandchild.", "info")
+        flash("You did not have a grandchild.", "error")
     player_info.yrs_til_have_grandkid = wait_yrs
 
     game = get_game(player.cur_game)
@@ -1270,7 +1318,6 @@ def season_tickets():
     player_info.money -= (50000 - (10000 * num_people))
     player_info.points += (20  * num_people)
     player_info.yrs_til_rich_action = wait_yrs
-    player_info.num_times_season_tickets += 1
 
     game = get_game(player.cur_game)
     player_info.done_action = True
@@ -1286,7 +1333,6 @@ def peace_corps():
     player_info.money -= 1000
     player_info.points += 75
     player_info.yrs_til_peace_corps = wait_yrs
-    player_info.num_times_peace_corps += 1
 
     game = get_game(player.cur_game)
     player_info.done_action = True
@@ -1302,7 +1348,6 @@ def mission_trip():
     player_info.money -= 10000
     player_info.points += 500
     player_info.yrs_til_mission_trip = wait_yrs
-    player_info.num_times_mission_trip += 1
 
     game = get_game(player.cur_game)
     player_info.done_action = True
@@ -1319,7 +1364,6 @@ def backpacking():
     player_info.money -= (5000 * num_people)
     player_info.points += 250
     player_info.yrs_til_rich_action = wait_yrs
-    player_info.num_times_backpacking += 1
 
     game = get_game(player.cur_game)
     player_info.done_action = True
@@ -1336,26 +1380,26 @@ def invest():
         flash("You must specify a numeric amount.", "error")
         return redirect(url_for('actions'))
     player, player_info = get_cur_player_info()
+    amount = int(amount)
     if(amount > player_info.money):
         flash("You do not have enough money for that investment.", "error")
         return redirect(url_for('actions'))
     roll = simulateRoll()
     if((roll % 2) == 0):  # even: gain
-        amount = int(amount) * 0.25  
-        flash("Your investment resulted in a GAIN.", "info")
+        amount = amount * 0.25  
+        flash("Your investment resulted in a GAIN.", "success")
     else:  # odd: loss
-        amount = int(amount) * -0.1
-        flash("Your investment resulted in a LOSS.", "info")
+        amount = amount * -0.1
+        flash("Your investment resulted in a LOSS.", "error")
     player_info.money += amount
     player_info.yrs_til_invest = wait_yrs
-    player_info.num_times_invest += 1
 
     game = get_game(player.cur_game)
     player_info.done_action = True
     switch_turn(game)
 
     db.session.commit()
-    return redirect(url_for('actions'))
+    return redirect(url_for('player_info'))
 
 @app.route('/mil_to_college')
 @login_required
@@ -1364,7 +1408,7 @@ def mil_to_college():
     player_info.mil_to_college = True
 
     # remove military job info
-    player_info.path = college
+    player_info.path = "college"
     player_info.job = "None"
     player_info.num_pay_raises = 0
     player_info.cur_time_til_raise = 0
@@ -1527,9 +1571,9 @@ def get_announcements(player_info):
                 announcements["Next year no longer covered by parents' health insurance"] = "fyi"
             if((player_info.path == "military") and (player_info.num_pay_raises == 4)):
                 announcements["Only one more pay raise"] = "fyi"
-            if((player_info.age >= 35) and (player_info.age < 40)):
+            if((player_info.age >= 40) and (player_info.age < 45)):
                 announcements["Last age to have kids is 40"] = "fyi"
-            if(player_info.age == 40):
+            if(player_info.age == 45):
                 announcements["Last year to have kids"] = "urgent"
             if(player_info.age == 64):  # retirement = game over
                 announcements["Retiring next year"] = "fyi"
@@ -1623,7 +1667,7 @@ def end_of_year():
     player, player_info = get_cur_player_info()
     
     expenses = int(request.args.get("total-expenses").replace(",", ""))
-    
+
     net_points = int(request.args.get("net-points").replace(",", ""))
     player_info.points += net_points
 
@@ -1703,7 +1747,7 @@ def end_of_year():
         player_info.num_yrs_teacher += 1
 
     if((player_info.job == "Teacher") and (player_info.num_yrs_teacher == 15)):
-        flash("You have been promoted to Principal!", "info")
+        flash("You have been promoted to Principal!", "success")
         player_info.current_salary = 100000
         
     salary = player_info.current_salary
@@ -1718,11 +1762,17 @@ def end_of_year():
     elif(player_info.job == "Veterinarian"):  # get all pet fees
         extras += get_all_pet_fees(player.cur_game)
 
-    player_info.money += (salary - expenses + extras)
+    income = (salary - expenses + extras)
+
+    player_info.money += income
+    player_info.expenses = expenses
+    player_info.income = income
 
     player_info.age += 1
     if(player_info.num_kids >= 1):
         player_info.oldest_child_age += 1
+        kids_ages = ";".join(list(map(lambda x: str(int(x) + 1), player_info.kids_ages.split(";"))))  # increment all kids' ages
+        player_info.kids_ages = kids_ages
 
     if(player_info.age == 26):  # no longer covered by parents' health insurance
         player_info.have_health_ins = False
@@ -1766,14 +1816,16 @@ def end_of_year():
     player_info.end_of_year = False
 
     # handle college scholarships
-    if((player_info.path == "college") and (player_info.age < 23) and (not player_info.mil_to_college)):  # not graduating yet, free tuition if mil -> college
+    if((player_info.path == "college") and (player_info.num_yrs_college < 4)):  # not graduating yet
         tuition = 50000
         roll = simulateRoll()  # roll for scholarship
         scholarship = 5000 * roll
         parent_help = 0
-        if(player_info.age == 19):  # add in parent contribution
+        if(player_info.age == 19):  # add in parent contribution (no military, must start college at 18)
             roll2 = simulateRoll()  # roll for scholarship
             parent_help = 5000 * roll2
+        if(player_info.mil_to_college):
+            tuition *= 0.75  # military get 25% off tuition
         player_info.college_loans += (tuition - scholarship + parent_help)
 
     # handle grad school scholarships
@@ -1789,7 +1841,7 @@ def end_of_year():
     db.session.commit()
 
     if(player_info.num_yrs_college == 10):  # graduating 6 yr grad school
-        flash("You graduated 6yr grad school!", "info")
+        flash("You graduated med school!", "success")
         return redirect(url_for('graduate'))    
 
     if(player_info.age == 65):  # retirement = game over
@@ -1811,7 +1863,7 @@ def graduate():
     player_info.num_yrs_college = 0  # reset so no notification to graduate
 
     db.session.commit()
-    return redirect(url_for('job'))
+    return redirect(url_for('jobs'))
     
 @app.route('/go_to_grad_school')
 @login_required
