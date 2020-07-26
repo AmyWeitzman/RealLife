@@ -89,7 +89,7 @@
             </td>
         </tr>
         <tr>
-            <td class="type">House Stress</td>
+            <td class="type">House Quality</td>
             <td class="details">
                 <ul>
                     <li>based on house cost</li>
@@ -236,9 +236,6 @@
                 <p><b>salary >= $100,000:</b> 10% of salary</p>
                 {% if player_info.job in ["Military", "Cashier", "Barista"] %}
                     <p class="once">* {{ player_info.job }} gets 50% off</p>
-                {% endif %}
-                {% if player_info.path == "college" %}
-                    <p class="once">* covered by tuition</p>
                 {% endif %}
                 {% if player_info.path != "military" and benefits %}
                     <p class="once">* military benefits: 50% off</p>
@@ -560,7 +557,7 @@
             document.getElementById("total-expenses").value = parseFloat(expenses).toLocaleString('en');
             document.getElementById("net-earnings-val").value = parseFloat(net_earnings).toLocaleString('en');
 
-            if((college_loans_payment + loans_payment) > (money + net_earnings)) {
+            if((money + net_earnings > 0) && ((college_loans_payment + loans_payment) > (money + net_earnings))) {
                 loanPaymentError(true);
                 loanPaymentError(false);
             }

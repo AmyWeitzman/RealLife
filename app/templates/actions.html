@@ -13,8 +13,12 @@
         <tr>
             <td class="action-button">
                 <form action="{{ url_for('buy_organic') }}">
-                    <button type="submit" id="buy_organic">Buy organic</button><br>
+                    <button type="submit" id="buy_organic" class="{{ 'afford' if ((2000 * num_people) < amt_can_afford) else 'not-afford' }}">Buy organic</button><br>
+                    {% if player_info.job == "Farmer" %}
+                    <label>pay ${{ "{:,.0f}".format((2000 * num_people) * 0.75) }}</label><br>
+                    {% else %}
                     <label>pay ${{ "{:,.0f}".format(2000 * num_people) }}</label><br>
+                    {% endif %}
                     <label>receive {{ "{:,.0f}".format(50 * num_people) }} points</label>
                 </form>
             </td>
@@ -34,7 +38,7 @@
         <tr>
             <td class="action-button">
                 <form action="{{ url_for('upgrade_appliances') }}">
-                    <button type="submit" id="upgrade_appliances">Upgrade appliances</button><br>
+                    <button type="submit" id="upgrade_appliances"  class="{{ 'afford' if (house != 'None') and ((0.01 * house.cost) < amt_can_afford) else 'not-afford' if (house != 'None') else '' }}">Upgrade appliances</button><br>
                     {% if house != "None" %}
                     <label>pay ${{ "{:,.0f}".format(0.01 * house.cost) }}</label><br>
                     <label>receive 100 points</label>
@@ -140,7 +144,7 @@
         <tr>
             <td class="action-button">
                 <form action="{{ url_for('buy_clothes') }}">
-                    <button type="submit" id="buy_clothes">Buy clothes</button><br>
+                    <button type="submit" id="buy_clothes" class="{{ 'afford' if ((0.01 * player_info.current_salary) < amt_can_afford) else 'not-afford' }}">Buy clothes</button><br>
                     <label>pay ${{ "{:,.0f}".format(0.01 * player_info.current_salary) }}</label><br>
                     <label>receive {{ "{:,.0f}".format(50 * num_people) }} points</label>
                 </form>
@@ -158,17 +162,21 @@
         <tr>
             <td class="action-button">
                 <form action="{{ url_for('travel', loc='local') }}">
-                    <button type="submit" id="local_travel">Local Travel</button><br>
+                    <button type="submit" id="local_travel" class="{{ 'afford' if ((500 * num_people) < amt_can_afford) else 'not-afford' }}">Local Travel</button><br>
+                    {% if (player_info.job in ["Pilot", "Flight Attendant"]) or benefits %}
+                    <label>pay ${{ "{:,.0f}".format(500 * (num_people - 2 if num_people - 2 > 0 else 0)) }}</label><br>
+                    {% else %}
                     <label>pay ${{ "{:,.0f}".format(500 * num_people) }}</label><br>
+                    {% endif %}
                     <label>receive {{ "{:,.0f}".format(10 + (20 * num_people)) }} points</label>
                 </form>
                 <form action="{{ url_for('travel', loc='domestic') }}">
-                    <button type="submit" id="domestic_travel">Domestic Travel</button><br>
+                    <button type="submit" id="domestic_travel" class="{{ 'afford' if ((1000 * num_people) < amt_can_afford) else 'not-afford' }}">Domestic Travel</button><br>
                     <label>pay ${{ "{:,.0f}".format(1000 * num_people) }}</label><br>
                     <label>receive {{ "{:,.0f}".format(40 + (30 * num_people)) }} points</label>
                 </form>
                 <form action="{{ url_for('travel', loc='international') }}">
-                    <button type="submit" id="international_travel">International Travel</button><br>
+                    <button type="submit" id="international_travel" class="{{ 'afford' if ((5000 * num_people) < amt_can_afford) else 'not-afford' }}">International Travel</button><br>
                     <label>pay ${{ "{:,.0f}".format(5000 * num_people) }}</label><br>
                     <label>receive {{ "{:,.0f}".format(60 + (40 * num_people)) }} points</label>
                 </form>
@@ -267,7 +275,7 @@
         <tr>
             <td class="action-button">
                 <form action="{{ url_for('buy_pet') }}">
-                    <button type="submit" id="buy_pet">Buy Pet</button>
+                    <button type="submit" id="buy_pet" class="{{ 'afford' if ((100) < amt_can_afford) else 'not-afford' }}">Buy Pet</button>
                 </form>
             </td>
             <td>
@@ -284,13 +292,42 @@
         </tr>
         <tr>
             <td class="action-button">
-                <form action="{{ url_for('switch_jobs') }}">
+                {% if player_info.job != "None" %}
+                <form action="{{ url_for('jobs') }}">
                     <button type="submit" id="switch_jobs">Switch Jobs</button>
                 </form>
+                {% endif %}
+                {% if (player_info.job == "None") and (player_info.num_yrs_college ) %}
+                <form action="{{ url_for('jobs') }}">
+                    <button type="submit" id="get_job">Get Job</button>
+                </form>
+                {% endif %}
+                {% if ((player_info.path == "college" or (player_info.grad_school))) and (player_info.job != "None") and (job.category == "job-in-college") %}
+                <form action="{{ url_for('quit_job') }}">
+                    <button type="submit" id="quit_job">Quit Job</button>
+                </form>
+                {% endif %}
             </td>
             <td>
                 <ul>
-                    <li>get job from same category (if none, then move down category)</li>
+                    {% if player_info.job != "None" %}
+                    <li>Switch Jobs:</li>
+                    <ul>
+                        <li>get new job from same category (if none, then move down category)</li>  
+                    </ul>
+                    {% endif %}
+                    {% if player_info.job == "None" %}
+                    <li>Get Job:</li>
+                    <ul>
+                        <li>get job in college</li>  
+                    </ul>
+                    {% endif %}
+                    {% if ((player_info.path == "college" or (player_info.grad_school))) and (player_info.job != "None") and (job.category == "job-in-college") %}
+                    <li>Quit Job:</li>
+                    <ul>
+                        <li>quit job in college</li>  
+                    </ul>
+                    {% endif %}
                 </ul>
             </td>
             <td>
@@ -300,7 +337,7 @@
         <tr>
             <td class="action-button">
                 <form action="{{ url_for('peace_corps') }}">
-                    <button type="submit" id="peace_corps">Peace Corps</button>
+                    <button type="submit" id="peace_corps" class="{{ 'afford' if ((1000) < amt_can_afford) else 'not-afford' }}">Peace Corps</button>
                 </form>
             </td>
             <td>
@@ -320,7 +357,7 @@
         <tr>
             <td class="action-button">
                 <form action="{{ url_for('mission_trip') }}">
-                    <button type="submit" id="mission_trip">Mission Trip</button>
+                    <button type="submit" id="mission_trip"  class="{{ 'afford' if ((10000) < amt_can_afford) else 'not-afford' }}">Mission Trip</button>
                 </form>
             </td>
             <td>
@@ -339,22 +376,22 @@
         </tr>
         <tr>
             <td class="action-button">
-                <form action="{{ url_for('pool', type='buy') }}">
-                    <button type="submit" id="buy_pool">Buy Pool</button>
+                <form action="{{ url_for('pool', ptype='buy') }}">
+                    <button type="submit" id="buy_pool" class="{{ 'afford' if ((100000) < amt_can_afford) else 'not-afford' }}">Buy Pool</button>
                 </form>
-                <form action="{{ url_for('pool', type='sell') }}">
+                <form action="{{ url_for('pool', ptype='sell') }}">
                     <button type="submit" id="sell_pool">Sell Pool</button>
                 </form>
                 <form action="{{ url_for('major_donor') }}">
-                    <button type="submit" id="major_donor">Major Donor</button>
+                    <button type="submit" id="major_donor" class="{{ 'afford' if ((1000000) < amt_can_afford) else 'not-afford' }}">Major Donor</button>
                 </form>
                 <form action="{{ url_for('season_tickets') }}">
-                    <button type="submit" id="season_tickets">Season Tickets</button><br>
+                    <button type="submit" id="season_tickets" class="{{ 'afford' if ((10000 * num_people) < amt_can_afford) else 'not-afford' }}">Season Tickets</button><br>
                     <label>pay ${{ "{:,.0f}".format(50000 + (10000 * num_people)) }}</label><br>
                     <label>receive {{ "{:,.0f}".format(200 * num_people) }} points</label>
                 </form>
                 <form action="{{ url_for('backpacking') }}">
-                    <button type="submit" id="backpacking">Backpacking</button><br>
+                    <button type="submit" id="backpacking" class="{{ 'afford' if ((5000 * num_people) < amt_can_afford) else 'not-afford' }}">Backpacking</button><br>
                     <label>pay ${{ "{:,.0f}".format(5000 * num_people) }}</label><br>
                     <label>receive {{ 250 }} points</label>
                 </form>
@@ -415,7 +452,9 @@
     </table>
     <script type="text/javascript">
         var gray = JSON.parse('{{ disabled|tojson }}');
+        console.log(gray);
         for(const key in gray) {
+            console.log(gray[key]);
             if(gray[key]) {   // disable action  
                 document.getElementById(key).disabled = true;
             }
@@ -478,15 +517,6 @@
 
             document.getElementById("house-change-points").innerHTML = change_in_points;
         }
-        
-        cur_age = parseFloat("{{ player_info.age }}");
-        need_loan = "{{ player_info.need_loan }}";
-        turn_num = parseFloat("{{ player_info.turn_num }}");
-        if((cur_age == 65) || (need_loan.toLowerCase() == "true") || (turn_num == -1)) {  // game over or force to get loan or game not started
-            document.querySelectorAll('button').forEach(btn => {
-                btn.disabled = true;
-            });
-        }
 
         if(cur_age <= 35)
             document.getElementById("child-100").setAttribute('style', 'font-weight: bold;');
@@ -505,8 +535,27 @@
             document.getElementById('change_house').disabled = false;
         }
 
-        money = parseFloat("{{ player_info.money }}");
-        loans_int = parseFloat("{{ loans_int }}");
-        if((money - loans_int) < 0) // cannot afford action
+        if((money - loans_int) < 0) { // cannot afford any action
+            document.querySelectorAll('button').forEach(btn => {
+                btn.classList.add('not-afford');
+            });
+        }
+        else {
+            document.querySelectorAll('.afford').forEach(btn => {
+                btn.classList.add('afford');
+            });
+            document.querySelectorAll('.not-afford').forEach(btn => {
+                btn.classList.add('not-afford');
+            });
+        }
+
+        cur_age = parseFloat("{{ player_info.age }}");
+        need_loan = "{{ player_info.need_loan }}";
+        turn_num = parseFloat("{{ player_info.turn_num }}");
+        if((cur_age == 65) || (need_loan.toLowerCase() == "true") || (turn_num == -1)) {  // game over or force to get loan or game not started
+            document.querySelectorAll('button').forEach(btn => {
+                btn.disabled = true;
+            });
+        }
     </script>
 {% endblock %}

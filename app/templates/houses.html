@@ -8,8 +8,9 @@
             <th>Category</th>
             <th>Type</th>
             <th>Cost</th>
-            <th>House Stress</th>
+            <th>Quality</th>
             <th>Insurance</th>
+            <th>Utilities</th>
             <th>Maid</th>
             <th>Sell Price</th>
         </tr>
@@ -17,8 +18,9 @@
             <td class="no-family" rowspan=6><b>Single Person</b><br><span id="rent">*Rent per year</span></td>
             <td>Teepee</td>
             <td class="cost">1,000</td>
-            <td>28</td>
+            <td>-28 pts</td>
             <td>0</td>
+            <td>{{ '{:,.0f}'.format(50 + 0.1 * 1000) }}</td>
             <td>0</td>
             <td>0</td>
             <td class="buy-button-cell">
@@ -30,8 +32,9 @@
         <tr>
             <td>Tent</td>
             <td class="cost">2,000</td>
-            <td>20</td>
+            <td>-20 pts</td>
             <td>0</td>
+            <td>{{ '{:,.0f}'.format(50 + 0.1 * 2000) }}</td>
             <td>0</td>
             <td>0</td>
             <td class="buy-button-cell">
@@ -43,8 +46,9 @@
         <tr>
             <td>Igloo</td>
             <td class="cost">3,000</td>
-            <td>15</td>
+            <td>-15 pts</td>
             <td>0</td>
+            <td>{{ '{:,.0f}'.format(50 + 0.1 * 3000) }}</td>
             <td>0</td>
             <td>0</td>
             <td class="buy-button-cell">
@@ -56,8 +60,9 @@
         <tr>
             <td>Hut</td>
             <td class="cost">3,000</td>
-            <td>15</td>
+            <td>-15 pts</td>
             <td>0</td>
+            <td>{{ '{:,.0f}'.format(50 + 0.1 * 3000) }}</td>
             <td>0</td>
             <td>0</td>
             <td class="buy-button-cell">
@@ -69,8 +74,9 @@
         <tr>
             <td>Tree House</td>
             <td class="cost">5,000</td>
-            <td>8</td>
+            <td>-8 pts</td>
             <td>0</td>
+            <td>{{ '{:,.0f}'.format(50 + 0.1 * 5000) }}</td>
             <td>0</td>
             <td>0</td>
             <td class="buy-button-cell">
@@ -82,8 +88,9 @@
         <tr>
             <td>Rented Room</td>
             <td class="cost">7,000</td>
-            <td>1</td>
+            <td>-1 pts</td>
             <td>0</td>
+            <td>{{ '{:,.0f}'.format(50 + 0.1 * 7000) }}</td>
             <td>0</td>
             <td>0</td>
             <td class="buy-button-cell">
@@ -96,8 +103,9 @@
             <td class="small-family" rowspan=6><b>Small Family</b><br>(max 4 people)<br>Sell for 20% profit</td>
             <td>Mobile Home</td>
             <td class="cost">80,000</td>
-            <td>60</td>
+            <td>-60 pts</td>
             <td>160</td>
+            <td>{{ '{:,.0f}'.format(50 + 0.1 * 80000) }}</td>
             <td>0</td>
             <td>96,000</td>
             <td class="buy-button-cell">
@@ -109,8 +117,9 @@
         <tr>
             <td>Bungalow</td>
             <td class="cost">80,000</td>
-            <td>60</td>
+            <td>-60 pts</td>
             <td>160</td>
+            <td>{{ '{:,.0f}'.format(50 + 0.1 * 80000) }}</td>
             <td>0</td>
             <td>96,000</td>
             <td class="buy-button-cell">
@@ -122,8 +131,9 @@
         <tr>
             <td>Cottage</td>
             <td class="cost">90,000</td>
-            <td>50</td>
+            <td>-50 pts</td>
             <td>180</td>
+            <td>{{ '{:,.0f}'.format(50 + 0.1 * 90000) }}</td>
             <td>0</td>
             <td>108,000</td>
             <td class="buy-button-cell">
@@ -135,8 +145,9 @@
         <tr>
             <td>Apartment</td>
             <td class="cost">90,000</td>
-            <td>50</td>
+            <td>-50 pts</td>
             <td>180</td>
+            <td>{{ '{:,.0f}'.format(50 + 0.1 * 90000) }}</td>
             <td>0</td>
             <td>108,000</td>
             <td class="buy-button-cell">
@@ -148,8 +159,9 @@
         <tr>
             <td>Condo</td>
             <td class="cost">100,000</td>
-            <td>40</td>
+            <td>-40 pts</td>
             <td>200</td>
+            <td>{{ '{:,.0f}'.format(50 + 0.1 * 100000) }}</td>
             <td>0</td>
             <td>120,000</td>
             <td class="buy-button-cell">
@@ -161,8 +173,9 @@
         <tr>
             <td>Log Cabin</td>
             <td class="cost">120,000</td>
-            <td>30</td>
+            <td>-30 pts</td>
             <td>240</td>
+            <td>{{ '{:,.0f}'.format(50 + 0.1 * 120000) }}</td>
             <td>0</td>
             <td>144,000</td>
             <td class="buy-button-cell">
@@ -175,8 +188,9 @@
             <td class="large-family" rowspan=6><b>Large Family</b><br>Sell for 30% profit</td>
             <td>Modern Victorian</td>
             <td class="cost">200,000</td>
-            <td>120</td>
+            <td>-120 pts</td>
             <td>400</td>
+            <td>{{ '{:,.0f}'.format(50 + 0.1 * 200000) }}</td>
             <td>1,000</td>
             <td>260,000</td>
             <td class="buy-button-cell">
@@ -188,8 +202,9 @@
         <tr>
             <td>Mountain Retreat</td>
             <td class="cost">350,000</td>
-            <td>110</td>
+            <td>-110 pts</td>
             <td>700</td>
+            <td>{{ '{:,.0f}'.format(50 + 0.1 * 350000) }}</td>
             <td>1,750</td>
             <td>455,000</td>
             <td class="buy-button-cell">
@@ -201,8 +216,9 @@
         <tr>
             <td>Houseboat</td>
             <td class="cost">500,000</td>
-            <td>100</td>
+            <td>-100 pts</td>
             <td>1,000</td>
+            <td>{{ '{:,.0f}'.format(50 + 0.1 * 500000) }}</td>
             <td>2,500</td>
             <td>650,000</td>
             <td class="buy-button-cell">
@@ -214,8 +230,9 @@
         <tr>
             <td>Penthouse Suite</td>
             <td class="cost">600,000</td>
-            <td>90</td>
+            <td>-90 pts</td>
             <td>1,200</td>
+            <td>{{ '{:,.0f}'.format(50 + 0.1 * 600000) }}</td>
             <td>3,000</td>
             <td>780,000</td>
             <td class="buy-button-cell">
@@ -227,8 +244,9 @@
         <tr>
             <td>Mansion</td>
             <td class="cost">800,000</td>
-            <td>80</td>
+            <td>-80 pts</td>
             <td>1,600</td>
+            <td>{{ '{:,.0f}'.format(50 + 0.1 * 800000) }}</td>
             <td>4,000</td>
             <td>1,040,000</td>
             <td class="buy-button-cell">
@@ -240,8 +258,9 @@
         <tr>
             <td>Castle</td>
             <td class="cost">1,000,000</td>
-            <td>70</td>
+            <td>-70 pts</td>
             <td>2,000</td>
+            <td>{{ '{:,.0f}'.format(50 + 0.1 * 1000000) }}</td>
             <td>5,000</td>
             <td>1,300,000</td>
             <td class="buy-button-cell">

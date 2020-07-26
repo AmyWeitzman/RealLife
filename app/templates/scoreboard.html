@@ -15,7 +15,7 @@
                 <td>{{ loop.index }}</td>
                 <td>{{ score["name"] }}</td>
                 <td>{{ "{:,.0f}".format(score["points"]) }}</td>
-                <td>{{ "{:,.0f}".format(score["money"]) }}</td>
+                <td class="{{ 'red' if score['has_loans'] else '' }}">{{ "{:,.0f}".format(score["money"]) }}</td>
             </tr>
         {% endfor %}
     </table>

@@ -240,3 +240,7 @@ button:disabled {
 .tax-40 {
     color: red;
 }
+
+.stress-pts {
+    color: darkred;
+}
