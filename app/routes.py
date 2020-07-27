@@ -441,7 +441,25 @@ def pick_card(game_id):
 def actions():  # actions can only be done every x yrs
     player, player_info = get_cur_player_info()
 
-    action_options = ["buy_organic", "upgrade_appliances", "change_car", "change_house", "buy_clothes", "local_travel", "domestic_travel", "international_travel", "get_married", "get_divorced", "have_kid", "have_grandkid", "buy_pet", "switch_jobs", "buy_pool", "sell_pool", "major_donor", "season_tickets", "backpacking", "peace_corps", "mission_trip", "invest"]
+    job = "None"
+    if(player_info.job != "None"):
+        job = get_job(player_info.job)
+
+    action_options = ["buy_organic", "upgrade_appliances", "change_car", "change_house", "buy_clothes", "local_travel", "domestic_travel", "international_travel", "get_married", "get_divorced", "have_kid", "have_grandkid", "buy_pet", "buy_pool", "sell_pool", "major_donor", "season_tickets", "backpacking", "peace_corps", "mission_trip", "invest"]  
+
+    can_switch_job = player_info.job != "None"
+    can_get_job = (player_info.job == "None") and ((player_info.path == "college") or (player_info.grad_school))
+    can_quit_job = (player_info.path == "college") and (player_info.job != "None" and job.category == "job-in-college")
+    can_get_promotion = (player_info.path != "military" and player_info.job != "None" and job.category != "job-in-college" and not player_info.path == "college" and not player_info.grad_school)
+    can_go_to_college = (player_info.path == "military" and player_info.yrs_military >= 4 and not player_info.mil_to_college) or (player_info.path != "college" and player_info.path != "military" and player_info.age_grad == 0)
+    can_go_to_grad_school = (player_info.age_grad > 0) and not (player_info.done_grad_1 and player_info.done_grad_2 and player_info.done_grad_6)
+
+    if(can_switch_job): action_options.append("switch_jobs")
+    if(can_get_job): action_options.append("get_job")
+    if(can_quit_job): action_options.append("quit_job")
+    if(can_get_promotion): action_options.append("get_promotion")
+    if(can_go_to_college): action_options.append("go_to_college")
+    if(can_go_to_grad_school): action_options.append("go_to_grad_school")
 
     if(player_info.house != "None"):
         house = get_house(player_info.house)
@@ -474,14 +492,18 @@ def actions():  # actions can only be done every x yrs
             disabled["have_grandkid"] = True  # oldest child must be at least 18 to try for grandchild
         if(player_info.have_pet):   # can only have one pet so no need to keep track of years since action done
             disabled["buy_pet"] = True  
-        if((player_info.job.lower() == "none") or (player_info.yrs_til_switch_jobs > 0)): 
+        if(can_switch_job and (player_info.job.lower() == "none") or (player_info.yrs_til_switch_jobs > 0)): 
             disabled["switch_jobs"] = True  # must have job for x yrs to switch jobs
-        # if((player_info.job.lower() != "none") or (player_info.yrs_til_switch_jobs > 0)): 
-        #     disabled["get_job"] = True  # must not have job to get job
-        # if((player_info.job.lower() == "none") or (player_info.yrs_til_switch_jobs > 0)): 
-        #     disabled["quit_job"] = True  # must have job to quit job
-        # if((player_info.path == "college") or (player_info.age_grad > 0)):  
-        #     disabled["go_to_college"] = True  # can only go to 4 yr college once
+        if(can_get_job and ((player_info.job.lower() != "none") or (player_info.yrs_til_switch_jobs > 0))): 
+            disabled["get_job"] = True  # must not have job to get job
+        if(can_quit_job and ((player_info.job.lower() == "none") or (player_info.yrs_til_switch_jobs > 0))): 
+            disabled["quit_job"] = True  # must have job to quit job
+        if(can_get_promotion and ((player_info.job.lower() != "none") or (player_info.yrs_til_switch_jobs > 0))): 
+            disabled["get_promotion"] = True  # must have job to get promotion
+        if(can_go_to_college and ((player_info.path == "college") or (player_info.age_grad > 0))):  
+            disabled["go_to_college"] = True  # can only go to 4 yr college once
+        if(can_go_to_grad_school and player_info.num_yrs_college == 4):  
+            disabled["go_to_grad_school"] = True  # must go to 4 yr college first
         if((player_info.house.lower() == "none") or (player_info.have_pool) or (player_info.yrs_til_rich_action > 0)):
             disabled["buy_pool"] = True  # must have a house to buy a pool, can only have one pool
         if((player_info.house.lower() == "none") or (not player_info.have_pool) or (player_info.yrs_til_rich_action > 0)):
@@ -529,16 +551,12 @@ def actions():  # actions can only be done every x yrs
         car_costs = {car.name: car.cost for car in cars}
         car_costs[car.name] = car.cost
 
-    job = "None"
-    if(player_info.job != "None"):
-        job = get_job(player_info.job)
-
     loans_int = get_loan_int(player_info.loans)
     amt_can_afford = player_info.money - get_loan_int(player_info.loans)
 
     benefits = check_eligibility(player_info.path, player_info.yrs_military, player_info.age_grad, player_info.age)
-  
-    return render_template('actions.html', page_name='Actions', player_info=player_info, disabled=disabled, num_people=num_people, house=house, houses=houses, house_costs=house_costs, car=car, cars=cars, car_costs=car_costs, loans_int=loans_int, job=job, amt_can_afford=amt_can_afford, benefits=benefits)
+    
+    return render_template('actions.html', page_name='Actions', player_info=player_info, disabled=disabled, num_people=num_people, house=house, houses=houses, house_costs=house_costs, car=car, cars=cars, car_costs=car_costs, loans_int=loans_int, job=job, amt_can_afford=amt_can_afford, benefits=benefits, can_switch_job=can_switch_job, can_get_job=can_get_job, can_quit_job=can_quit_job, can_go_to_college=can_go_to_college, can_go_to_grad_school=can_go_to_grad_school, can_get_promotion=can_get_promotion)
 
 @app.route('/no_action')
 @login_required
@@ -562,7 +580,11 @@ def jobs():
         picked = {job.title.lower(): job.picked for job in jobs}  # mark picked jobs so can't be chosen by others
     if(player_info.last_card == "Lose job"):
         flash("You lost your job.", "error")
-    return render_template('jobs.html', page_name='Jobs', player_info=player_info, category=player_info.jobs_page_type, picked=picked, job_options=None)
+
+    job = "None"
+    if(player_info.job != "None"):
+        job = get_job(player_info.job)
+    return render_template('jobs.html', page_name='Jobs', player_info=player_info, category=player_info.jobs_page_type, picked=picked, job_options=None, job=job)
 
 @app.route('/filter_jobs')
 @login_required
@@ -581,6 +603,36 @@ def quit_job():
     player_info.cur_time_til_raise = 0
     player_info.current_salary = 0
     player_info.yrs_til_switch_jobs = 2  # only wait 2 yrs since can only quit if have job in college
+    game = get_game(player.cur_game)
+    player_info.done_action = True
+    switch_turn(game)
+    
+    db.session.commit()
+    return redirect(url_for('jobs'))
+
+@app.route('/get_promotion')
+@login_required
+def get_promotion():
+    roll = simulateRoll()
+    if(roll <= 3):  # no promotion
+        flash("You did not get a promotion.", "error")
+        game = get_game(player.cur_game)
+        player_info.done_action = True
+        switch_turn(game)
+        db.session.commit()
+        return redirect(url_for('jobs'))
+
+    # promotion
+    flash("You got a promotion!", "success")
+    player, player_info = get_cur_player_info()
+    job = get_job(player_info.job)
+    player_info.num_pay_raises += 1
+    player_info.current_salary += 5000  # $5000 raise
+    player_info.yrs_til_switch_jobs = wait_yrs 
+    game = get_game(player.cur_game)
+    player_info.done_action = True
+    switch_turn(game)
+
     db.session.commit()
     return redirect(url_for('jobs'))
 
@@ -629,6 +681,7 @@ def pick_job(job_name):  # set up job on player info
     player, player_info = get_cur_player_info()
     player_info.job = job.title
     player_info.cur_time_til_raise = job.default_time_til_raise
+    player_info.base_salary = job.base_salary
     player_info.current_salary = job.base_salary
     player_info.path = get_path(job.title)
 
@@ -639,14 +692,25 @@ def pick_job(job_name):  # set up job on player info
         player_info.graduating = False
     else:
         if(player_info.path == "college" or player_info.grad_school):
-            player_info.yrs_til_switch_jobs = 2  # only 2 yrs if in school   
+            player_info.yrs_til_switch_jobs = 2  # only 2 yrs if in school  
+            if(job.category != "job-in-college"): # part-time
+                player_info.base_salary /= 2
+                player_info.current_salary /= 2
         else: 
             player_info.yrs_til_switch_jobs = wait_yrs  # changed job as action
 
+    # switch job, get job, quit job = actions
+    if((player_info.ready) and (player_info.yrs_til_switch_jobs != 0)):
+        game = get_game(player.cur_game)
+        player_info.done_action = True
+        switch_turn(game)
+
     if(player_info.mil_to_college and (player_info.mil_start_college == 0)):  # get job not count as action
-        pass
+        game = get_game(player.cur_game)
+        switch_turn(game)
     elif((player_info.ready) and (not player_info.graduating)):  # doing an action
         game = get_game(player.cur_game)
+        player_info.done_action = True
         switch_turn(game)
 
     db.session.commit()
@@ -693,7 +757,7 @@ def buy_car(car):
             player_info.upgrade_over_40 = wait_yrs
     player_info.yrs_til_change_car = wait_yrs
 
-    if(player_info.mil_to_college and (player_info.mil_start_college == 0)):  # required to get vehicle, not count as action
+    if((player_info.path == "college" and player_info.age == 18) or (player_info.mil_to_college and (player_info.mil_start_college == 0))):  # required to get vehicle, not count as action
         pass
     elif(player_info.ready):  # doing an action
         game = get_game(player.cur_game)
@@ -790,9 +854,9 @@ def expenses(testing, data):
     if(my_job != "None"):
         job = get_job(my_job)
         if(is_testing):
-            job_stress = int(job.base_salary / 1000)  # current salary = base salary since if got new job would start over salary
+            job_stress = int(player_info.base_salary / 1000)  # current salary = base salary since if got new job would start over salary
         else:
-            job_stress = int(player_info.current_salary / 1000) if player_info.path == "military" else int(job.base_salary / 1000)
+            job_stress = int(player_info.current_salary / 1000) if player_info.path == "military" else int(player_info.base_salary / 1000)
     jobs = Job.query.filter(Job.title != my_job)  # get all jobs except player's current job for dropdown
 
     house = "None"
@@ -829,7 +893,7 @@ def expenses(testing, data):
     if((player_info.job == "Athlete") and (player_info.med_prob)):
         taxes = get_taxes(player_info.current_salary * 0.25, player_info.job, player_info.married) # 25% salary -> 25% taxes (adjust with tax bracket)
     else:
-        taxes = get_taxes(player_info.current_salary if not is_testing else job.base_salary if my_job != "None" else 0, my_job, my_married)
+        taxes = get_taxes(player_info.current_salary if not is_testing else player_info.base_salary if my_job != "None" else 0, my_job, my_married)
     player_info.total_taxes = taxes
     num_people = get_num_people(my_married, my_num_kids, player_info.kids_ages)
     benefits = check_eligibility(my_path, player_info.yrs_military, player_info.age_grad, player_info.age)
@@ -885,7 +949,7 @@ def expenses(testing, data):
 
     eat_ent = 0 
     if(my_job != "None"):
-        cur_salary = player_info.current_salary if not is_testing else job.base_salary
+        cur_salary = player_info.current_salary if not is_testing else player_info.base_salary
         if cur_salary < 50000:
             eat_ent = 0.01 * cur_salary
         elif cur_salary < 100000:
@@ -1006,7 +1070,7 @@ def expenses(testing, data):
     mandatory_loans = loans_int * 0.005  # must pay 0.5% of loans + interest back every year
 
     db.session.commit()
-    return render_template('expenses.html', page_name='Expenses', player_info=player_info, job=job, job_stress=job_stress, house=house, house_stress=house_stress, car=car, jobs=jobs, taxes=taxes, num_people=num_people, houses=houses, cars=cars, college_loans_int=college_loans_int, loans_int=loans_int, auto_ins=auto_ins, health_ins= health_ins, home_ins=home_ins, shopping=shopping, car_maintenance=car_maintenance, maid=maid, utilities=utilities, dental_fees=dental_fees, eat_ent=eat_ent, gas=gas, new_auto_ins=new_auto_ins, new_home_ins=new_home_ins, new_health_ins=new_health_ins, misc_points=misc_points, misc_fees=misc_fees, rent=rent, transit_fee=transit_fee, no_fam_car=no_fam_car, no_fam_house=no_fam_house, benefits=benefits, all_dental_fees=all_dental_fees, all_pet_fees=all_pet_fees, all_depression_fees=all_depression_fees, tax_prep=tax_prep, all_tax_prep_fees=all_tax_prep_fees, my_job=my_job, cur_house=my_house, cur_car=my_car, my_home_ins=my_home_ins, my_auto_ins=my_auto_ins, my_health_ins=my_health_ins, my_married=my_married, my_num_kids=my_num_kids, my_loans=my_loans, my_path=my_path, testing=is_testing, loan_pts=loan_pts, mandatory_loans=mandatory_loans)
+    return render_template('expenses.html', page_name='Expenses', player_info=player_info, job=job, job_stress=job_stress, house=house, house_stress=house_stress, car=car, jobs=jobs, taxes=taxes, num_people=num_people, houses=houses, cars=cars, college_loans_int=college_loans_int, loans_int=loans_int, auto_ins=auto_ins, health_ins= health_ins, home_ins=home_ins, shopping=shopping, car_maintenance=car_maintenance, maid=maid, utilities=utilities, dental_fees=dental_fees, eat_ent=eat_ent, gas=gas, new_auto_ins=new_auto_ins, new_home_ins=new_home_ins, new_health_ins=new_health_ins, misc_points=misc_points, misc_fees=misc_fees, rent=rent, transit_fee=transit_fee, no_fam_car=no_fam_car, no_fam_house=no_fam_house, benefits=benefits, tax_prep=tax_prep, my_job=my_job, cur_house=my_house, cur_car=my_car, my_home_ins=my_home_ins, my_auto_ins=my_auto_ins, my_health_ins=my_health_ins, my_married=my_married, my_num_kids=my_num_kids, my_loans=my_loans, my_path=my_path, testing=is_testing, loan_pts=loan_pts, mandatory_loans=mandatory_loans)
 
 @app.route('/test_expenses')
 @login_required
@@ -1031,9 +1095,8 @@ def test_expenses():
 def scoreboard():
     scores = []
     player = get_cur_player()
-    players_infos = Player_Info.query.filter_by(game_id=player.cur_game, active=True).join(Player, Player_Info.player_id==Player.id).add_columns(Player.name, Player_Info.points, Player_Info.money, Player_Info.loans).order_by(Player_Info.points.desc())
+    players_infos = Player_Info.query.filter_by(game_id=player.cur_game, active=True).join(Player, Player_Info.player_id==Player.id).add_columns(Player.name, Player_Info.points, Player_Info.money, Player_Info.loans, Player_Info.college_loans).order_by(Player_Info.points.desc())
     for player_info in players_infos:  # show players ordered by highest -> lowest points
-        print(player_info.loans)
         scores.append({"name": player_info.name, "points": player_info.points, "money": player_info.money, "has_loans": True if ((player_info.loans > 0)  or (player_info.college_loans > 0)) else False})
   
     return render_template('scoreboard.html', page_name='Scoreboard', scores=scores)
@@ -1530,7 +1593,7 @@ def get_path(job):
 
 def check_eligibility(path, yrs_military, age_grad, age):
     if(path.lower() == "military"): return True
-    if((yrs_military != 0) and ((age - age_grad) < yrs_military)): return True
+    if((yrs_military != 0) and ((age - age_grad) < yrs_military) and (yrs_benefits_used <= yrs_military)): return True
     return False
 
 def get_num_people(is_married, num_kids, kids_ages):
@@ -1604,12 +1667,12 @@ def get_announcements(player_info):
             cur_turn = game.join(Player_Info, and_(Player_Info.game_id == Game.id, Player_Info.turn_num == Game.cur_turn)).add_columns(Player_Info.player_id).join(Player, Player.id == Player_Info.player_id).add_columns(Player.name).first().name
             announcements[cur_turn + "'s turn"] = "turn"
         
-            if((player_info.path == "military") and (player_info.age == 20)):
-                announcements["Eligible for college with free tuition for 4 yrs"] = "fyi"
-            if((player_info.path == "college") and (player_info.age >= 20) and (player_info.age < 22) and (player_info.car in ["None", "Skateboard", "Bike"])):
-                announcements["Need non-college vehicle by graduation"] = "fyi"
-            if((player_info.path == "college") and (player_info.age == 22) and (player_info.car in ["None", "Skateboard", "Bike"]) and (not player_info.mil_to_college)):
-                announcements["Need non-college vehicle by graduation"] = "urgent"
+            if((player_info.path == "military") and (player_info.yrs_military == 4)):
+                announcements["Eligible for discounted college tuition for 4 yrs"] = "fyi"
+            if((player_info.path == "college") and (player_info.num_yrs_college in [2, 3]) and (player_info.car in ["None", "Skateboard", "Bike"])):
+                announcements["Need non-college vehicle by college graduation"] = "fyi"
+            if((player_info.path == "college") and (player_info.num_yrs_college == 4) and (player_info.car in ["None", "Skateboard", "Bike"])):
+                announcements["Need non-college vehicle by college graduation"] = "urgent"
             if((player_info.path != "military") and (player_info.age >= 20) and (player_info.age < 22) and (player_info.house == "None")):
                 announcements["Need house before 23"] = "fyi"
             if((player_info.path != "military") and (player_info.age == 22) and (player_info.house == "None")):
@@ -1624,6 +1687,8 @@ def get_announcements(player_info):
                 announcements["Last year to have kids"] = "urgent"
             if(player_info.age == 64):  # retirement = game over
                 announcements["Retiring next year"] = "fyi"
+                if(player_info.loans > 0 or player_info.college_loans > 0):
+                    announcements["Pay off all loans by end of year or will lose ALL points"] = "urgent"
             if(get_college_loan_int(player_info.college_loans, player_info.age, player_info.age_grad) != get_college_loan_int(player_info.college_loans, player_info.age + 1, player_info.age_grad)):
                announcements["Next year college loan interest rate will increase"] = "urgent"   # interest rate about to increase
             if(check_eligibility(player_info.path, player_info.yrs_military, player_info.age_grad, player_info.age) != check_eligibility(player_info.path, player_info.yrs_military, player_info.age_grad, player_info.age + 1)):
@@ -1636,7 +1701,8 @@ def get_announcements(player_info):
                 house = get_house(player_info.house) 
                 if((car.category != "large-family") or (house.category != "large-family")):
                     announcements["Reached max family size for small car/house"] = "fyi"
-
+            if((player_info.loans > 0 or player_info.college_loans > 0) and (player_info.age in [40, 50, 60])):
+                announcements["Should pay off all loans before 65"] = "fyi"
         db.session.commit()
         return announcements
 
@@ -1827,8 +1893,10 @@ def end_of_year():
     if((player_info.path == "military")):
         player_info.yrs_military += 1
 
-    if((player_info.path == "college") or (player_info.grad_school)):
+    if(player_info.path == "college"): 
         player_info.num_yrs_college += 1
+    if(player_info.grad_school):
+        player_info.num_yrs_grad_school += 1
 
     # update to new insurances
     if((player_info.age < 26) or check_eligibility(player_info.path, player_info.yrs_military, player_info.age_grad, player_info.age)):
@@ -1862,6 +1930,9 @@ def end_of_year():
     player_info.done_action = False
     player_info.end_of_year = False
 
+    if(player_info.mil_to_college and player_info.mil_start_college != 0 and player_info.path == "college"):
+        player_info.yrs_benefits_used += 1
+
     # handle college scholarships
     if((player_info.path == "college") and (player_info.num_yrs_college < 4)):  # not graduating yet
         tuition = 50000
@@ -1881,6 +1952,7 @@ def end_of_year():
         roll = simulateRoll()  # roll for scholarship
         scholarship = 10000 * roll
         player_info.college_loans += (tuition - scholarship)
+        player_info.num_yrs_grad_school += 1
 
     if((player_info.age == 65) and ((player_info.loans > 0) or (player_info.college_loans > 0))):  
         player_info.points = 0  # if have loans when retire = lose all points
@@ -1890,7 +1962,7 @@ def end_of_year():
 
     db.session.commit()
 
-    if(player_info.num_yrs_college == 10):  # graduating 6 yr grad school
+    if(player_info.num_yrs_grad_school == 6):  # graduating 6 yr grad school
         flash("You graduated med school!", "success")
         return redirect(url_for('graduate'))    
 
@@ -1912,10 +1984,49 @@ def graduate():
         player_info.grad_school = False
     player_info.points += 50
     player_info.num_yrs_college = 0  # reset so no notification to graduate
+    player_info.yrs_til_switch_jobs = 0  #  need to reset so can get job since required
+
+    # if completed a grad school, keep track of which one
+    if(player_info.num_yrs_grad_school == 1):
+        player_info.done_grad_1 = True
+    elif(player_info.num_yrs_college == 2):
+        player_info.done_grad_2 = True
+    elif(player_info.num_yrs_college == 6):
+        player_info.done_grad_6 = True
+    player_info.num_yrs_grad_school = 0  # reset so can tell if do another grad school
 
     db.session.commit()
     return redirect(url_for('jobs'))
-    
+
+@app.route('/go_to_college')
+@login_required
+def go_to_college():
+    player, player_info = get_cur_player_info()
+
+    if(player_info.path == "military"):
+        player_info.mil_to_college = True
+
+        # remove military job info
+        player_info.job = "None"
+        player_info.num_pay_raises = 0
+        player_info.cur_time_til_raise = 0
+        player_info.current_salary = 0
+
+    player_info.path = "college"
+
+    # only for people who go to college later so will already have job: switch to part-time, half salary
+    player_info.base_salary /= 2
+    player_info.current_salary /= 2
+
+    # handle scholarships
+    tuition = 50000
+    roll = simulateRoll()  # roll for scholarship
+    scholarship = 5000 * roll
+    player_info.college_loans += (tuition - scholarship)
+
+    db.session.commit()
+    return redirect(url_for('player_info'))
+
 @app.route('/go_to_grad_school')
 @login_required
 def go_to_grad_school():
@@ -1930,7 +2041,18 @@ def go_to_grad_school():
     scholarship = 10000 * roll
     player_info.college_loans += (tuition - scholarship)
 
+    # when go to grad school straight from college, not an action; other go to grad school count as action
+    if(player_info.age > 21):  # action
+       player_info.done_action = True
+       player_info.base_salary /= 2
+       player_info.current_salary /= 2  # go to grad school later, keep current job part-time
+
     db.session.commit()
+    
+    # if go to college at start of game and then go directly to grad school, get college grad job part-time
+    if(player_info.age == 21):
+        return redirect(url_for('jobs'))
+
     return redirect(url_for('player_info'))
 
 @app.route('/continue_grad_school')

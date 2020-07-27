@@ -720,21 +720,23 @@
                             {% if player_info.age == 18 and player_info.path != "military" %}
                             <option value="military">Military</option>
                             {% endif %}
-                            {% if player_info.path == "college" and player_info.age_grad == 0 %}
+                            {% if (player_info.path == "college" and player_info.age_grad == 0) or (player_info.job == "None" or job.category == "job-in-college") %}
                             <option value="job-in-college">Job in College</option>
                             {% endif %}
-                            {% if (not player_info.ready) or (player_info.path != "college") %}
+                            {% if (not player_info.ready) or not ((player_info.path == "college") and (player_info.job == "None" or job.category == "job-in-college")) %}
                             <option value="regular">Regular</option>
                             {% endif %}
-                            {% if ((player_info.path == "college") or (player_info.grad_school)) and (player_info.age_grad != 0) %}
-                                <option value="college-grad">College Graduate</option>
-                                {% if player_info.num_yrs_college >= 5 %}
-                                <option value="grad-school-1">Grad School (1 yr)</option>
-                                {% elif player_info.num_yrs_college >= 6 %}
-                                <option value="grad-school-2">Grad School (2 yr)</option>
-                                {% elif player_info.num_yrs_college >= 10 %}
-                                <option value="grad-school-6">Grad School (6 yr)</option>
-                                {% endif %}
+                            {% if player_info.num_yrs_college == 4 %}
+                            <option value="college-grad">College Graduate</option>
+                            {% endif %}
+                            {% if player_info.done_grad_1 %}
+                            <option value="grad-school-1">Grad School (1 yr)</option>
+                            {% endif %}
+                            {% if player_info.done_grad_2 %}
+                            <option value="grad-school-2">Grad School (2 yr)</option>
+                            {% endif %}
+                            {% if player_info.done_grad_6 %}
+                            <option value="grad-school-6">Grad School (6 yr)</option>
                             {% endif %}
                         </select>
                         <button type="submit" id="pick-job-button">Choose Job</button>

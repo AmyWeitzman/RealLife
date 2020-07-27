@@ -32,7 +32,15 @@
             <button type="submit" id="ready-button" class="detail">Grad School</button>
         </form>
         {% endif %}
-        {% if player_info.num_yrs_college in [5, 6] %}
+        {% if player_info.num_yrs_grad_school == 1 and not player_info.done_grad_1 %}
+        <form action="{{ url_for('graduate') }}">
+            <button type="submit" id="ready-button" class="detail">Graduate</button>
+        </form>
+        <form action="{{ url_for('continue_grad_school') }}">
+            <button type="submit" id="ready-button" class="detail">Continue Grad School</button>
+        </form>
+        {% endif %}
+        {% if player_info.num_yrs_grad_school == 2 and not player_info.done_grad_2 %}
         <form action="{{ url_for('graduate') }}">
             <button type="submit" id="ready-button" class="detail">Graduate</button>
         </form>
@@ -127,11 +135,6 @@
     </table>
     <div id="notes">
         <label id="notes-label">Notes</label>
-        {% if player_info.path == "military" and player_info.yrs_military >= 2 and not player_info.mil_to_college %}
-        <form id="mil-go-to-college" action="{{ url_for(mil_to_college) }}">
-            <button id="college-button">Go To College</button>
-        </form>
-        {% endif %}
         <br>
         <table id="sticky-notes">
             <tr>

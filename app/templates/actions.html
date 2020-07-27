@@ -30,7 +30,7 @@
             </td>
             <td>
                 <ul>
-                    <li>cannot be in college</li>
+                    <li class="{{ 'no' if player_info.path == 'college' else 'yes' }}">cannot be in college</li>
                 </ul>
             </td>
             <td class="center">{{ player_info.yrs_til_buy_organic }}</td>
@@ -38,7 +38,7 @@
         <tr>
             <td class="action-button">
                 <form action="{{ url_for('upgrade_appliances') }}">
-                    <button type="submit" id="upgrade_appliances"  class="{{ 'afford' if (house != 'None') and ((0.01 * house.cost) < amt_can_afford) else 'not-afford' if (house != 'None') else '' }}">Upgrade appliances</button><br>
+                    <button type="submit" id="upgrade_appliances" class="{{ 'afford' if (house != 'None') and ((0.01 * house.cost) < amt_can_afford) else 'not-afford' if (house != 'None') else '' }}">Upgrade appliances</button><br>
                     {% if house != "None" %}
                     <label>pay ${{ "{:,.0f}".format(0.01 * house.cost) }}</label><br>
                     <label>receive 100 points</label>
@@ -54,7 +54,7 @@
             </td>
             <td>
                 <ul>
-                    <li>must have at least small family house</li>
+                    <li class="{{ 'yes' if player_info.house != 'None' and house.category != 'no-family' else 'no' }}">must have at least small family house</li>
                 </ul>
             </td>
             <td></td>
@@ -213,12 +213,12 @@
                 <ul>
                     <li>get married:</li>
                         <ul>
-                            <li>must be out of college</li>
-                            <li>must be single</li>
-                            <li>have at least small family house/car</li>
+                            <li class="{{ 'no' if player_info.path == 'college' else 'yes' }}">must be out of college</li>
+                            <li class="{{ 'no' if player_info.married else 'yes' }}">must be single</li>
+                            <li class="{{ 'yes' if player_info.house != 'None' and house.category != 'no-family' and player_info.car != 'None' and car.category != 'no-family' else 'no' }}">have at least small family house/car</li>
                         </ul>
                     <li>get divorced:</li>
-                        <ul><li>must be married</li></ul>
+                        <ul><li class="{{ 'yes' if player_info.married else 'no' }}">must be married</li></ul>
                 </ul>
             </td>
             <td class="center">{{ player_info.yrs_til_change_married }}</td>
@@ -246,8 +246,8 @@
             </td>
             <td>
                 <ul>
-                    <li>must be married</li>
-                    <li>age <= 45</li>
+                    <li class="{{ 'yes' if player_info.married else 'no' }}">must be married</li>
+                    <li class="{{ 'yes' if player_info.age <= 45 else 'no' }}">age <= 45</li>
                 </ul>
             </td>
             <td class="center">{{ player_info.yrs_til_have_kid }}</td>
@@ -267,7 +267,7 @@
             </td>
             <td>
                 <ul>
-                    <li>oldest child must be at least 18</li>
+                    <li class="{{ 'yes' if player_info.oldest_child_age >= 18 else 'no' }}">oldest child must be at least 18</li>
                 </ul>
             </td>
             <td class="center">{{ player_info.yrs_til_have_kid }}</td>
@@ -292,40 +292,52 @@
         </tr>
         <tr>
             <td class="action-button">
-                {% if player_info.job != "None" %}
+                {% if can_switch_job %}
                 <form action="{{ url_for('jobs') }}">
                     <button type="submit" id="switch_jobs">Switch Jobs</button>
                 </form>
                 {% endif %}
-                {% if (player_info.job == "None") and (player_info.num_yrs_college ) %}
+                {% if can_get_job %}
                 <form action="{{ url_for('jobs') }}">
                     <button type="submit" id="get_job">Get Job</button>
                 </form>
                 {% endif %}
-                {% if ((player_info.path == "college" or (player_info.grad_school))) and (player_info.job != "None") and (job.category == "job-in-college") %}
+                {% if can_quit_job %}
                 <form action="{{ url_for('quit_job') }}">
                     <button type="submit" id="quit_job">Quit Job</button>
+                </form>
+                {% endif %}
+                {% if can_get_promotion %}
+                <form action="{{ url_for('get_promotion') }}">
+                    <button type="submit" id="get_promotion">Get Promotion</button>
                 </form>
                 {% endif %}
             </td>
             <td>
                 <ul>
-                    {% if player_info.job != "None" %}
+                    {% if can_switch_job %}
                     <li>Switch Jobs:</li>
                     <ul>
                         <li>get new job from same category (if none, then move down category)</li>  
                     </ul>
                     {% endif %}
-                    {% if player_info.job == "None" %}
+                    {% if can_get_job %}
                     <li>Get Job:</li>
                     <ul>
                         <li>get job in college</li>  
                     </ul>
                     {% endif %}
-                    {% if ((player_info.path == "college" or (player_info.grad_school))) and (player_info.job != "None") and (job.category == "job-in-college") %}
+                    {% if can_quit_job %}
                     <li>Quit Job:</li>
                     <ul>
                         <li>quit job in college</li>  
+                    </ul>
+                    {% endif %}
+                    {% if can_get_promotion %}
+                    <li>Get Promotion:</li>
+                    <ul>
+                        <li>roll 1, 2, 3: no promotion</li>  
+                        <li>roll 4, 5, 6: $5000 raise</li>  
                     </ul>
                     {% endif %}
                 </ul>
@@ -334,6 +346,39 @@
             </td>
             <td class="center">{{ player_info.yrs_til_switch_jobs }}</td>
         </tr> 
+        <tr>
+            <td class="action-button">
+                {% if can_go_to_college %}
+                <form action="{{ url_for('go_to_college') }}">
+                    <button type="submit" id="go_to_college">Go to College</button>
+                </form>
+                {% endif %}
+                {% if can_go_to_grad_school %}
+                <form action="{{ url_for('go_to_grad_school') }}">
+                    <button type="submit" id="go_to_grad_school">Go to Grad School</button>
+                    <label>Eligible for <span id="grad-school-1-label">{{ 1 if not player_info.done_grad_1 else '' }}</span> <span id="grad-school-2-label">{{ 2 if not player_info.done_grad_2 else '' }}</span> <span id="grad-school-6-label">{{ 6 if not player_info.done_grad_6 else '' }}</span> yr grad school</label>
+                </form>
+                {% endif %}
+            </td>
+            <td>
+                <ul>
+                    {% if player_info.path != "college" and player_info.age_grad == 0 %}
+                    <li>go to 4 yr college</li>  
+                    <span class="once">* eligible for scholarships but not parent contribution</span>
+                    <span class="once">* keep current job part-time for half salary</span> 
+                    {% endif %}
+                    {% if (player_info.age_grad > 0) and not (player_info.done_grad_1 and player_info.done_grad_2 and player_info.done_grad_6) %}
+                    <li>go to grad school, can graduate after 1, 2, or 6 yrs</li> 
+                    <i>see jobs page for career options</i>
+                    <span class="once">* eligible for scholarships but not parent contribution</span>
+                    <span class="once">* keep current job part-time for half salary</span>
+                    {% endif %}
+                </ul>
+            </td>
+            <td>
+            </td>
+            <td class="center"></td>
+        </tr>
         <tr>
             <td class="action-button">
                 <form action="{{ url_for('peace_corps') }}">
@@ -348,8 +393,8 @@
             </td>
             <td>
                 <ul>
-                    <li>must be single</li>
-                    <li>age <= 45</li>
+                    <li class="{{ 'no' if player_info.married else 'yes' }}">must be single</li>
+                    <li class="{{ 'yes' if player_info.age <= 45 else 'no' }}">age <= 45</li>
                 </ul>
             </td>
             <td class="center">{{ player_info.yrs_til_peace_corps }}</td>
@@ -368,8 +413,8 @@
             </td>
             <td>
                 <ul>
-                    <li>must be single</li>
-                    <li>age > 45</li>
+                    <li class="{{ 'no' if player_info.married else 'yes' }}">must be single</li>
+                    <li class="{{ 'yes' if player_info.age > 45 else 'no' }}">age > 45</li>
                 </ul>
             </td>
             <td class="center">{{ player_info.yrs_til_mission_trip }}</td>
@@ -454,8 +499,7 @@
         var gray = JSON.parse('{{ disabled|tojson }}');
         console.log(gray);
         for(const key in gray) {
-            console.log(gray[key]);
-            if(gray[key]) {   // disable action  
+            if(gray[key]) {   // disable action 
                 document.getElementById(key).disabled = true;
             }
         }
@@ -518,6 +562,7 @@
             document.getElementById("house-change-points").innerHTML = change_in_points;
         }
 
+        cur_age = parseFloat("{{ player_info.age }}");
         if(cur_age <= 35)
             document.getElementById("child-100").setAttribute('style', 'font-weight: bold;');
         else if((cur_age > 35) && (cur_age <= 40))
@@ -535,8 +580,10 @@
             document.getElementById('change_house').disabled = false;
         }
 
+        money = parseFloat("{{ player_info.money }}");
+        loans_int = parseFloat("{{ loans_int }}");
         if((money - loans_int) < 0) { // cannot afford any action
-            document.querySelectorAll('button').forEach(btn => {
+            document.querySelectorAll('.afford').forEach(btn => {
                 btn.classList.add('not-afford');
             });
         }
@@ -549,7 +596,6 @@
             });
         }
 
-        cur_age = parseFloat("{{ player_info.age }}");
         need_loan = "{{ player_info.need_loan }}";
         turn_num = parseFloat("{{ player_info.turn_num }}");
         if((cur_age == 65) || (need_loan.toLowerCase() == "true") || (turn_num == -1)) {  // game over or force to get loan or game not started

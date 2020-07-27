@@ -61,6 +61,10 @@ button:disabled {
     color: white !important;
 }
 
+#go_to_grad_school:hover {
+    color: white !important;
+}
+
 .once {
     color: red;
 
@@ -150,6 +154,36 @@ button:disabled {
     border: #2e8ec9 3px solid;
 }
 
+#get_job {
+    background-color: #473d04;
+    color: #cc7c05;
+    border: #cc7c05 3px solid;
+}
+
+#quit_job {
+    background-color: #e47c75;
+    color: darkred;
+    border: darkred 3px solid;
+}
+
+#get_promotion {
+    background-color: #a5db9e;
+    color: green;
+    border: green 3px solid;
+}
+
+#go_to_college {
+    background-color: blue;
+    color: yellow;
+    border: red 3px solid;
+}
+
+#go_to_grad_school {
+    background-color: black;
+    color: gold;
+    border: gold 3px solid;
+}
+
 #peace_corps {
     background-color: #0221ab;
     color: white;
@@ -233,4 +267,24 @@ button:disabled {
 
 .not-afford {
     box-shadow: 0px 0px 10px 5px red;
+}
+
+.no {
+    color: red !important;
+}
+
+.yes {
+    color: green !important;
+}
+
+#grad-school-1-label {
+    color: gold;
+}
+
+#grad-school-2-label {
+    color: #a859e4;
+}
+
+#grad-school-6-label {
+    color: rgb(241, 139, 99);
 }
