@@ -720,7 +720,7 @@
                             {% if player_info.age == 18 and player_info.path != "military" %}
                             <option value="military">Military</option>
                             {% endif %}
-                            {% if (player_info.path == "college" and player_info.age_grad == 0) or (player_info.job == "None" or job.category == "job-in-college") %}
+                            {% if (not player_info.mil_to_college) and (player_info.job == "None" or job.category == "job-in-college") %}
                             <option value="job-in-college">Job in College</option>
                             {% endif %}
                             {% if (not player_info.ready) or not ((player_info.path == "college") and (player_info.job == "None" or job.category == "job-in-college")) %}
@@ -781,12 +781,13 @@
         }
 
         cur_age = parseFloat("{{ player_info.age }}");
-        need_loan = "{{ player_info.need_loan }}";
+        need_loan = "{{ player_info.need_loan }}".toLowerCase() == "true" ? true : false;
         turn_num = parseFloat("{{ player_info.turn_num }}");
-        if((cur_age == 65) || (need_loan.toLowerCase() == "true") || (turn_num == -1)) {  // game over or force to get loan or game not started
+        if((cur_age == 65) || (need_loan) || (turn_num == -1)) {  // game over or force to get loan or game not started
             document.querySelectorAll('button').forEach(btn => {
                 btn.disabled = true;
             });
+            document.getElementById('job-dropdown').disabled = true
         }
     </script>
 {% endblock %}

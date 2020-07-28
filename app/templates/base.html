@@ -23,7 +23,7 @@
         <div><a href="{{ url_for('jobs') }}" class="nav-link">Jobs</a></div>
         <div><a href="{{ url_for('vehicles') }}" class="nav-link">Vehicles</a></div>
         <div><a href="{{ url_for('houses') }}" class="nav-link">Houses</a></div>
-        <div><a href="{{ url_for('expenses', testing='false', data='none') }}" class="nav-link">Expenses</a></div>
+        <div><a href="{{ url_for('expenses', testing='false', data='none') }}" class="nav-link">Finances</a></div>
         <div><a href="{{ url_for('stats') }}" class="nav-link">Analysis</a></div>
         <div><a href="{{ url_for('scoreboard') }}" class="nav-link">Scoreboard</a></div>
         <br>
@@ -78,7 +78,7 @@
                     $(".alert").fadeTo(1000, 0).slideUp(500, function(){
                         $(this).remove(); 
                     });
-                }, 3000);
+                }, 5000);
             });
 
             // $(document).ready(function(){

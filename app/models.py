@@ -114,6 +114,7 @@ class Player_Info(db.Model):
     total_depression = db.Column(db.Integer, default=0)
     total_loan = db.Column(db.Integer, default=0)
     num_yrs_college = db.Column(db.Integer, default=0)
+    grad_college = db.Column(db.Boolean, default=False)
     num_yrs_grad_school = db.Column(db.Integer, default=0)
     expenses = db.Column(db.Integer, default=0)
     income = db.Column(db.Integer, default=0)

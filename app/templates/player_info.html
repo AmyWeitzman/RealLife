@@ -4,6 +4,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/player_info.css') }}">
     {{ moment.include_jquery() }}
     {{ moment.include_moment() }}
+    {{ JSGlue.include() }}
     <div id="game-details">
         <h4 id="game-id" class="detail">Game ID: {{ game.id }}</h4>
         <h4 id="date-started" class="detail">Started: <span id="date">{{ moment(game.date_started).format('MM/DD/YY') }}</span></h4>
@@ -24,7 +25,7 @@
             <button type="submit" id="ready-button" class="detail">READY</button>
         </form>
         {% endif %}
-        {% if player_info.num_yrs_college == 4 %}
+        {% if player_info.num_yrs_college == 3 and not player_info.grad_college and player_info.done_action %}
         <form action="{{ url_for('graduate') }}">
             <button type="submit" id="ready-button" class="detail">Graduate</button>
         </form>
@@ -32,7 +33,7 @@
             <button type="submit" id="ready-button" class="detail">Grad School</button>
         </form>
         {% endif %}
-        {% if player_info.num_yrs_grad_school == 1 and not player_info.done_grad_1 %}
+        {% if player_info.grad_school and player_info.num_yrs_grad_school == 0 and not player_info.done_grad_1 and player_info.done_action %}
         <form action="{{ url_for('graduate') }}">
             <button type="submit" id="ready-button" class="detail">Graduate</button>
         </form>
@@ -40,7 +41,7 @@
             <button type="submit" id="ready-button" class="detail">Continue Grad School</button>
         </form>
         {% endif %}
-        {% if player_info.num_yrs_grad_school == 2 and not player_info.done_grad_2 %}
+        {% if player_info.num_yrs_grad_school == 1 and not player_info.done_grad_2 and player_info.done_action %}
         <form action="{{ url_for('graduate') }}">
             <button type="submit" id="ready-button" class="detail">Graduate</button>
         </form>
@@ -135,7 +136,6 @@
     </table>
     <div id="notes">
         <label id="notes-label">Notes</label>
-        <br>
         <table id="sticky-notes">
             <tr>
                 <td class="sticky-note">
@@ -166,10 +166,17 @@
         </table>
     </div>
     <script>
-        window.onbeforeunload = function(e) {
-            console.log("hsdf");
-            $.GET(url_for('save_allnotes'));
-        };
+        // window.onbeforeunload = function(e) {
+        //     note1 = document.getElementById('notepad1').value;
+        //     note2 = document.getElementById('notepad2').value;
+        //     note3 = document.getElementById('notepad3').value;
+        //     note4 = document.getElementById('notepad4').value;
+        //     // if(note1 == '') note1 = 'To-Do:'
+        //     // if(note2 == '') note2 = 'To-Do:'
+        //     // if(note3 == '') note3 = 'To-Do:'
+        //     // if(note4 == '') note4 = 'To-Do:'
+        //     $.get(Flask.url_for('save_allnotes', {note1: note1, note2: note2, note3: note3, note4: note4}));
+        // };
 
         $(document).ready(function(){
             $('[data-toggle="tooltip"]').tooltip();

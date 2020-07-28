@@ -3,7 +3,7 @@
 {% block content %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/expenses.css') }}">
     <table>
-        <tr><th id="table-title" colspan="6">YEARLY EXPENSES</th></tr>
+        <tr><th id="table-title" colspan="6">ANNUAL FINANCIAL REPORT</th></tr>
         <tr>
             <th>Type</th>
             <th>Details</th>
@@ -557,7 +557,9 @@
             document.getElementById("total-expenses").value = parseFloat(expenses).toLocaleString('en');
             document.getElementById("net-earnings-val").value = parseFloat(net_earnings).toLocaleString('en');
 
-            if((money + net_earnings > 0) && ((college_loans_payment + loans_payment) > (money + net_earnings))) {
+            if((college_loans_payment == 0) && (loans_payment == 0))
+                noLoanPaymentError(true, true);
+            else if((money + net_earnings < 0) || ((money + net_earnings > 0) && ((college_loans_payment + loans_payment) > (money + net_earnings)))) {
                 loanPaymentError(true);
                 loanPaymentError(false);
             }
@@ -602,13 +604,19 @@
                 document.getElementById("total-expenses").value = parseFloat(expenses).toLocaleString('en');
                 document.getElementById("net-earnings-val").value = parseFloat(net_earnings).toLocaleString('en');
             
-                if((college_loans_payment + loans_payment) > (money + net_earnings)) {
-                    loanPaymentError(true);
-                    loanPaymentError(false);
-                }
-                else {
-                    noLoanPaymentError(true, true);
-                }
+                if((college_loans_payment == 0) && (loans_payment == 0))
+                noLoanPaymentError(true, true);
+                else if((money + net_earnings < 0) || ((money + net_earnings > 0) && ((college_loans_payment + loans_payment) > (money + net_earnings)))) {
+                loanPaymentError(true);
+                loanPaymentError(false);
+            }
+                // if((college_loans_payment != 0 && loans_payment != 0) || ((college_loans_payment + loans_payment) > (money + net_earnings))) {
+                //     loanPaymentError(true);
+                //     loanPaymentError(false);
+                // }
+                // else {
+                //     noLoanPaymentError(true, true);
+                // }
             }
 
         function loanPaymentError(is_college) {
@@ -637,20 +645,20 @@
             });
         }
 
-        home_ins = "{{ player_info.have_home_ins }}";
-        if(home_ins.toLowerCase() == "true") // currently have home insurance
+        home_ins = "{{ player_info.have_home_ins }}".toLowerCase() == "true" ? true : false;
+        if(home_ins) // currently have home insurance
             document.getElementById("test-home-ins-checkbox").checked = true;
 
-        auto_ins = "{{ player_info.have_auto_ins }}";
-        if(auto_ins.toLowerCase() == "true") // currently have auto insurance
+        auto_ins = "{{ player_info.have_auto_ins }}".toLowerCase() == "true" ? true : false;
+        if(auto_ins) // currently have auto insurance
             document.getElementById("test-auto-ins-checkbox").checked = true;
 
-        health_ins = "{{ player_info.have_health_ins }}";
-        if(health_ins.toLowerCase() == "true") // currently have health insurance
+        health_ins = "{{ player_info.have_health_ins }}".toLowerCase() == "true" ? true : false;
+        if(health_ins) // currently have health insurance
             document.getElementById("test-health-ins-checkbox").checked = true;
         
-        married = "{{ player_info.married }}";
-        if(married.toLowerCase() == "true") // currently have health insurance
+        married = "{{ player_info.married }}".toLowerCase() == "true" ? true : false;
+        if(married) // currently have health insurance
                 document.getElementById("test-married-checkbox").checked = true;
         
         function updateTestOptions() {
@@ -677,8 +685,8 @@
                 document.getElementById("test-auto-ins-checkbox").disabled = false;
             }
 
-        end_of_year = "{{ player_info.end_of_year }}";
-        if(end_of_year.toLowerCase() == "false") {
+        end_of_year = "{{ player_info.end_of_year }}".toLowerCase() == "true" ? true : false;
+        if(!end_of_year) {
             document.getElementById('pay-button').disabled = true;
         }
         

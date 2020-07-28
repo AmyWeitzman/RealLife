@@ -13,7 +13,7 @@
         <div><a href="{{ url_for('jobs') }}" class="nav-link">Jobs</a></div>
         <div><a href="{{ url_for('vehicles') }}" class="nav-link">Vehicles</a></div>
         <div><a href="{{ url_for('houses') }}" class="nav-link">Houses</a></div>
-        <div><a href="{{ url_for('expenses', testing='false', data='none') }}" class="nav-link">Expenses</a></div>
+        <div><a href="{{ url_for('expenses', testing='false', data='none') }}" class="nav-link">Finances</a></div>
         <div><a href="{{ url_for('stats') }}" class="nav-link">Analysis</a></div>
         <div><a href="{{ url_for('scoreboard') }}" class="nav-link">Scoreboard</a></div>
         <br>
@@ -77,11 +77,10 @@
             var legendRectSize = 18;                                  
             var legendSpacing = 5; 
 
-            data = [
+            data1 = [
                 {label: "Expenses", count: parseInt("{{ player_info.expenses }}")},
                 {label: "Savings", count: parseInt("{{ player_info.income - player_info.expenses }}")}
             ]
-
             var color = d3.scaleOrdinal().range(["red", "green"])
             
             var svg = d3.select('#expenses-savings')
@@ -113,7 +112,7 @@
             .attr('class', 'percent');  
 
             var path = svg.selectAll('path')
-            .data(pie(data))
+            .data(pie(data1))
             .enter()
             .append('path')
             .attr('d', arc)
@@ -122,9 +121,9 @@
             });
 
             path.on('mouseover', function(d) {                            
-                var total = d3.sum(data.map(function(d) {                
+                var total = d3.sum(data1.map(function(d) {               
                 return d.count;                                           
-                }));                                                        
+                }));                                        
                 var percent = Math.round(1000 * d.data.count / total) / 10; 
                 tooltip.attr('id', "tooltip-left")
                 tooltip.select('.label').html(d.data.label).style('font-weight', 'bold');                
@@ -174,7 +173,7 @@
 
             var color = d3.scaleOrdinal(d3.schemeCategory10);
 
-            data = []
+            data2 = []
 
             taxes = parseInt("{{ player_info.total_taxes }}");
             ins = parseInt("{{ player_info.total_insurance }}");
@@ -195,39 +194,39 @@
             loans = parseInt("{{ player_info.total_loan }}");
 
             if(taxes > 0)
-                data.push({label: "Taxes", count: taxes});
+                data2.push({label: "Taxes", count: taxes});
             if(ins > 0)
-                data.push({label: "Insurance", count: ins});
+                data2.push({label: "Insurance", count: ins});
             if(shopping > 0)
-                data.push({label: "Shopping", count: shopping});
+                data2.push({label: "Shopping", count: shopping});
             if(car_main > 0)
-                data.push({label: "Car Maintenance", count: car_main});
+                data2.push({label: "Car Maintenance", count: car_main});
             if(maid > 0)
-                data.push({label: "Maid", count: maid});
+                data2.push({label: "Maid", count: maid});
             if(util > 0)
-                data.push({label: "Utilities", count: util});
+                data2.push({label: "Utilities", count: util});
             if(dental > 0)
-                data.push({label: "Dental fees", count: dental});
+                data2.push({label: "Dental fees", count: dental});
             if(eat_ent > 0)
-                data.push({label: "Eat-out / Entertainment", count: eat_ent});
+                data2.push({label: "Eat-out / Entertainment", count: eat_ent});
             if(gas > 0)
-                data.push({label: "Gas", count: gas});
+                data2.push({label: "Gas", count: gas});
             if(tax_prep > 0)
-                data.push({label: "Tax prep fee", count: tax_prep});
+                data2.push({label: "Tax prep fee", count: tax_prep});
             if(rent > 0)
-                data.push({label: "Rent", count: rent});
+                data2.push({label: "Rent", count: rent});
             if(transit > 0)
-                data.push({label: "Public transit", count: transit});
+                data2.push({label: "Public transit", count: transit});
             if(organic > 0)
-                data.push({label: "Buying organic", count: organic});
+                data2.push({label: "Buying organic", count: organic});
             if(pet > 0)
-                data.push({label: "Pet fees", count: pet});
+                data2.push({label: "Pet fees", count: pet});
             if(pool > 0)
-                data.push({label: "Pool fees", count: pool});
+                data2.push({label: "Pool fees", count: pool});
             if(depression > 0)
-                data.push({label: "Depression services", count: depression});
+                data2.push({label: "Depression services", count: depression});
             if(loans > 0)
-                data.push({label: "Min Loan Payments", count: loans});
+                data2.push({label: "Min Loan Payments", count: loans});
             
             var svg = d3.select('#expenses')
             .append('svg')
@@ -258,7 +257,7 @@
             .attr('class', 'percent');  
 
             var path = svg.selectAll('path')
-            .data(pie(data))
+            .data(pie(data2))
             .enter()
             .append('path')
             .attr('d', arc)
@@ -267,7 +266,7 @@
             });
 
             path.on('mouseover', function(d) {                            
-                var total = d3.sum(data.map(function(d) {                
+                var total = d3.sum(data2.map(function(d) {                
                 return d.count;                                           
                 }));                                                        
                 var percent = Math.round(1000 * d.data.count / total) / 10; 

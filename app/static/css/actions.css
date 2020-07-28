@@ -288,3 +288,7 @@ button:disabled {
 #grad-school-6-label {
     color: rgb(241, 139, 99);
 }
+
+.yrs-wait {
+    font-size: 35px;
+}

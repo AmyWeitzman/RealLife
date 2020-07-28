@@ -223,14 +223,18 @@
         }
 
         var num_people = parseFloat("{{ num_people }}");
+        var yrs_college = parseFloat("{{ player_info.num_yrs_college }}");
         var path = "{{ player_info.path }}";
         var job = "{{ player_info.job }}";
-        if(path != "college") {  // cannot have college vehicle
+        if((path != "college") || !((!player_info.mil_to_college) && (player_info.job == "None" || job.category == "job-in-college"))) {  // cannot have college vehicle
             document.getElementById('buy_Skateboard').disabled = true
             document.getElementById('buy_Bike').disabled = true
         }
-        if((path == "college") && (job != "None")) {  // only in college, cannot have job
+        if((path == "college") && (job != "None") && (yrs_college >= 2)) {  // only in college, cannot have job
             document.getElementById('buy_Skateboard').disabled = true
+        }
+        if((path == "college") && (job == "None") && (yrs_college >= 2)) {  // only in college, must have job
+            document.getElementById('buy_Bike').disabled = true
         }
 
         var money = parseFloat("{{ player_info.money }}");

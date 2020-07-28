@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_moment import Moment
+from flask_jsglue import JSGlue
 #from flask_socketio import SocketIO, emit
 
 app = Flask(__name__)
@@ -13,6 +14,7 @@ migrate = Migrate(app, db)
 login = LoginManager(app)
 login.login_view = 'home'
 moment = Moment(app)
+jsglue = JSGlue(app)
 #socketio = SocketIO(app)
 
 from app import routes, models

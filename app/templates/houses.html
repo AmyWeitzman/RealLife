@@ -304,9 +304,9 @@
         }
 
         cur_age = parseFloat("{{ player_info.age }}");
-        need_loan = "{{ player_info.need_loan }}";
+        need_loan = "{{ player_info.need_loan }}".toLowerCase() == "true" ? true : false;
         turn_num = parseFloat("{{ player_info.turn_num }}");
-        if((cur_age == 65) || (need_loan.toLowerCase() == "true") || (turn_num == -1)) {  // game over or force to get loan or game not started
+        if((cur_age == 65) || (need_loan) || (turn_num == -1)) {  // game over or force to get loan or game not started
             document.querySelectorAll('button').forEach(btn => {
                 btn.disabled = true;
             });
