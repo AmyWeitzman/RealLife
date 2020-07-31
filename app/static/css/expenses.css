@@ -5,7 +5,7 @@ table {
 }
   
 td {
-    border: 2px solid black;
+    border: 5px solid lightskyblue;
     font-size: 20px;
     text-align: center;
     padding: 5px;
@@ -13,9 +13,10 @@ td {
 
 th {
     font-size: 25px; 
-    border: black 2px solid;
+    border: lightskyblue 5px solid;
     padding: 5px;
-    background-color: lightskyblue;
+    background-color: indigo;
+    color: white;
     text-align: center;
 }
 
@@ -25,11 +26,12 @@ th {
     margin: 10px;
     text-align: center;
     background-color: white;
+    color: black;
     border: none;
 }
 
 .total-col {
-    border: 3px black solid;
+    border: 7px lightskyblue solid;
 }
 
 button {
@@ -70,18 +72,18 @@ p {
 
 .type {
     width: 150px;
-    background-color: lightgray;
+    background-color: rgb(223, 222, 222);
     font-weight: bold;
 }
 
 .amount {
     width: 180px;
     background-color: lightgray;
-    border: 3px black solid;
+    border: 7px solid lightskyblue;
 }
 
 .tax-break {
-    background-color: lightsteelblue;
+    background-color: rgb(159, 238, 166);
 }
 
 button:disabled {
@@ -251,7 +253,8 @@ option {
 }
 
 .test {
-    background-color: darkgray;
+    background-color: rgb(46, 46, 46);
+    color: white;
     text-align: left;
 }
 

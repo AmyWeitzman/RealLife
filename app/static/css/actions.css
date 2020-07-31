@@ -9,6 +9,7 @@ td {
     font-size: 20px;
     text-align: left;
     padding-top: 10px;
+    color: black;
 }
 
 caption {
@@ -279,14 +280,17 @@ button:disabled {
 
 #grad-school-1-label {
     color: gold;
+    font-weight: bold;
 }
 
 #grad-school-2-label {
     color: #a859e4;
+    font-weight: bold;
 }
 
 #grad-school-6-label {
     color: rgb(241, 139, 99);
+    font-weight: bold;
 }
 
 .yrs-wait {
@@ -305,3 +309,16 @@ button:disabled {
     background-color: rgb(240, 152, 152);
 }
 
+#dark-mode {
+    background-color: lightskyblue;
+}
+
+#dark-mode td {
+    border: white 5px solid;
+}
+
+.col-titles {
+    background-color: indigo;
+    color: white;
+    border: white 5px solid;
+}

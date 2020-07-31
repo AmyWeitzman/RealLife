@@ -42,7 +42,7 @@
             </form>
             {% endif %}
         {% endif %}
-        {% if player_info.num_yrs_college == 5 and not player_info.grad_college %}
+        {% if player_info.num_yrs_college == 5 and not player_info.grad_college and not player_info.clicked_button %}
         <form action="{{ url_for('graduate') }}">
             <button type="submit" class="graduate-button detail">Graduate</button>
         </form>
@@ -50,7 +50,7 @@
             <button type="submit" class="grad-school-button detail">Grad School</button>
         </form>
         {% endif %}
-        {% if player_info.grad_school and player_info.num_yrs_grad_school == 2 and not player_info.done_grad_1 %}
+        {% if player_info.grad_school and player_info.num_yrs_grad_school == 2 and not player_info.done_grad_1 and not player_info.clicked_button %}
         <form action="{{ url_for('graduate') }}">
             <button type="submit" class="graduate-button detail">Graduate</button>
         </form>
@@ -58,7 +58,7 @@
             <button type="submit" class="continue-grad-btn detail">Continue Grad School</button>
         </form>
         {% endif %}
-        {% if player_info.num_yrs_grad_school == 3 and not player_info.done_grad_2 %}
+        {% if player_info.num_yrs_grad_school == 3 and not player_info.done_grad_2 and not player_info.clicked_button %}
         <form action="{{ url_for('graduate') }}">
             <button type="submit" class="graduate-button detail">Graduate</button>
         </form>
@@ -115,7 +115,13 @@
             <td class="field-name"><label class="field-label yellow">Salary</label></td>
             <td class="field-val"><label class="black-border">{{ "{:,.0f}".format(player_info.current_salary) }}</label></td>
             <td class="field-name"><label class="field-label yellow">Raise</label></td>
-            <td class="field-val"><label class="black-border">{{ "N/A" if player_info.cur_time_til_raise == 0 else "in {{ player_info.cur_time_til_raise }} {{ yr if player_info.cur_time_til_raise == 1 else yrs" }}</label></td>
+            {% if player_info.cur_time_til_raise == 0 %}
+            <td class="field-val"><label class="black-border">{{ "N/A" }}</label></td>
+            {% elif player_info.cur_time_til_raise == 1 %}
+            <td class="field-val"><label class="black-border">in {{ player_info.cur_time_til_raise }} yr</label></td>
+            {% else %}
+            <td class="field-val"><label class="black-border">in {{ player_info.cur_time_til_raise }} yrs</label></td>
+            {% endif %}
         </tr>
         <tr>
             <td class="field-name"><label class="field-label red">Car</label></td>

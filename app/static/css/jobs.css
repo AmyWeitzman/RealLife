@@ -62,7 +62,7 @@ table {
 }
   
 td {
-    border: 2px solid black;
+    border: 5px solid indigo;
     padding: 10px;
     font-size: 25px;
     text-align: center;
@@ -79,10 +79,11 @@ td {
 
 th {
     font-size: 25px !important; 
-    border: black 2px solid;
+    border: indigo 5px solid;
     padding: 5px;
-    background-color: lightgray;
+    background-color: lightskyblue;
     text-align: center !important;
+    color: indigo;
 }
 
 .legend {

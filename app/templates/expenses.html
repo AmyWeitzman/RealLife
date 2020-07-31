@@ -120,9 +120,7 @@
                 <p id="tax-20">income < $80,000: 20%</p>
                 <p id="tax-30">income < $200,000: 30%</p>
                 <p id="tax-40">income >= $200,000: 40%</p>
-                {% if player_info.job == "Accountant" %}
-                <p class="once">* Accountant does not pay taxes</p>
-                {% elif player_info.married %}
+                {% if player_info.married %}
                 <p class="once">* 50% off since married</p>
                 {% endif %}
             </td>
@@ -329,7 +327,7 @@
                 {% if rent != 0 %}
                 <p>Rent: Single person houses are for annual rent</p>
                 {% endif %}
-                {% if car == "Public Transit" %}
+                {% if my_car == "Public Transit" %}
                 <p>Public Transit: cost is annual fee</p>
                 {% endif %}
                 {% if player_info.buying_organic %}
@@ -379,7 +377,7 @@
                 {% if rent != 0 %}
                 <p class="loss">Rent: ${{ "{:,.0f}".format(rent) }}</p>
                 {% endif %}
-                {% if car == "Public Transit" %}
+                {% if my_car == "Public Transit" %}
                 <p class="loss">Public Transit: ${{ "{:,.0f}".format(transit_fee) }}</p>
                 {% endif %}
                 {% if player_info.buying_organic %}
@@ -429,9 +427,9 @@
             <td class="details">
             </td>
             <td>
-                <p>$500 per child until first child turns 18</p>
+                <p>$500 per child until child turns 18</p>
             </td>
-            <td class="amount tax-break">$<span id="tax-break-val">{{ '{:,.0f}'.format(500 * player_info.num_kids if player_info.oldest_child_age < 18 else 0) }}</span></td>
+            <td class="amount tax-break">$<span id="tax-break-val">{{ '{:,.0f}'.format(tax_break) }}</span></td>
         </tr>
         <tr>
             <td class="last-row" colspan="5">
@@ -536,7 +534,7 @@
             tax_break = parseFloat(document.getElementById("tax-break-val").innerHTML.replace(/,/g, ''));
             loans_payment = parseFloat(document.getElementById("pay-loans").value.replace(/,/g, ''));
 
-            salary -= misc_fees;
+            //salary -= misc_fees;
 
             // do not want expenses calculated with NaN, cannot pay more than current money for total loan payments
             if(isNaN(loans_payment))

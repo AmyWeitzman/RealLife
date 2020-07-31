@@ -2,13 +2,13 @@
 
 {% block content %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/actions.css') }}">
-    <table>
+    <table id="dark-mode">
         <tr><th id="table-title" colspan="4">ACTIONS</th></tr>
         <tr>
-            <th>Action</th>
-            <th>Yrs Wait</th>
-            <th>Details</th>
-            <th>Prerequisites</th>
+            <th class="col-titles">Action</th>
+            <th class="col-titles">Yrs Wait</th>
+            <th class="col-titles">Details</th>
+            <th class="col-titles">Prerequisites</th>
         </tr>
         <tr>
             <td class="action-button">

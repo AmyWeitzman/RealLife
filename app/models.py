@@ -34,6 +34,7 @@ class Player_Info(db.Model):
     picked_card = db.Column(db.Boolean, default=False)
     done_action = db.Column(db.Boolean, default=False)
     end_of_year = db.Column(db.Boolean, default=False)
+    clicked_button = db.Column(db.Boolean, default=False)
     jobs_page_type = db.Column(db.String(20), default="all")
     notes1 = db.Column(db.String(255), default="To-Do:")
     notes2 = db.Column(db.String(255), default="To-Do:")

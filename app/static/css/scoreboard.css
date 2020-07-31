@@ -6,7 +6,7 @@ table {
 }
   
 td {
-    border: 2px solid black;
+    border: 5px solid lightskyblue;
     padding: 10px;
     font-size: 25px;
     text-align: center;
@@ -23,9 +23,9 @@ td {
 
 th {
     font-size: 25px !important; 
-    border: black 2px solid;
+    border: indigo 5px solid;
     padding: 5px;
-    background-color: lightskyblue;
+    background-color: white;
     text-align: center !important;
 }
 
