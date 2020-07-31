@@ -20,33 +20,50 @@
         {% if game.roll_order and (game.cur_turn == player_info.turn_num) and not player_info.ready %}
         <form action="{{ url_for('set_ready') }}">
             <p class="detail set-up"><b>Set up:</b></p>
-            <label for="pick-job" class="detail set-up">Pick Job</label>
-            <label for="pick-car" class="detail set-up">Pick Vehicle</label>
+            <label for="pick-job" class="detail set-up"><a href="{{ url_for('jobs') }} " id='pick-job-ready'>Pick Job</a></label>
+            <label for="pick-car" class="detail set-up"><a href="{{ url_for('vehicles') }}" id='pick-car-ready'>Pick Vehicle</a></label>
             <button type="submit" id="ready-button" class="detail">READY</button>
         </form>
         {% endif %}
-        {% if player_info.num_yrs_college == 3 and not player_info.grad_college and player_info.done_action %}
+        {% if player_info.mil_to_college and player_info.mil_start_college == 0 %}
+            {% if player_info.job == "Military" %}
+            <form action="{{ url_for('jobs') }}">
+                <button type="submit" id="mil-to-college-job-button" class="detail">Job</button>
+            </form>
+            {% endif %}
+            {% if player_info.car == "None" %}
+            <form action="{{ url_for('vehicles') }}">
+                <button type="submit" id="mil-to-college-car-button" class="detail">Vehicle</button>
+            </form>
+            {% endif %}
+            {% if player_info.house == "None" %}
+            <form action="{{ url_for('houses') }}">
+                <button type="submit" id="mil-to-college-house-button" class="detail">House</button>
+            </form>
+            {% endif %}
+        {% endif %}
+        {% if player_info.num_yrs_college == 5 and not player_info.grad_college %}
         <form action="{{ url_for('graduate') }}">
-            <button type="submit" id="ready-button" class="detail">Graduate</button>
+            <button type="submit" class="graduate-button detail">Graduate</button>
         </form>
         <form action="{{ url_for('go_to_grad_school') }}">
-            <button type="submit" id="ready-button" class="detail">Grad School</button>
+            <button type="submit" class="grad-school-button detail">Grad School</button>
         </form>
         {% endif %}
-        {% if player_info.grad_school and player_info.num_yrs_grad_school == 0 and not player_info.done_grad_1 and player_info.done_action %}
+        {% if player_info.grad_school and player_info.num_yrs_grad_school == 2 and not player_info.done_grad_1 %}
         <form action="{{ url_for('graduate') }}">
-            <button type="submit" id="ready-button" class="detail">Graduate</button>
+            <button type="submit" class="graduate-button detail">Graduate</button>
         </form>
         <form action="{{ url_for('continue_grad_school') }}">
-            <button type="submit" id="ready-button" class="detail">Continue Grad School</button>
+            <button type="submit" class="continue-grad-btn detail">Continue Grad School</button>
         </form>
         {% endif %}
-        {% if player_info.num_yrs_grad_school == 1 and not player_info.done_grad_2 and player_info.done_action %}
+        {% if player_info.num_yrs_grad_school == 3 and not player_info.done_grad_2 %}
         <form action="{{ url_for('graduate') }}">
-            <button type="submit" id="ready-button" class="detail">Graduate</button>
+            <button type="submit" class="graduate-button detail">Graduate</button>
         </form>
         <form action="{{ url_for('continue_grad_school') }}">
-            <button type="submit" id="ready-button" class="detail">Continue Grad School</button>
+            <button type="submit" class="continue-grad-btn detail">Continue Grad School</button>
         </form>
         {% endif %}
         {% if announcements %}
@@ -54,23 +71,36 @@
             <h3 class="detail announcement {{ level }}">{{ announcement }}</h3>
         {% endfor %}
         {% endif %}
+        {% if player_info.end_of_year %}
+        <td id="side-button-cell" colspan="2">
+            <form action="{{ url_for('expenses', testing='false', data='none') }}">
+                <button type="submit" id="end-of-year-button">End of Year</button>
+            </form>
+        </td>
+        {% endif %}
     {% endif %}
     </div>
-    <table>
+    <table id="player-info-table">
         <tr>
-            <td class="field-name gray">Name</td><td class="field-val">{{ name }}</td>
-            <td class="field-name gray">Age</td><td class="field-val">{{ player_info.age }}</td>
+            <td class="field-name"><label class="field-label gray">Name</label></td>
+            <td class="field-val"><label class="black-border">{{ name }}</label></td>
+            <td class="field-name"><label class="field-label gray">Age</label></td>
+            <td class="field-val"><label class="black-border">{{ player_info.age }}</label></td>
             {% if player_info.points < 0 %}
-            <td class="field-name green">Points</td><td class="field-val negative">{{ "{:,.0f}".format(player_info.points) }}</td>
+            <td class="field-name"><label class="field-label green">Points</label></td>
+            <td class="field-val negative"><label class="black-border">{{ "{:,.0f}".format(player_info.points) }}</label></td>
             {% else %}
-            <td class="field-name green">Points</td><td class="field-val">{{ "{:,.0f}".format(player_info.points) }}</td>
+            <td class="field-name"><label class="field-label green">Points</label></td>
+            <td class="field-val"><label class="black-border">{{ "{:,.0f}".format(player_info.points) }}</label></td>
             {% endif %}
             {% if (player_info.money < 0) or ((player_info.money - loans_int) < 0) %}
-            <td class="field-name green">$$$</td><td class="field-val negative">{{ "{:,.0f}".format(player_info.money) }}</td>
+            <td class="field-name"><label class="field-label green">$$$</label></td>
+            <td class="field-val negative"><label class="black-border">{{ "{:,.0f}".format(player_info.money) }}</label></td>
             {% else %}
-            <td class="field-name green">$$$</td><td class="field-val">{{ "{:,.0f}".format(player_info.money) }}</td>
+            <td class="field-name"><label class="field-label green">$$$</label></td>
+            <td class="field-val"><label class="black-border">{{ "{:,.0f}".format(player_info.money) }}</label></td>
             {% endif %}
-            <td id="side-button-cell" rowspan="2" colspan="2">
+            <td id="side-button-cell" rowspan="2" colspan="2" class="card-cell">
                 <form action="{{ url_for('go_to_card') }}" id="card-form">
                     <input hidden name="card" value="{{ player_info.last_card }}">
                     <button type="submit" id="card">{{ player_info.last_card }}</button>
@@ -78,17 +108,29 @@
             </td>
         </tr>
         <tr>
-            <td class="field-name yellow">Job</td><td class="field-val">{{ player_info.job }}</td>
-            <td class="field-name yellow">Current Salary</td><td class="field-val">{{ "{:,.0f}".format(player_info.current_salary) }}</td>
-            <td class="field-name yellow" data-toggle="tooltip" title="income < $40,000: 10% &#013income < $80,000: 20% &#013income < $200,000: 30% &#013income >= $200,000: 40%">Taxes</td><td class="field-val">{{ "{:,.0f}".format(taxes) }}</td>
-            <td class="field-name yellow">Yrs Until Raise</td><td class="field-val">{{ player_info.cur_time_til_raise }}</td>
+            <td class="field-name"><label class="field-label yellow">Path</label></td>
+            <td class="field-val"><label class="black-border">{{ player_info.path }}</label></td>
+            <td class="field-name"><label class="field-label yellow">Job</label></td>
+            <td class="field-val"><label class="black-border">{{ player_info.job }}</label></td>
+            <td class="field-name"><label class="field-label yellow">Salary</label></td>
+            <td class="field-val"><label class="black-border">{{ "{:,.0f}".format(player_info.current_salary) }}</label></td>
+            <td class="field-name"><label class="field-label yellow">Raise</label></td>
+            <td class="field-val"><label class="black-border">{{ "N/A" if player_info.cur_time_til_raise == 0 else "in {{ player_info.cur_time_til_raise }} {{ yr if player_info.cur_time_til_raise == 1 else yrs" }}</label></td>
         </tr>
         <tr>
-
-            <td class="field-name yellow">Path</td><td class="field-val">{{ player_info.path }}</td>
-            <td class="field-name red">Car</td><td class="field-val">{{ player_info.car }}</td>
-            <td class="field-name red">House</td><td class="field-val">{{ player_info.house }}</td>
-            <td class="field-name brown">Military Benefits</td><td class="field-val">{{ "yes" if benefits else "no" }}</td>
+            <td class="field-name"><label class="field-label red">Car</label></td>
+            <td class="field-val"><label class="black-border">{{ player_info.car }}</label></td>
+            <td class="field-name"><label class="field-label red">House</label></td>
+            <td class="field-val"><label class="black-border">{{ player_info.house }}</label></td>
+            <td class="field-name" data-toggle="tooltip" data-html="true" title="interest rate = 10% <br> auto pay 0.5% back per yr <br>lose (loans / 10,000) pts/yr"><label class="field-label purple">Loans</label></td>
+            <td class="field-val"><label class="black-border">{{ "{:,.0f}".format(loans_int) }}</label></td>
+            <td id="side-button-cell" colspan="2" class=""><label class="rounded purple">
+                <form action="{{ url_for('get_loan') }}" id="loans-form">
+                    <p id='dollar-sign'>$</p>
+                    <input id="loan-amount" name="amount">
+                    <button type="submit" id="get-loan-button">Loan</button><br>
+                </form></label>
+            </td>
             <td id="side-button-cell" colspan="2">
                 <form action="{{ url_for('pick_card', game_id=game.id) }}">
                     <button type="submit" id="pick-card-button">Pick Card</button>
@@ -96,40 +138,20 @@
             </td>
         </tr>
         <tr>
-            <td class="field-name blue">Married</td><td class="field-val">{{ "yes" if player_info.married else "no" }}</td>
-            <td class="field-name blue"># Kids</td><td class="field-val">{{ player_info.num_kids }}</td>
-            <td class="field-name blue"># People</td><td class="field-val">{{ num_people }}</td>
-            <td class="field-name blue">Kids' Ages</td><td class="field-val">{{ ", ".join(player_info.kids_ages.split(";")) }}</td>
+            <td class="field-name"><label class="field-label blue">People</label></td>
+            <td class="field-val"><label class="black-border">{{ num_people }}</label></td>
+            <td class="field-name"><label class="field-label blue">Married</label></td>
+            <td class="field-val"><label class="black-border">{{ "yes" if player_info.married else "no" }}</label></td>
+            <td class="field-name"><label class="field-label blue">Kids</label></td>
+            <td class="field-val"><label class="black-border">{{ player_info.num_kids }}</label></td>
+            <td class="field-name"><label class="field-label blue">Ages</label></td>
+            <td class="field-val"><label class="black-border">{{ ", ".join(player_info.kids_ages.split(";")) }}</label></td>
             <td id="side-button-cell" colspan="2">
                 <form action="{{ url_for('actions') }}">
                     <button type="submit" id="do-action-button">Action</button>
                 </form>
                 <form action="{{ url_for('no_action') }}">
                     <button type="submit" id="no-action-button">No Action</button>
-                </form>
-            </td>
-        </tr>
-        <tr>
-            <td class="field-name orange">Auto Insurance</td><td class="field-val">{{ "yes" if player_info.have_auto_ins else "no" }}</td>
-            <td class="field-name orange">Health Insurance</td><td class="field-val">{{ "yes" if player_info.have_health_ins else "no" }}</td>
-            <td class="field-name orange">Home Insurance</td><td class="field-val">{{ "yes" if player_info.have_home_ins else "no" }}</td>
-            <td class="field-name orange">Pet</td><td class="field-val">{{ "yes" if player_info.have_pet else "no" }}</td>
-            <td id="side-button-cell" colspan="2">
-                <form action="{{ url_for('expenses', testing='false', data='none') }}">
-                    <button type="submit" id="end-of-year-button">End of Year</button>
-                </form>
-            </td>
-        </tr>
-        <tr>
-            <td class="field-name purple">College Loans</td><td class="field-val">{{ "{:,.0f}".format(player_info.college_loans) }}</td>
-            <td class="field-name purple" data-toggle="tooltip" title="within 5 yrs after grad: 5% &#013within 10 yrs after grad: 10% &#013over 10 yrs after grad: 20%">College Loans + Interest</td><td class="field-val">{{ "{:,.0f}".format(college_loan_int) }}</td>
-            <td class="field-name purple">Loans</td><td class="field-val">{{ "{:,.0f}".format(player_info.loans) }}</td>
-            <td class="field-name purple">Loans + Interest</td><td class="field-val">{{ "{:,.0f}".format(loans_int) }}</td>
-            <td id="side-button-cell" colspan="2">
-                <form action="{{ url_for('get_loan') }}">
-                    <p id='dollar-sign'>$</p>
-                    <input id="loan-amount" name="amount">
-                    <button type="submit" id="get-loan-button">Loan</button><br>
                 </form>
             </td>
         </tr>
@@ -140,7 +162,7 @@
             <tr>
                 <td class="sticky-note">
                     <form action="{{ url_for('save_notes', notepad=1) }}">
-                        <textarea rows=10 cols=25 maxlength="255" id="notepad1" name="notepad">{{ player_info.notes1 }} </textarea>
+                        <textarea rows=10 cols=25 maxlength="255" id="notepad1" name="notepad" oninput="{{ url_for('save_notes', notepad=1) }}">{{ player_info.notes1 }} </textarea>
                         <button type="submit" class="save-note-button">SAVE</button>
                     </form>
                 </td>
@@ -166,6 +188,9 @@
         </table>
     </div>
     <script>
+        function save1() {
+            console.log("here");
+        }
         // window.onbeforeunload = function(e) {
         //     note1 = document.getElementById('notepad1').value;
         //     note2 = document.getElementById('notepad2').value;
@@ -181,6 +206,24 @@
         $(document).ready(function(){
             $('[data-toggle="tooltip"]').tooltip();
         });
+
+        job = "{{ player_info.job }}";
+        car = "{{ player_info.car }}";
+        pick_job_ready = document.getElementById('pick-job-ready');
+        if(pick_job_ready && (job == "None") && (car != "Skateboard"))
+            pick_job_ready.classList.add('announcement-link');
+        else if(pick_job_ready && ((job != "None") || (car == "Skateboard"))) {
+            pick_job_ready.classList.remove('announcement-link');
+            pick_job_ready.classList.add('link-done');
+        }
+        
+        pick_car_ready = document.getElementById('pick-car-ready');
+        if(pick_car_ready && (car == "None") && (job != "Mlitary"))
+            pick_car_ready.classList.add('announcement-link');
+        else if (pick_car_ready && (car != "None")) {
+            pick_car_ready.classList.remove('announcement-link');
+            pick_car_ready.classList.add('link-done');
+        }
 
         cur_age = parseFloat("{{ player_info.age }}");
         game_started = "{{ game.roll_order }}";
@@ -207,6 +250,11 @@
             document.getElementById('end-of-year-button').disabled = true;
             document.getElementById('college-button').disabled = true;
         }
+        
+        cur_turn = parseInt("{{ cur_turn }}");
+        turn_num = parseInt("{{ player_info.turn_num }}");
+        if(cur_turn != turn_num)
+            document.getElementById('pick-card-button').disabled = true;
 
         picked_card = "{{ player_info.picked_card }}";
         done_action = "{{ player_info.done_action }}";
@@ -215,7 +263,12 @@
         if(picked_card.toLowerCase() == "true") {
             document.getElementById('pick-card-button').disabled = true;
             document.getElementById('do-action-button').disabled = false;
-            document.getElementById('no-action-button').disabled = false;
+
+            disable_no_action = "{{ player_info.disable_no_action }}".toLowerCase() == "true" ? true : false;
+            if(disable_no_action) 
+                document.getElementById("no-action-button").disabled = true;
+            else
+                document.getElementById('no-action-button').disabled = false;
         }
         else if((ready_to_start.toLowerCase() == "false")) {    // game not started yet
             document.getElementById('pick-card-button').disabled = true;
@@ -233,11 +286,14 @@
             document.getElementById('no-action-button').disabled = true;
         }
 
-        if(end_of_year.toLowerCase() == "true") {
-            document.getElementById('end-of-year-button').disabled = false;
-        }
-        else {
-            document.getElementById('end-of-year-button').disabled = true;
+        end_of_year_btn = document.getElementById('end-of-year-button')
+        if(end_of_year_btn) {
+            if(end_of_year.toLowerCase() == "true") {
+                end_of_year_btn.disabled = false;
+            }
+            else {
+                end_of_year_btn.disabled = true;
+            }
         }
 
     </script>

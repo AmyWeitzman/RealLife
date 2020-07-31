@@ -68,14 +68,14 @@
                         <select name="car" id="car-from" class="dropdown" onchange="updateCarPoints()">
                             <option value="{{ car.name }}" selected>{{ car.name }}</option>
                             {% for car in cars %}
-                            <option value="{{ car.name }}">{{ car.name }}</option>
+                            <option value="{{ car.name }}" class="{{ car.category }}">{{ car.name }}</option>
                             {% endfor %}
                         </select><br>
                     <label id="label-to"><b>To:</b></label>
                         <select name="car" id="car-to" class="dropdown" onchange="updateCarPoints()">
                             <option value="{{ car.name }}" selected>{{ car.name }}</option>
                             {% for car in cars %}
-                            <option value="{{ car.name }}">{{ car.name }}</option>
+                            <option value="{{ car.name }}" class="{{ car.category }}">{{ car.name }}</option>
                             {% endfor %}
                         </select>
                     <label>receive <span id="car-change-points">0</span> points</label>
@@ -109,14 +109,14 @@
                         <select name="house" id="house-from" class="dropdown" onchange="updateHousePoints()">
                             <option value="{{ house.name }}" selected>{{ house.name }}</option>
                             {% for house in houses %}
-                            <option value="{{ house.name }}">{{ house.name }}</option>
+                            <option value="{{ house.name }}" class="{{ house.category }}">{{ house.name }}</option>
                             {% endfor %}
                         </select><br>
                     <label id="label-to"><b>To:</b></label>
                         <select name="house" id="house-to" class="dropdown" onchange="updateHousePoints()">
                             <option value="{{ house.name }}" selected>{{ house.name }}</option>
                             {% for house in houses %}
-                            <option value="{{ house.name }}">{{ house.name }}</option>
+                            <option value="{{ house.name }}" class="{{ house.category }}">{{ house.name }}</option>
                             {% endfor %}
                         </select>
                     <label>receive <span id="house-change-points">0</span> points</label>
@@ -364,19 +364,25 @@
             <td>
                 <ul>
                     {% if can_go_to_college %}
-                    <li>go to 4 yr college</li>  
-                    <span class="once">* eligible for scholarships but not parent contribution</span>
-                    {% if not (player_info.path == "military") %}
-                    <p class="once">* keep current job part-time for half salary</p> 
-                    {% else %}
-                    <p class="once">* if desired, can get regular job part-time for half salary</p>
-                    {% endif %}
+                        <li>go to 4 yr college</li>  
+                        <span class="once">* eligible for scholarships but not parent contribution</span><br>
+                        {% if not (player_info.path == "military") %}
+                        <span class="once">* keep current job part-time for half salary</span><br> 
+                        {% else %}
+                        <span class="once">* must get regular job part-time for half salary</span><br>
+                        {% endif %}
+                        {% if player_info.path == "military" and player_info.car == "None" %}
+                        <span class="once">* must get vehicle</span><br>
+                        {% endif %}
+                        {% if player_info.path == "military" and player_info.house == "None" %}
+                        <span class="once">* must get house</span><br>
+                        {% endif %}
                     {% endif %}
                     {% if can_go_to_grad_school %}
                     <li>go to grad school, can graduate after 1, 2, or 6 yrs</li> 
                     <i>see jobs page for career options</i>
-                    <p class="once">* eligible for scholarships but not parent contribution</p>
-                    <p class="once">* keep current job part-time for half salary</p>
+                    <span class="once">* eligible for scholarships but not parent contribution</span><br>
+                    <span class="once">* keep current job part-time for half salary</span>
                     {% endif %}
                 </ul>
             </td>
@@ -506,6 +512,11 @@
                 document.getElementById(key).disabled = true;
             }
         }
+
+        // car =  "{{ car }}";
+        // yrs_college = parseFloat("{{ player_info.yrs_college }}");
+        // if(((car == "Skateboard") || (car == "Bike")) && (yrs_college >= 2))
+        //     document.getElementById('change_car').disabled = false;
 
         function updateCarPoints() {
             car_from =  document.getElementById("car-from").value;

@@ -15,12 +15,12 @@
                 <form action="{{ url_for('filter_jobs') }}">
                     <select name="job-types" id="jobs-dropdown" class="filter-dropdown" onchange="this.form.submit()">
                         <option value="all" id="type-all">all</option>
-                        <option value="job-in-college" id="type-job-in-college">job in college</option>
-                        <option value="regular" id="type-regular">regular</option>
-                        <option value="college-grad" id="type-college-grad">college grad</option>
-                        <option value="grad-school-1" id="type-grad-school-1">grad school (1 yr)</option>
-                        <option value="grad-school-2" id="type-grad-school-2">grad school (2 yrs)</option>
-                        <option value="grad-school-6" id="type-grad-school-6">grad school (6 yrs)</option>
+                        <option value="job-in-college" id="type-job-in-college" class="job-in-college">job in college</option>
+                        <option value="regular" id="type-regular" class="regular">regular</option>
+                        <option value="college-grad" id="type-college-grad" class="college-grad">college grad</option>
+                        <option value="grad-school-1" id="type-grad-school-1" class="grad-school-1">grad school (1 yr)</option>
+                        <option value="grad-school-2" id="type-grad-school-2" class="grad-school-2">grad school (2 yrs)</option>
+                        <option value="grad-school-6" id="type-grad-school-6" class="grad-school-6">grad school (6 yrs)</option>
                     </select>
                 </form>
             </td>
@@ -717,26 +717,26 @@
                     <div id="job-picker">
                         <select name="job-dropdown" id="job-dropdown">
                             <option value="default" selected disabled hidden>Choose type...</option>
-                            {% if player_info.age == 18 and player_info.path != "military" %}
-                            <option value="military">Military</option>
+                            {% if player_info.age == 18 and not player_info.ready %}
+                            <option value="military" class="military">Military</option>
                             {% endif %}
-                            {% if (not player_info.mil_to_college) and (player_info.job == "None" or job.category == "job-in-college") %}
-                            <option value="job-in-college">Job in College</option>
+                            {% if (player_info.start_college_beginning and player_info.path == "college") or (not player_info.ready)  %}
+                            <option value="job-in-college" class="job-in-college">Job in College</option>
                             {% endif %}
-                            {% if (not player_info.ready) or not ((player_info.path == "college") and (player_info.job == "None" or job.category == "job-in-college")) %}
-                            <option value="regular">Regular</option>
+                            {% if not (player_info.start_college_beginning and player_info.path == "college") %}
+                            <option value="regular" class="regular">Regular</option>
                             {% endif %}
                             {% if player_info.num_yrs_college == 4 %}
-                            <option value="college-grad">College Graduate</option>
+                            <option value="college-grad" class="college-grad">College Graduate</option>
                             {% endif %}
                             {% if player_info.done_grad_1 %}
-                            <option value="grad-school-1">Grad School (1 yr)</option>
+                            <option value="grad-school-1" class="grad-school-1">Grad School (1 yr)</option>
                             {% endif %}
                             {% if player_info.done_grad_2 %}
-                            <option value="grad-school-2">Grad School (2 yr)</option>
+                            <option value="grad-school-2" class="grad-school-2">Grad School (2 yr)</option>
                             {% endif %}
                             {% if player_info.done_grad_6 %}
-                            <option value="grad-school-6">Grad School (6 yr)</option>
+                            <option value="grad-school-6" class="grad-school-6">Grad School (6 yr)</option>
                             {% endif %}
                         </select>
                         <button type="submit" id="pick-job-button">Choose Job</button>
@@ -755,6 +755,7 @@
         </tr>
     </table>
     <script type="text/javascript">
+    console.log('{{ player_info.path }}')
         category = '{{ category }}';
         switch(category) {
             case "job-in-college":

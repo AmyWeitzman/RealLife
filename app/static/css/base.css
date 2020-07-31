@@ -4,12 +4,16 @@ body {
 }
 
 .nav-link {
-    float: left;
-    margin-left: 50px;
+    /* float: left; */
+     /* margin-left: 2%;   */
     font-size: 20px;
     padding: 10px;
     background-color: indigo;
     border-radius: 25px;
+}
+
+#nav-container {
+    margin-bottom: 20px;
 }
 
 a {

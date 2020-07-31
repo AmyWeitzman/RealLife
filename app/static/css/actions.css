@@ -292,3 +292,15 @@ button:disabled {
 .yrs-wait {
     font-size: 35px;
 }
+
+.no-family {
+    background-color: rgb(245, 245, 198);
+}
+
+.small-family {
+    background-color: rgb(200, 200, 228);
+}
+
+.large-family {
+    background-color: rgb(240, 152, 152);
+}

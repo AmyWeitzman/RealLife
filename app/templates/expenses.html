@@ -31,7 +31,7 @@
                     <select name="job" id="job" class="dropdown">
                         <option value="{{ player_info.job }}">{{ player_info.job }}</option>
                         {% for job in jobs %}
-                        <option value="{{ job.title }}">{{ job.title }}</option>
+                        <option value="{{ job.title }}" class="{{ job.category }}">{{ job.title }}</option>
                         {% endfor %}
                     </select><br>
 
@@ -39,7 +39,7 @@
                     <select name="house" id="house" class="dropdown" onchange="updateTestOptions()">
                         <option value="{{ player_info.house }}">{{ player_info.house }}</option>
                         {% for house in houses %}
-                        <option value="{{ house.name }}">{{ house.name }}</option>
+                        <option value="{{ house.name }}" class="{{ house.category }}">{{ house.name }}</option>
                         {% endfor %}
                     </select><br>
                     {% if player_info.house == "None" %}
@@ -55,7 +55,7 @@
                     <select name="car" id="car" class="dropdown" onchange="updateTestOptions()">
                         <option value="{{ player_info.car }}">{{ player_info.car }}</option>
                         {% for car in cars %}
-                        <option value="{{ car.name }}">{{ car.name }}</option>
+                        <option value="{{ car.name }}" class="{{ car.category }}">{{ car.name }}</option>
                         {% endfor %}
                     </select><br>
                     {% if player_info.car == "None" %}
@@ -84,6 +84,14 @@
                     <label for="test-loan"><b>Loan:</b></label><br>
                     <b id="dollar-sign">$</b> <input type="text" class="textbox" name="test-loans-amount"><br>
 
+                    {% if benefits %}
+                    <input type="checkbox" name="test-benefits" class="checkbox" value="test-benefits" id="test-benefits-checkbox">
+                    <label for="test-benefits"><b>Military Benefits?</b></label><br>
+                    {% else %}
+                    <input type="checkbox" name="test-benefits" class="checkbox" value="test-benefits" id="test-benefits-checkbox" style="visibility: hidden;">
+                    <label for="test-benefits" style="visibility: hidden;"><b>Military Benefits?</b></label><br>
+                    {% endif %}
+
                     <button type="submit" id="start-test-button">TEST</button>
                 </form>
             </td>
@@ -108,14 +116,17 @@
                 </ul>
             </td>
             <td>
-                <span class="italic">see references chart</span>
+                <p id="tax-10">income < $40,000: 10%</p>
+                <p id="tax-20">income < $80,000: 20%</p>
+                <p id="tax-30">income < $200,000: 30%</p>
+                <p id="tax-40">income >= $200,000: 40%</p>
                 {% if player_info.job == "Accountant" %}
                 <p class="once">* Accountant does not pay taxes</p>
                 {% elif player_info.married %}
                 <p class="once">* 50% off since married</p>
                 {% endif %}
             </td>
-            <td class="amount">$<span id="taxes">{{ "{:,.0f}".format(taxes) }}</span></td>
+            <td class="amount">$-<span id="taxes">{{ "{:,.0f}".format(taxes) }}</span></td>
         </tr>
         <tr>
             <td class="type">Insurance</td>
@@ -149,9 +160,9 @@
                 </ul>
             </td>
             <td class="amount">
-                <p><b>auto:</b> $<span id="auto-ins-val">{{ '{:,.0f}'.format(auto_ins) }}</span></p>
-                <p><b>health:</b> $<span id="health-ins-val">{{ '{:,.0f}'.format(health_ins) }}</span></p>
-                <p><b>home:</b> $<span id="home-ins-val">{{ '{:,.0f}'.format(home_ins) }}</span></p>
+                <p><b>auto:</b> $-<span id="auto-ins-val">{{ '{:,.0f}'.format(auto_ins) }}</span></p>
+                <p><b>health:</b> $-<span id="health-ins-val">{{ '{:,.0f}'.format(health_ins) }}</span></p>
+                <p><b>home:</b> $-<span id="home-ins-val">{{ '{:,.0f}'.format(home_ins) }}</span></p>
             </td>
         </tr>
         <tr>
@@ -167,7 +178,7 @@
                 <p class="once">* college students get 50% off</p>
                 {% endif %}
             </td>
-            <td class="amount">$<span id="shopping">{{ '{:,.0f}'.format(shopping) }}</span></td>
+            <td class="amount">$-<span id="shopping">{{ '{:,.0f}'.format(shopping) }}</span></td>
         </tr>
         <tr>
             <td class="type">Car Maintenance</td>
@@ -182,7 +193,7 @@
                 <p class="once">* free for mechanic</p>
                 {% endif %}
             </td>
-            <td class="amount">$<span id="car-maintain">{{ '{:,.0f}'.format(car_maintenance) }}</span></td>
+            <td class="amount">$-<span id="car-maintain">{{ '{:,.0f}'.format(car_maintenance) }}</span></td>
         </tr>
         <tr>
             <td class="type">Maid Service</td>
@@ -197,7 +208,7 @@
                 <p class="once">* learned cleaning skills as janitor so no pay maid</p>
                 {% endif %}
             </td>
-            <td class="amount">$<span id="maid">{{ '{:,.0f}'.format(maid) }}</span></td>
+            <td class="amount">$-<span id="maid">{{ '{:,.0f}'.format(maid) }}</span></td>
         </tr>
         <tr>
             <td class="type">Utilities</td>
@@ -212,7 +223,7 @@
                 <p class="once">* {{ player_info.job }} gets 50% off</p>
                 {% endif %}
             </td>
-            <td class="amount">$<span id="utils">{{ '{:,.0f}'.format(utilities) }}</span></td>
+            <td class="amount">$-<span id="utils">{{ '{:,.0f}'.format(utilities) }}</span></td>
         </tr>
         <tr>
             <td class="type">Dental Fees</td>
@@ -224,7 +235,7 @@
                 <p class="once">* Dentist does not pay dental fees</p>
                 {% endif %}
             </td>
-            <td class="amount">$<span id="dental">{{ '{:,.0f}'.format(dental_fees) }}</span></td>
+            <td class="amount">$-<span id="dental">{{ '{:,.0f}'.format(dental_fees) }}</span></td>
         </tr>
         <tr>
             <td class="type">Eat-out / Entertainment</td>
@@ -241,7 +252,11 @@
                     <p class="once">* military benefits: 50% off</p>
                 {% endif %}
             </td>
-            <td class="amount">$<span id="eat-ent">{{ '{:,.0f}'.format(eat_ent) }}</span></td>
+            <td class="amount">$-<span id="eat-ent">{{ '{:,.0f}'.format(eat_ent) }}</span></td>
+            <td class="blank">
+                <p class="cur-status"><b>Current $$$:</b> {{ '{:,.0f}'.format(player_info.money) }}</p>
+                <p class="cur-status"><b>Current Points:</b> {{ '{:,.0f}'.format(player_info.points) }}</p>
+            </td>
         </tr>
         <tr>
             <td class="type">Gas</td>
@@ -256,7 +271,7 @@
                 <p class="once">* free for truck driver</p>
                 {% endif %}
             </td>
-            <td class="amount">$<span id="gas">{{ '{:,.0f}'.format(gas) }}</span></td>
+            <td class="amount">$-<span id="gas">{{ '{:,.0f}'.format(gas) }}</span></td>
         </tr>
         <tr>
             <td class="type">Tax Prep Fee</td>
@@ -268,7 +283,7 @@
                 <p class="once">* free for accountant</p>
                 {% endif %}
             </td>
-            <td class="amount">$<span id="tax-prep">{{ '{:,.0f}'.format(tax_prep) }}</span></td>
+            <td class="amount">$-<span id="tax-prep">{{ '{:,.0f}'.format(tax_prep) }}</span></td>
         </tr>
         <tr>
             <td class="type">Miscellaneous Points</td>
@@ -407,7 +422,7 @@
                 <p>Raise: salary -> $100,000</p>
                 {% endif %}
             </td>
-            <td class="amount">$<span id="misc-fees">{{ '{:,.0f}'.format(misc_fees) }}</span></td>
+            <td class="amount">$<span id="misc-fees">{{ '{:,.0f}'.format(-1 * misc_fees) }}</span></td>
         </tr>
         <tr>
             <td class="type tax-break">Tax Break</td>
@@ -421,14 +436,6 @@
         <tr>
             <td class="last-row" colspan="5">
             <form id="results-form" action="{{ url_for('end_of_year') }}">
-                <p class="college-loans-bg input-label" class="top-margin"><b>College Loans + Interest</b></p>
-                <p class="in-line loans-cur-val">${{ '{:,.0f}'.format(college_loans_int) }}</p>
-                {% if player_info.college_loans == 0 %}
-                    <b class="last-dollar-sign in-line">$</b> <input type="text" class="textbox in-line college-loans-bg" name="college-loans-amount" id="pay-college-loans" value="0" readonly>
-                {% else %}
-                    <b  class="last-dollar-sign in-line">$</b> <input type="text" class="textbox in-line college-loans-bg" name="college-loans-amount" id="pay-college-loans" onchange="updateExpenses()">
-                {% endif %}
-          
                 <p class="loans-bg input-label"><b>Loans + Interest</b></p>
                 <p class="in-line loans-cur-val">${{ '{:,.0f}'.format(loans_int - mandatory_loans) }}</p>
                 {% if my_loans == 0 %}
@@ -495,7 +502,6 @@
             ttraise = parseFloat("{{ player_info.cur_time_til_raise }}");
             path = "{{ player_info.path }}";
             job = "{{ player_info.job }}";
-            college_loans = parseFloat("{{ player_info.college_loans }}");
             real_loans = parseFloat("{{ player_info.real_loans }}");
             mandatory_loans = parseFloat("{{ mandatory_loans }}");
             if(job == "Teacher")
@@ -528,22 +534,17 @@
             misc_fees = parseFloat(document.getElementById("misc-fees").innerHTML.replace(/,/g, ''));
             tax_prep = parseFloat(document.getElementById("tax-prep").innerHTML.replace(/,/g, ''));
             tax_break = parseFloat(document.getElementById("tax-break-val").innerHTML.replace(/,/g, ''));
-            college_loans_payment = parseFloat(document.getElementById("pay-college-loans").value.replace(/,/g, ''));
             loans_payment = parseFloat(document.getElementById("pay-loans").value.replace(/,/g, ''));
 
             salary -= misc_fees;
 
             // do not want expenses calculated with NaN, cannot pay more than current money for total loan payments
-            if(isNaN(college_loans_payment))
-                college_loans_payment = 0;
             if(isNaN(loans_payment))
                 loans_payment = 0;
-            if(college_loans_payment > college_loans) 
-                loanPaymentError(true);
             if(loans_payment > (real_loans - mandatory_loans))
-                loanPaymentError(false);
+                loanPaymentError();  // cannot pay more than you owe for loans
       
-            expenses = taxes + auto_ins + health_ins + home_ins + shopping + car_maintain + maid + utils + dental + eat_ent + gas + misc_fees + tax_prep - tax_break + college_loans_payment + loans_payment;
+            expenses = taxes + auto_ins + health_ins + home_ins + shopping + car_maintain + maid + utils + dental + eat_ent + gas + misc_fees + tax_prep - tax_break + loans_payment;
         
             // Points
             job_stress = parseFloat(document.getElementById("job-stress").innerHTML);
@@ -557,11 +558,19 @@
             document.getElementById("total-expenses").value = parseFloat(expenses).toLocaleString('en');
             document.getElementById("net-earnings-val").value = parseFloat(net_earnings).toLocaleString('en');
 
-            if((college_loans_payment == 0) && (loans_payment == 0))
-                noLoanPaymentError(true, true);
-            else if((money + net_earnings < 0) || ((money + net_earnings > 0) && ((college_loans_payment + loans_payment) > (money + net_earnings)))) {
-                loanPaymentError(true);
-                loanPaymentError(false);
+            if(taxes < 40000)
+                document.getElementById("tax-10").setAttribute('style', 'font-weight: bold;');
+            else if(taxes < 80000)
+                document.getElementById("tax-20").setAttribute('style', 'font-weight: bold;');
+            else if(taxes < 200000)
+                document.getElementById("tax-30").setAttribute('style', 'font-weight: bold;');
+            else
+                document.getElementById("tax-40").setAttribute('style', 'font-weight: bold;');
+
+            if(loans_payment == 0)
+                noLoanPaymentError();  // no error if not paying back any loan
+            else if((money + net_earnings < 0) || ((money + net_earnings > 0) && (loans_payment > (money + net_earnings)))) {
+                loanPaymentError();    // error if paying more than current money
             }
 
             function updateExpenses() {
@@ -579,36 +588,38 @@
                 misc_fees = parseFloat(document.getElementById("misc-fees").innerHTML.replace(/,/g, ''));
                 tax_prep = parseFloat(document.getElementById("tax-prep").innerHTML.replace(/,/g, ''));
                 tax_break = parseFloat(document.getElementById("tax-break-val").innerHTML.replace(/,/g, ''));
-                college_loans_payment = parseFloat(document.getElementById("pay-college-loans").value.replace(/,/g, ''));
                 loans_payment = parseFloat(document.getElementById("pay-loans").value.replace(/,/g, ''));
                 
                 salary -= misc_fees;
 
                 // do not want expenses calculated with NaN
-                if(isNaN(college_loans_payment))
-                    college_loans_payment = 0;
                 if(isNaN(loans_payment))
                     loans_payment = 0;
-                if(college_loans_payment > college_loans) 
-                    loanPaymentError(true);
-                else
-                    noLoanPaymentError(true, false);
                 if(loans_payment > (real_loans - mandatory_loans))
-                    loanPaymentError(false);
+                    loanPaymentError();
                 else
-                    noLoanPaymentError(false, true);
+                    noLoanPaymentError();
     
-                expenses = taxes + auto_ins + health_ins + home_ins + shopping + car_maintain + maid + utils + dental + eat_ent + gas + misc_fees + tax_prep - tax_break + college_loans_payment + loans_payment;
+                expenses = taxes + auto_ins + health_ins + home_ins + shopping + car_maintain + maid + utils + dental + eat_ent + gas + misc_fees + tax_prep - tax_break + loans_payment;
                 net_earnings = salary - expenses;
                 
                 document.getElementById("total-expenses").value = parseFloat(expenses).toLocaleString('en');
                 document.getElementById("net-earnings-val").value = parseFloat(net_earnings).toLocaleString('en');
             
-                if((college_loans_payment == 0) && (loans_payment == 0))
-                noLoanPaymentError(true, true);
-                else if((money + net_earnings < 0) || ((money + net_earnings > 0) && ((college_loans_payment + loans_payment) > (money + net_earnings)))) {
-                loanPaymentError(true);
-                loanPaymentError(false);
+                if(taxes < 40000)
+                    document.getElementById("tax-10").setAttribute('style', 'font-weight: bold;');
+                else if(taxes < 80000)
+                    document.getElementById("tax-20").setAttribute('style', 'font-weight: bold;');
+                else if(taxes < 200000)
+                    document.getElementById("tax-30").setAttribute('style', 'font-weight: bold;');
+                else
+                    document.getElementById("tax-40").setAttribute('style', 'font-weight: bold;');
+
+
+                if(loans_payment == 0)
+                    noLoanPaymentError(true, true);
+                else if((money + net_earnings < 0) || ((money + net_earnings > 0) && (loans_payment > (money + net_earnings)))) {
+                    loanPaymentError();
             }
                 // if((college_loans_payment != 0 && loans_payment != 0) || ((college_loans_payment + loans_payment) > (money + net_earnings))) {
                 //     loanPaymentError(true);
@@ -619,21 +630,14 @@
                 // }
             }
 
-        function loanPaymentError(is_college) {
-            if(is_college) 
-                document.getElementById("pay-college-loans").setAttribute('style', 'border: red solid 3px;');
-            else 
-                document.getElementById("pay-loans").setAttribute('style', 'border: red solid 3px;');
+        function loanPaymentError() {
+            document.getElementById("pay-loans").setAttribute('style', 'border: red solid 3px;');
             document.getElementById('pay-button').disabled = true;
         }
 
-        function noLoanPaymentError(college, loan) {
-            if(college) 
-                document.getElementById("pay-college-loans").setAttribute('style', 'border: black solid 2px;');
-            if(loan)
-                document.getElementById("pay-loans").setAttribute('style', 'border: black solid 2px;');
-            if(college && loan)
-                document.getElementById('pay-button').disabled = false;
+        function noLoanPaymentError() {
+            document.getElementById("pay-loans").setAttribute('style', 'border: black solid 2px;');
+            document.getElementById('pay-button').disabled = false;
         }
 
         cur_age = parseFloat("{{ player_info.age }}");
@@ -660,6 +664,10 @@
         married = "{{ player_info.married }}".toLowerCase() == "true" ? true : false;
         if(married) // currently have health insurance
                 document.getElementById("test-married-checkbox").checked = true;
+
+        benefits = "{{ benefits }}".toLowerCase() == "true" ? true : false;
+        if(benefits) // currently have health insurance
+                document.getElementById("test-benefits-checkbox").checked = true;
         
         function updateTestOptions() {
             cur_home = "{{ player_info.house }}";
@@ -689,6 +697,5 @@
         if(!end_of_year) {
             document.getElementById('pay-button').disabled = true;
         }
-        
     </script>
 {% endblock %}

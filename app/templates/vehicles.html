@@ -225,17 +225,19 @@
         var num_people = parseFloat("{{ num_people }}");
         var yrs_college = parseFloat("{{ player_info.num_yrs_college }}");
         var path = "{{ player_info.path }}";
+        var cur_age = parseFloat("{{ player_info.age }}");
         var job = "{{ player_info.job }}";
-        if((path != "college") || !((!player_info.mil_to_college) && (player_info.job == "None" || job.category == "job-in-college"))) {  // cannot have college vehicle
-            document.getElementById('buy_Skateboard').disabled = true
-            document.getElementById('buy_Bike').disabled = true
+
+        if(!(cur_age == 18 && path == "college")) {  // cannot have college vehicle
+            document.getElementById('buy_Skateboard').disabled = true;
+            document.getElementById('buy_Bike').disabled = true;
         }
-        if((path == "college") && (job != "None") && (yrs_college >= 2)) {  // only in college, cannot have job
-            document.getElementById('buy_Skateboard').disabled = true
+        if((path == "college") && (job != "None")) {  // only in college, cannot have job
+            document.getElementById('buy_Skateboard').disabled = true;
         }
-        if((path == "college") && (job == "None") && (yrs_college >= 2)) {  // only in college, must have job
-            document.getElementById('buy_Bike').disabled = true
-        }
+        // if((path == "college") && (job == "None")) { // only in college, must have job
+        //     document.getElementById('buy_Bike').disabled = true;
+        // }
 
         var money = parseFloat("{{ player_info.money }}");
         document.querySelectorAll('.cost').forEach(el => {
@@ -257,12 +259,11 @@
         }
 
         yrs_college = parseFloat("{{ player_info.num_yrs_college }}");
-        if(yrs_college in [3, 4] && car_name in ["Bike", "Skateboard"]) {  // need to get non-college vehicle
+        if(yrs_college in [2, 3] && car_name in ["Bike", "Skateboard"]) {  // need to get non-college vehicle
             document.getElementById('buy_Skateboard').disabled = true
             document.getElementById('buy_Bike').disabled = true
         }
 
-        cur_age = parseFloat("{{ player_info.age }}");
         need_loan = "{{ player_info.need_loan }}";
         turn_num = parseFloat("{{ player_info.turn_num }}");
         if((cur_age == 65) || (need_loan.toLowerCase() == "true") || (turn_num == -1)) {  // game over or force to get loan or game not started

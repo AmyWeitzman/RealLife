@@ -66,7 +66,6 @@ class Player_Info(db.Model):
     have_home_ins = db.Column(db.Boolean, default=False)
     last_home_ins = db.Column(db.Integer, default=0)
     have_pet = db.Column(db.Boolean, default=False)
-    college_loans = db.Column(db.Integer, default=0)
     loans = db.Column(db.Integer, default=0)
     buying_organic = db.Column(db.Boolean, default=False)
     was_janitor = db.Column(db.Boolean, default=False)
@@ -119,6 +118,8 @@ class Player_Info(db.Model):
     expenses = db.Column(db.Integer, default=0)
     income = db.Column(db.Integer, default=0)
     kids_ages = db.Column(db.String(64), default="None")
+    start_college_beginning = db.Column(db.Boolean, default=False)
+    disable_no_action = db.Column(db.Boolean, default=False)
 
 class Card(db.Model):
     id = db.Column(db.Integer, primary_key=True)

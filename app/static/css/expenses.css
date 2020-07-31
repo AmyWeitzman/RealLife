@@ -234,6 +234,7 @@ button:disabled {
     border: none;
     width: 100px;
     outline: 0;
+    margin-left: 10px;
 }
 
 #done-button:hover {
@@ -355,4 +356,54 @@ option {
 
 .loss {
     color: red;
+}
+
+.no-family {
+    background-color: rgb(245, 245, 198);
+}
+
+.small-family {
+    background-color: rgb(200, 200, 228);
+}
+
+.large-family {
+    background-color: rgb(240, 152, 152);
+}
+
+.military {
+    background-color: burlywood;
+}
+
+.regular {
+    background-color: #77c98d;
+}
+
+.job-in-college {
+    background-color: lightcoral;
+}
+
+.college-grad {
+    background-color: lightskyblue;
+}
+
+.grad-school-1 {
+    background-color: #fff28c;
+}
+
+.grad-school-2 {
+    background-color: #e0b8ff;
+}
+
+.grad-school-6 {
+    background-color: lightsalmon;
+}
+
+.extra-costs {
+    margin-left: 10px;
+    margin-right: 0;
+}
+
+.cur-status {
+    font-size: 25px;
+    color: green
 }
