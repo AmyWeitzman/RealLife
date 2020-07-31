@@ -1126,7 +1126,7 @@ def test_expenses():
     kids = request.args.get("test-kids")
     loan = request.args.get("test-loans-amount")
 
-    data = {'job': job, 'house': house, 'home_ins': home_ins, 'car': car, 'auto_ins': auto_ins, 'health_ins': health_ins, 'married': married, 'benefits': marbenefitsried, 'kids': kids, 'loan': loan}
+    data = {'job': job, 'house': house, 'home_ins': home_ins, 'car': car, 'auto_ins': auto_ins, 'health_ins': health_ins, 'married': married, 'benefits': benefits, 'kids': kids, 'loan': loan}
     data_str = json.dumps(data)
     return redirect(url_for('expenses', testing="true", data=data_str))
     #return render_template('expenses.html', page_name='Expenses', player_info=player_info, jobs=jobs, houses=houses, cars=cars)
