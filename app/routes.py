@@ -2149,5 +2149,3 @@ def continue_grad_school():
 
     db.session.commit() 
     return redirect(url_for('player_info'))
-
-

@@ -19,7 +19,6 @@ jsglue = JSGlue(app)
 
 from app import routes, models
 
-
 # @socketio.on('connect')
 # def test_connect():
 #     emit('my response', {'data': 'Connected'})
