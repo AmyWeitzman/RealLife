@@ -240,11 +240,11 @@ def pick_card(game_id):
             else:
                 flash("Chiropractor fees covered by health insurance.", "success")
             job = get_job("Mechanic")
-            if(job.picked):  # someone is the mechanic, gets paid $5000
+            if(job.picked and not player_info.job == "Mechanic"):  # someone is the mechanic, gets paid $5000
                 mechanic = get_player_with_job(game_id, job)
                 mechanic.money += 5000
             job = get_job("Chiropractor")
-            if(job.picked):  # someone is the chiropractor, gets paid $50/person
+            if(job.picked and not player_info.job == "Chiropractor"):  # someone is the chiropractor, gets paid $50/person
                 chiro = get_player_with_job(game_id, job)
                 chiro.money += (50 * num_people)
     elif(card.text == "Earthquake damage"):
@@ -252,7 +252,7 @@ def pick_card(game_id):
             if(not player_info.have_home_ins):
                 player_info.money -= 50000  # pay $50,000
             job = get_job("Carpenter")
-            if(job.picked):  # someone is the carpenter, gets paid $5000
+            if(job.picked and not player_info.job == "Carpenter"):  # someone is the carpenter, gets paid $5000
                 carpenter = get_player_with_job(game_id, job)
                 carpenter.money += 5000  
     elif(card.text == "Fire damage"):
@@ -260,20 +260,20 @@ def pick_card(game_id):
             if(not player_info.have_home_ins):
                 player_info.money -= 50000  # pay $50,000
             job = get_job("Firefighter")
-            if(job.picked):  # someone is the firefighter, gets paid $5000
+            if(job.picked and not player_info.job == "Firefighter"):  # someone is the firefighter, gets paid $5000
                 firefighter = get_player_with_job(game_id, job)
                 firefighter.money += 5000  
     elif(card.text == "Pest problem"):
         if(player_info.house != "None"):
             player_info.money -= 5000  # pay $5000, no insurance coverage
             job = get_job("Exterminator")
-            if(job.picked):  # someone is the exterminator, gets paid $5000
+            if(job.picked and not player_info.job == "Exterminator"):  # someone is the exterminator, gets paid $5000
                 exterminator = get_player_with_job(game_id, job)
                 exterminator.money += 5000 
     elif(card.text == "Tech problems"):
         player_info.money -= 100  # pay $100
         job = get_job("Software Developer")
-        if(job.picked):  # someone is the software developer, gets paid $100
+        if(job.picked and not player_info.job == "Software Developer"):  # someone is the software developer, gets paid $100
             developer = get_player_with_job(game_id, job)
             developer.money += 100 
     elif(card.text == "Lawsuit"):
@@ -282,7 +282,7 @@ def pick_card(game_id):
         flash("You have been sued for $" + str(payment) + ".", "error")
         player_info.money -= payment
         job = get_job("Lawyer")
-        if(job.picked):  # someone is the lawyer, gets paid 50% of payment
+        if(job.picked and not player_info.job == "Lawyer"):  # someone is the lawyer, gets paid 50% of payment
             lawyer = get_player_with_job(game_id, job)
             lawyer.money += (0.5 * payment)
     elif(card.text == "Speeding"):
@@ -302,13 +302,17 @@ def pick_card(game_id):
                     else:
                         flash("Chiropractor fees covered by health insurance.", "success")
                     job = get_job("Mechanic")
-                    if(job.picked):  # someone is the mechanic, gets paid $5000
+                    if(job.picked and not player_info.job == "Mechanic"):  # someone is the mechanic, gets paid $5000
                         mechanic = get_player_with_job(game_id, job)
                         mechanic.money += 5000
                     job = get_job("Chiropractor")
-                    if(job.picked):  # someone is the chiropractor, gets paid $50/person
+                    if(job.picked and not player_info.job == "Chiropractor"):  # someone is the chiropractor, gets paid $50/person
                         chiro = get_player_with_job(game_id, job)
                         chiro.money += (50 * num_people)
+                job = get_job("Police Officer")
+                if(job.picked and not player_info.job == "Police Officer"):  # someone is the police officer, gets paid $100
+                    police = get_player_with_job(game_id, job)
+                    police.money += 100
             else:
                 flash("Ineligible vehicle for speeding", "info")
         else:
@@ -868,6 +872,10 @@ def expenses(testing, data):
     if(is_testing):  # get new data to test
         data = json.loads(data)
         my_job = data['job']
+        t_job = "None"
+        if(my_job != "None"):
+            t_job = get_job(my_job)
+        my_cur_salary = t_job.base_salary if t_job != "None" else 0
         my_house = data['house']  
         my_car = data['car']
         my_home_ins = True if data['home_ins'] != None else False
@@ -880,6 +888,7 @@ def expenses(testing, data):
         my_path = get_path(my_job)
     else:  # data is real current player info
         my_job = player_info.job
+        my_cur_salary = player_info.cur_salary
         my_house = player_info.house
         my_car = player_info.car
         my_home_ins = player_info.have_home_ins
@@ -896,9 +905,9 @@ def expenses(testing, data):
     if(my_job != "None"):
         job = get_job(my_job)
         if(is_testing):
-            job_stress = int(player_info.base_salary / 1000)  # current salary = base salary since if got new job would start over salary
+            job_stress = int(job.base_salary / 1000)  # current salary = base salary since if got new job would start over salary
         else:
-            job_stress = int(player_info.current_salary / 1000) if player_info.path == "military" else int(player_info.base_salary / 1000)
+            job_stress = int(job.base_salary / 1000) if my_path == "military" else int(job.base_salary / 1000)
     jobs = Job.query.filter(Job.title != my_job)  # get all jobs except player's current job for dropdown
 
     house = "None"
@@ -932,24 +941,24 @@ def expenses(testing, data):
         else:
             car = get_car(my_car) 
         
-    if((player_info.job == "Athlete") and (player_info.med_prob)):
-        taxes = get_taxes(player_info.current_salary * 0.25, player_info.job, player_info.married) # 25% salary -> 25% taxes (adjust with tax bracket)
+    if((my_job == "Athlete") and (player_info.med_prob)):
+        taxes = get_taxes(my_cur_salary * 0.25, my_job, my_married) # 25% salary -> 25% taxes (adjust with tax bracket)
     else:
-        taxes = get_taxes(player_info.current_salary if not is_testing else player_info.base_salary if my_job != "None" else 0, my_job, my_married)
+        taxes = get_taxes(my_cur_salary if not is_testing else job.base_salary if my_job != "None" else 0, my_job, my_married)
     player_info.total_taxes = taxes
     num_people = get_num_people(my_married, my_num_kids, player_info.kids_ages)
 
     if(not is_testing):
         auto_ins = 0 if player_info.last_auto_ins == 0 else player_info.last_auto_ins
     else:
-        auto_ins = 0 if not my_auto_ins else car.insurance
+        auto_ins = 0 if not my_auto_ins else car.insurance if car != "None" else 0
     if(my_job == "Mechanic"):
         auto_ins = 0  # mechanic gets free auto insurance
 
     if(not is_testing):
         home_ins = 0 if player_info.last_home_ins == 0 else player_info.last_home_ins
     else:
-        home_ins = 0 if not my_home_ins else house.insurance
+        home_ins = 0 if not my_home_ins else house.insurance if house != "None" else 0
     if(my_job == "Firefighter"):
         home_ins = 0  # firefighter gets free home insurance
 
@@ -990,13 +999,12 @@ def expenses(testing, data):
 
     eat_ent = 0 
     if(my_job != "None"):
-        cur_salary = player_info.current_salary if not is_testing else player_info.base_salary
-        if cur_salary < 50000:
-            eat_ent = 0.01 * cur_salary
-        elif cur_salary < 100000:
-            eat_ent = 0.05 * cur_salary
+        if my_cur_salary < 50000:
+            eat_ent = 0.01 * my_cur_salary
+        elif my_cur_salary < 100000:
+            eat_ent = 0.05 * my_cur_salary
         else: 
-            eat_ent = 0.1 * cur_salary
+            eat_ent = 0.1 * my_cur_salary
 
         if(my_job in ["Cashier", "Barista"]):
             eat_ent *= 0.5  # 50% off
@@ -1056,6 +1064,10 @@ def expenses(testing, data):
         misc_fees -= 2000 
 
     extras = 0
+    all_tax_prep_fees = 0
+    all_dental_fees = 0
+    all_pet_fees = 0
+    all_depression_fees = 0
     if(player_info.job == "Accountant"):
         all_tax_prep_fees = get_all_tax_prep_fees(player.cur_game)
         extras += all_tax_prep_fees
@@ -1102,7 +1114,7 @@ def expenses(testing, data):
             no_fam_house = False
 
     tax_prep = 100
-    if(player_info.job == "Accountant"):
+    if(my_job == "Accountant"):
         tax_prep = 0
     player_info.total_tax_prep = tax_prep
 
@@ -1112,7 +1124,7 @@ def expenses(testing, data):
     tax_break = 500 * player_info.num_kids
 
     db.session.commit()
-    return render_template('expenses.html', page_name='Expenses', player_info=player_info, job=job, job_stress=job_stress, house=house, house_stress=house_stress, car=car, jobs=jobs, taxes=taxes, num_people=num_people, houses=houses, cars=cars, loans_int=loans_int, auto_ins=auto_ins, health_ins= health_ins, home_ins=home_ins, shopping=shopping, car_maintenance=car_maintenance, maid=maid, utilities=utilities, dental_fees=dental_fees, eat_ent=eat_ent, gas=gas, new_auto_ins=new_auto_ins, new_home_ins=new_home_ins, new_health_ins=new_health_ins, misc_points=misc_points, misc_fees=misc_fees, rent=rent, transit_fee=transit_fee, no_fam_car=no_fam_car, no_fam_house=no_fam_house, my_benefits=my_benefits, tax_prep=tax_prep, my_job=my_job, cur_house=my_house, cur_car=my_car, my_home_ins=my_home_ins, my_auto_ins=my_auto_ins, my_health_ins=my_health_ins, my_married=my_married, my_num_kids=my_num_kids, my_loans=my_loans, my_path=my_path, testing=is_testing, loan_pts=loan_pts, mandatory_loans=mandatory_loans, tax_break=tax_break)
+    return render_template('expenses.html', page_name='Expenses', player_info=player_info, job=job, job_stress=job_stress, house=house, house_stress=house_stress, car=car, jobs=jobs, taxes=taxes, num_people=num_people, houses=houses, cars=cars, loans_int=loans_int, auto_ins=auto_ins, health_ins= health_ins, home_ins=home_ins, shopping=shopping, car_maintenance=car_maintenance, maid=maid, utilities=utilities, dental_fees=dental_fees, eat_ent=eat_ent, gas=gas, new_auto_ins=new_auto_ins, new_home_ins=new_home_ins, new_health_ins=new_health_ins, misc_points=misc_points, misc_fees=misc_fees, rent=rent, transit_fee=transit_fee, no_fam_car=no_fam_car, no_fam_house=no_fam_house, my_benefits=my_benefits, tax_prep=tax_prep, my_job=my_job, cur_house=my_house, cur_car=my_car, my_home_ins=my_home_ins, my_auto_ins=my_auto_ins, my_health_ins=my_health_ins, my_married=my_married, my_num_kids=my_num_kids, my_loans=my_loans, my_path=my_path, testing=is_testing, loan_pts=loan_pts, mandatory_loans=mandatory_loans, tax_break=tax_break, my_cur_salary=my_cur_salary, all_tax_prep_fees=all_tax_prep_fees, all_dental_fees=all_dental_fees, all_pet_fees=all_pet_fees, all_depression_fees=all_depression_fees)
 
 @app.route('/test_expenses')
 @login_required
@@ -1328,7 +1340,7 @@ def change_marriage(mtype):
         # lawyer collect $1000 fee
         all_players = get_all_player_infos(player.cur_game)
         for p in all_players:
-            if(p.job == "Lawyer"):
+            if(p.job == "Lawyer" and player_info.job != "Lawyer"):
                 p.money += 1000
 
     player_info.yrs_til_change_married = wait_yrs
@@ -1603,7 +1615,7 @@ def simulateRoll():
     return roll
 
 def is_valid_card(player_info, card):
-    if((player_info.age == 18) or (player_info.car == "None") or (player_info.car == "Public Transit")):  # no car (no insurance in first year so no probs)
+    if((player_info.age == 18) or (player_info.car == "None") or (player_info.car in ["Bike", "Skateboard", "Public Transit"])):  # no car (no insurance in first year so no probs)
         if(card.text in ["Stuck in traffic", "Car accident", "Speeding", "Car repairs"]):
             return False
     if((player_info.age == 18) or (player_info.house == "None")):  # no house (no insurance in first year so no probs)
@@ -1611,6 +1623,9 @@ def is_valid_card(player_info, card):
             return False
     if(player_info.age == 18):
         if(card.text == "Minor medical problems"):  # haven't had chance to buy pet yet so not fair to have minor med prob
+            return False
+    if(player_info.job == "Psychologist"):
+        if(card.text == ["Mental illness", "Family issue"]):
             return False
     if(player_info.job == "None"):  # no job
         if(card.text in ["Lost job"]):
@@ -1803,7 +1818,7 @@ def get_all_pet_fees(game_id):
     all_players = get_all_player_infos(game_id)
     num_pets = 0
     for p in all_players:
-        if(p.have_pet):
+        if(p.have_pet and p.job != "Veterinarian"):
             num_pets += 1
     pet_fees = 100 * num_pets
     return pet_fees
@@ -1812,7 +1827,7 @@ def get_all_depression_fees(game_id):
     all_players = get_all_player_infos(game_id)
     num_depressed = 0
     for p in all_players:
-        if(p.depressed):
+        if(p.depressed and p.job != "Psychologist"):
             num_depressed += 1
     depression_fees = 1000 * num_depressed
     return depression_fees

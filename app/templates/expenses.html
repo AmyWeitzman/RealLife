@@ -339,7 +339,7 @@
                 {% if player_info.have_pet and my_job == "Veterinarian" %}
                 <p>* Veterinarian does not pay pet fees</p>
                 {% endif %}
-                {% if player_info.depressed %}
+                {% if player_info.depressed and not player_info.job == "Psychologist" %}
                 <p>Depression: $1000 fee to psychologist for treatment</p>
                 {% endif %}
                 {% if my_loans > 0 %}
@@ -389,7 +389,7 @@
                 {% if player_info.have_pool %}
                 <p class="loss">Pool: $20,000</p>
                 {% endif %}
-                {% if player_info.depressed %}
+                {% if player_info.depressed and not player_info.job == "Psychologist" %}
                 <p class="loss">Depression: $1000</p>
                 {% endif %}
                 {% if my_loans > 0 %}
@@ -496,11 +496,11 @@
     </table>
     <script type="text/javascript">
             money = parseFloat("{{ player_info.money }}");
-            salary = parseFloat("{{ player_info.current_salary }}");
+            salary = parseFloat("{{ my_cur_salary }}");
             ttraise = parseFloat("{{ player_info.cur_time_til_raise }}");
-            path = "{{ player_info.path }}";
-            job = "{{ player_info.job }}";
-            real_loans = parseFloat("{{ player_info.real_loans }}");
+            path = "{{ my_path }}";
+            job = "{{ my_job }}";
+            real_loans = parseFloat("{{ my_loans }}");
             mandatory_loans = parseFloat("{{ mandatory_loans }}");
             if(job == "Teacher")
                 num_yrs_teacher = parseFloat("{{ player_info.num_yrs_teacher }}");
@@ -529,7 +529,7 @@
             dental = parseFloat(document.getElementById("dental").innerHTML.replace(/,/g, ''));
             eat_ent = parseFloat(document.getElementById("eat-ent").innerHTML.replace(/,/g, ''));
             gas = parseFloat(document.getElementById("gas").innerHTML.replace(/,/g, ''));
-            misc_fees = parseFloat(document.getElementById("misc-fees").innerHTML.replace(/,/g, ''));
+            misc_fees = -1 * parseFloat(document.getElementById("misc-fees").innerHTML.replace(/,/g, ''));
             tax_prep = parseFloat(document.getElementById("tax-prep").innerHTML.replace(/,/g, ''));
             tax_break = parseFloat(document.getElementById("tax-break-val").innerHTML.replace(/,/g, ''));
             loans_payment = parseFloat(document.getElementById("pay-loans").value.replace(/,/g, ''));
@@ -583,12 +583,12 @@
                 dental = parseFloat(document.getElementById("dental").innerHTML.replace(/,/g, ''));
                 eat_ent = parseFloat(document.getElementById("eat-ent").innerHTML.replace(/,/g, ''));
                 gas = parseFloat(document.getElementById("gas").innerHTML.replace(/,/g, ''));
-                misc_fees = parseFloat(document.getElementById("misc-fees").innerHTML.replace(/,/g, ''));
+                misc_fees = -1 * parseFloat(document.getElementById("misc-fees").innerHTML.replace(/,/g, ''));
                 tax_prep = parseFloat(document.getElementById("tax-prep").innerHTML.replace(/,/g, ''));
                 tax_break = parseFloat(document.getElementById("tax-break-val").innerHTML.replace(/,/g, ''));
                 loans_payment = parseFloat(document.getElementById("pay-loans").value.replace(/,/g, ''));
                 
-                salary -= misc_fees;
+                // salary -= misc_fees;
 
                 // do not want expenses calculated with NaN
                 if(isNaN(loans_payment))

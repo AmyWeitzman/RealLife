@@ -253,13 +253,15 @@ option {
 }
 
 .test {
-    background-color: rgb(46, 46, 46);
-    color: white;
+    background-color: lightskyblue;
+    color: black;
     text-align: left;
 }
 
 #test-title {
     text-align: center;
+    background-color: indigo;
+    color: white;
 }
 
 .left-radio {
