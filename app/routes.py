@@ -888,7 +888,7 @@ def expenses(testing, data):
         my_path = get_path(my_job)
     else:  # data is real current player info
         my_job = player_info.job
-        my_cur_salary = player_info.cur_salary
+        my_cur_salary = player_info.current_salary
         my_house = player_info.house
         my_car = player_info.car
         my_home_ins = player_info.have_home_ins
@@ -1197,6 +1197,7 @@ def save_notes(notepad):
 @login_required
 def save_allnotes(note1, note2, note3, note4):
     print("here")
+    print(repr(note1))
     player, player_info = get_cur_player_info()
     player_info.notes1 = note1
     player_info.notes2 = note2

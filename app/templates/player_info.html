@@ -168,7 +168,7 @@
             <tr>
                 <td class="sticky-note">
                     <form action="{{ url_for('save_notes', notepad=1) }}">
-                        <textarea rows=10 cols=25 maxlength="255" id="notepad1" name="notepad" oninput="{{ url_for('save_notes', notepad=1) }}">{{ player_info.notes1 }} </textarea>
+                        <textarea rows=10 cols=25 maxlength="255" id="notepad1" name="notepad" oninput="{{ url_for('save_notes', notepad=1) }}">{{ player_info.notes1 }}</textarea>
                         <button type="submit" class="save-note-button">SAVE</button>
                     </form>
                 </td>
@@ -194,14 +194,12 @@
         </table>
     </div>
     <script>
-        function save1() {
-            console.log("here");
-        }
         // window.onbeforeunload = function(e) {
-        //     note1 = document.getElementById('notepad1').value;
+        //     note1 = JSON.stringify(document.getElementById('notepad1').value);
         //     note2 = document.getElementById('notepad2').value;
         //     note3 = document.getElementById('notepad3').value;
         //     note4 = document.getElementById('notepad4').value;
+        //     console.log(note1);
         //     // if(note1 == '') note1 = 'To-Do:'
         //     // if(note2 == '') note2 = 'To-Do:'
         //     // if(note3 == '') note3 = 'To-Do:'
@@ -257,11 +255,6 @@
             document.getElementById('college-button').disabled = true;
         }
         
-        cur_turn = parseInt("{{ cur_turn }}");
-        turn_num = parseInt("{{ player_info.turn_num }}");
-        if(cur_turn != turn_num)
-            document.getElementById('pick-card-button').disabled = true;
-
         picked_card = "{{ player_info.picked_card }}";
         done_action = "{{ player_info.done_action }}";
         end_of_year = "{{ player_info.end_of_year }}";
@@ -291,6 +284,17 @@
             document.getElementById('do-action-button').disabled = true;
             document.getElementById('no-action-button').disabled = true;
         }
+
+        graduate_button = document.getElementsByClassName('graduate-button');
+        if(graduate_button)  // must decide whether or not to graduate before can pick card
+            document.getElementById('pick-card-button').disabled = true;
+
+        // if not your turn, can't pick card
+        cur_turn = parseInt("{{ cur_turn }}");
+        turn_num = parseInt("{{ player_info.turn_num }}");
+        if(cur_turn != turn_num)
+            document.getElementById('pick-card-button').disabled = true;
+
 
         end_of_year_btn = document.getElementById('end-of-year-button')
         if(end_of_year_btn) {
