@@ -948,17 +948,17 @@ def expenses(testing, data):
     player_info.total_taxes = taxes
     num_people = get_num_people(my_married, my_num_kids, player_info.kids_ages)
 
-    if(not is_testing):
-        auto_ins = 0 if player_info.last_auto_ins == 0 else player_info.last_auto_ins
-    else:
-        auto_ins = 0 if not my_auto_ins else car.insurance if car != "None" else 0
+    # if(not is_testing):
+    #     auto_ins = 0 if player_info.last_auto_ins == 0 else player_info.last_auto_ins
+    # else:
+    auto_ins = 0 if not my_auto_ins else car.insurance if car != "None" else 0
     if(my_job == "Mechanic"):
         auto_ins = 0  # mechanic gets free auto insurance
 
-    if(not is_testing):
-        home_ins = 0 if player_info.last_home_ins == 0 else player_info.last_home_ins
-    else:
-        home_ins = 0 if not my_home_ins else house.insurance if house != "None" else 0
+    # if(not is_testing):
+    #     home_ins = 0 if player_info.last_home_ins == 0 else player_info.last_home_ins
+    # else:
+    home_ins = 0 if not my_home_ins else house.insurance if house != "None" else 0
     if(my_job == "Firefighter"):
         home_ins = 0  # firefighter gets free home insurance
 
@@ -1694,7 +1694,7 @@ def get_new_auto_ins(player_info):
     if(player_info.yrs_til_change_car == wait_yrs):  # just bought new car, show new insurance
         t_car = get_car(player_info.car)
         new_auto_ins = t_car.insurance
-    elif((player_info.car != "None") and (not player_info.have_auto_ins)):  # have car but no insurance
+    elif((player_info.car != "None")): #and (not player_info.have_auto_ins)):  # have car but no insurance
         t_car = get_car(player_info.car)
         new_auto_ins = t_car.insurance
     if(player_info.job == "Mechanic"):

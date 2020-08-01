@@ -287,7 +287,7 @@
             <td class="type">Miscellaneous Points</td>
             <td class="details">
                 {% if player_info.buying_organic %}
-                <p>Buying organic: get 50 points per person</p>
+                <p>Buy organic: get 50 points per person</p>
                 {% endif %}
                 {% if player_info.depressed %}
                 <p>Depression: gain 10% of points back</p>
@@ -298,7 +298,7 @@
             </td>
             <td>
                 {% if player_info.buying_organic %}
-                <p class="gain">Buying organic: +{{ "{:,.0f}".format(50 * num_people) }} points</p>
+                <p class="gain">Buy organic: +{{ "{:,.0f}".format(50 * num_people) }} points</p>
                 {% endif %}
                 {% if player_info.have_pet %}
                 <p class="gain">Pet: +10 points</p>
@@ -331,10 +331,10 @@
                 <p>Public Transit: cost is annual fee</p>
                 {% endif %}
                 {% if player_info.buying_organic %}
-                <p>* Buying organic: extra $1000 per person</p>
+                <p>* Buy organic: extra $1000 per person</p>
                 {% endif %}
                 {% if player_info.buying_organic and my_job == "Farmer" %}
-                <p>* Buying organic: farmer gets 25% off</p>
+                <p>* Buy organic: farmer gets 25% off</p>
                 {% endif %}
                 {% if player_info.have_pet and my_job == "Veterinarian" %}
                 <p>* Veterinarian does not pay pet fees</p>
@@ -381,7 +381,7 @@
                 <p class="loss">Public Transit: ${{ "{:,.0f}".format(transit_fee) }}</p>
                 {% endif %}
                 {% if player_info.buying_organic %}
-                <p class="loss">Buying organic: pay extra $1000 per person</p>
+                <p class="loss">Buy organic: pay $1000 per person</p>
                 {% endif %}
                 {% if player_info.have_pet and player_info.job != "Veterinarian" %}
                 <p class="loss">Pet: $100</p>
@@ -414,7 +414,7 @@
                 <p class="gain">Raise: $1000</p>
                 {% endif %}
                 {% if player_info.cur_time_til_raise == 1 and my_path == "military" %}
-                <p class="gain">Raise: salary -> ${{ player_info.current_salary * 2 }}</p>
+                <p class="gain">Raise: salary -> ${{ '{:,.0f}'.format(player_info.current_salary * 2) }}</p>
                 {% endif %}
                 {% if my_job == "Teacher" and player_info.num_yrs_teacher == 15 %}
                 <p>Raise: salary -> $100,000</p>
@@ -453,10 +453,12 @@
                 <label for="auto-ins" class="in-line checkbox-label">${{ '{:,.0f}'.format(new_auto_ins) }}</label>
 
                 <p class="health-ins-bg input-label pad-bottom"><b>Health Insurance </b></p>
-                {% if player_info.age < 26 %}
+                {% if player_info.age < 25 %}
                     <input type="checkbox" name="health-ins" class="ins-checkbox in-line" value="health-ins" id="new-health-ins" disabled checked>
+                {% elif player_info.age == 25 %}
+                <input type="checkbox" name="health-ins" class="ins-checkbox in-line" value="health-ins" id="new-health-ins">
                 {% elif player_info.have_health_ins %}
-                    <input type="checkbox" name="health-ins" class="ins-checkbox in-line" value="health-ins" id="new-health-ins" checked>
+                <input type="checkbox" name="health-ins" class="ins-checkbox in-line" value="health-ins" id="new-health-ins" checked>
                 {% else %}
                     <input type="checkbox" name="health-ins" class="ins-checkbox in-line" value="health-ins" id="new-health-ins">
                 {% endif %}

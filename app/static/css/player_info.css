@@ -429,8 +429,8 @@ button:disabled {
 }
 
 #mil-to-college-job-button {
-    background-color: #58d872;
-    border: brown 2px solid;
+    background-color: #6dc07e;
+    border: brown 2px solid !important;
     color: white;
     margin-bottom: 8px;
     border: none;
@@ -443,8 +443,8 @@ button:disabled {
 }
 
 #mil-to-college-car-button {
-    background-color: #58d872;
-    border: brown 2px solid;
+    background-color: #6dc07e;
+    border: brown 2px solid !important;
     color: gold;
     margin-bottom: 8px;
     border: none;

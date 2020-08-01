@@ -26,11 +26,9 @@
         </form>
         {% endif %}
         {% if player_info.mil_to_college and player_info.mil_start_college == 0 %}
-            {% if player_info.job == "Military" %}
             <form action="{{ url_for('jobs') }}">
                 <button type="submit" id="mil-to-college-job-button" class="detail">Job</button>
             </form>
-            {% endif %}
             {% if player_info.car == "None" %}
             <form action="{{ url_for('vehicles') }}">
                 <button type="submit" id="mil-to-college-car-button" class="detail">Vehicle</button>
