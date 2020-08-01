@@ -286,15 +286,16 @@
         }
 
         graduate_button = document.getElementsByClassName('graduate-button');
-        if(graduate_button)  // must decide whether or not to graduate before can pick card
+        if(graduate_button.length > 0)  // must decide whether or not to graduate before can pick card
+        {
             document.getElementById('pick-card-button').disabled = true;
+        }
 
         // if not your turn, can't pick card
         cur_turn = parseInt("{{ cur_turn }}");
         turn_num = parseInt("{{ player_info.turn_num }}");
-        if(cur_turn != turn_num)
+        if(cur_turn != turn_num) 
             document.getElementById('pick-card-button').disabled = true;
-
 
         end_of_year_btn = document.getElementById('end-of-year-button')
         if(end_of_year_btn) {
