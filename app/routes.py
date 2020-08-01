@@ -2003,7 +2003,7 @@ def end_of_year():
     player_info.done_action = False
     player_info.end_of_year = False
     player_info.disable_no_action = False
-    player_info.clicked_button = True
+    player_info.clicked_button = False
 
     if(player_info.mil_to_college and player_info.mil_start_college != 0 and player_info.path == "college"):
         player_info.yrs_benefits_used += 1
