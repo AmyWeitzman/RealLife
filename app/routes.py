@@ -319,64 +319,64 @@ def pick_card(game_id):
             flash("You were NOT in a car accident", "success")
     elif(card.text[:5] == "Baker"):  # baker cards
         player_infos = get_all_player_infos(game_id)
-        for player_info in player_infos:
-            player_info.money -= 10  # everyone pay $10
+        for pi in player_infos:
+            pi.money -= 10  # everyone pay $10
         job = get_job("Baker")
         if(job.picked):  # someone is the baker, gets paid $10,000
             baker = get_player_with_job(game_id, job)
             baker.money += 10010  # gets paid $10,000 + $10 already taken out above 
     elif(card.text[:6] == "Animal"):  # animal trainer cards
         player_infos = get_all_player_infos(game_id)
-        for player_info in player_infos:
-            player_info.money -= 10  # everyone pay $10
+        for pi in player_infos:
+            pi.money -= 10  # everyone pay $10
         job = get_job("Animal Trainer")
         if(job.picked):  # someone is the animal trainer, gets paid $10,000
             trainer = get_player_with_job(game_id, job)
             trainer.money += 10010  # gets paid $10,000 + $10 already taken out above 
     elif(card.text[:8] == "Reporter"):  # reporter cards
         player_infos = get_all_player_infos(game_id)
-        for player_info in player_infos:
-            player_info.money -= 10  # everyone pay $10
+        for pi in player_infos:
+            pi.money -= 10  # everyone pay $10
         job = get_job("Reporter")
         if(job.picked):  # someone is the reporter, gets paid $10,000
             reporter = get_player_with_job(game_id, job)
             reporter.money += 10010  # gets paid $10,000 + $10 already taken out above 
     elif(card.text[:6] == "Author"):  # author cards
         player_infos = get_all_player_infos(game_id)
-        for player_info in player_infos:
-            player_info.money -= 10  # everyone pay $10
+        for pi in player_infos:
+            pi.money -= 10  # everyone pay $10
         job = get_job("Author")
         if(job.picked):  # someone is the author, gets paid $10,000
             author = get_player_with_job(game_id, job)
             author.money += 10010  # gets paid $10,000 + $10 already taken out above 
     elif(card.text[:6] == "Singer"):  # singer card
         player_infos = get_all_player_infos(game_id)
-        for player_info in player_infos:
-            player_info.money -= 10  # everyone pay $10
+        for pi in player_infos:
+            pi.money -= 10  # everyone pay $10
         job = get_job("Singer")
         if(job.picked):  # someone is the singer, gets paid $10,000
             singer = get_player_with_job(game_id, job)
             singer.money += 10010  # gets paid $10,000 + $10 already taken out above 
     elif(card.text[:5] == "Actor"):  # actor card
         player_infos = get_all_player_infos(game_id)
-        for player_info in player_infos:
-            player_info.money -= 10  # everyone pay $10
+        for pi in player_infos:
+            pi.money -= 10  # everyone pay $10
         job = get_job("Actor")
         if(job.picked):  # someone is the actor, gets paid $10,000
             actor = get_player_with_job(game_id, job)
             actor.money += 10010  # gets paid $10,000 + $10 already taken out above 
     elif(card.text[:8] == "Engineer"):  # engineer card
         player_infos = get_all_player_infos(game_id)
-        for player_info in player_infos:
-            player_info.money -= 10  # everyone pay $10
+        for pi in player_infos:
+            pi.money -= 10  # everyone pay $10
         job = get_job("Engineer")
         if(job.picked):  # someone is the engineer, gets paid $10,000
             engineer = get_player_with_job(game_id, job)
             engineer.money += 10010  # gets paid $10,000 + $10 already taken out above 
     elif(card.text[:8] == "Athlete"):  # athlete card
         player_infos = get_all_player_infos(game_id)
-        for player_info in player_infos:
-            player_info.money -= 10  # everyone pay $10
+        for pi in player_infos:
+            pi.money -= 10  # everyone pay $10
         job = get_job("Athlete")
         if(job.picked):  # someone is the athlete, gets paid $50,000
             athlete = get_player_with_job(game_id, job)
@@ -403,8 +403,8 @@ def pick_card(game_id):
     elif(card.text == "Birthday party"): 
         player_infos = get_all_player_infos(game_id)
         num_players = len(list(player_infos))
-        for player_info in player_infos:
-            player_info.money -= 20  # everyone pay $20
+        for pi in player_infos:
+            pi.money -= 20  # everyone pay $20
         job = get_job("Hair Stylist")
         if(job.picked):  # someone is the hair stylist, gets paid $20/player
             stylist = get_player_with_job(game_id, job)
@@ -412,8 +412,8 @@ def pick_card(game_id):
     elif(card.text in ["Graduation party", "Anniversary party"]): 
         player_infos = get_all_player_infos(game_id)
         num_players = len(list(player_infos))
-        for player_info in player_infos:
-            player_info.money -= 100  # everyone pay $100
+        for pi in player_infos:
+            pi.money -= 100  # everyone pay $100
         job = get_job("Hair Stylist")
         if(job.picked):  # someone is the hair stylist, gets paid $100/player
             stylist = get_player_with_job(game_id, job)
@@ -421,8 +421,8 @@ def pick_card(game_id):
     elif(card.text == "Work dinner"): 
         player_infos = get_all_player_infos(game_id)
         num_players = len(list(player_infos))
-        for player_info in player_infos:
-            player_info.money -= 50  # everyone pay $50
+        for pi in player_infos:
+            pi.money -= 50  # everyone pay $50
         job = get_job("Hair Stylist")
         if(job.picked):  # someone is the hair stylist, gets paid $50/player
             stylist = get_player_with_job(game_id, job)
@@ -430,8 +430,8 @@ def pick_card(game_id):
     elif(card.text == "Wedding"): 
         player_infos = get_all_player_infos(game_id)
         num_players = len(list(player_infos))
-        for player_info in player_infos:
-            player_info.money -= 150  # everyone pay $150
+        for pi in player_infos:
+            pi.money -= 150  # everyone pay $150
         job = get_job("Hair Stylist")
         if(job.picked):  # someone is the hair stylist, gets paid $150/player
             stylist = get_player_with_job(game_id, job)
@@ -610,7 +610,6 @@ def jobs():
     if(player_info.last_card == "Lose job"):
         flash("You lost your job.", "error")
 
-    print(picked)
     job = "None"
     if(player_info.job != "None"):
         job = get_job(player_info.job)
@@ -2073,7 +2072,7 @@ def graduate():
         player_info.grad_college = True
     if(player_info.grad_school):
         player_info.points += 50    # grad school graduation = 100 points
-        #player_info.grad_school = False
+        player_info.grad_school = False
         player_info.num_yrs_grad_school -= 1
     player_info.points += 50
     #player_info.num_yrs_college = 0  # reset so no notification to graduate

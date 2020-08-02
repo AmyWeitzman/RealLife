@@ -448,14 +448,16 @@
                 <p class="auto-ins-bg input-label pad-bottom"><b>Auto Insurance </b></p>
                 {% if no_fam_car %}
                     <input type="checkbox" name="auto-ins" class="ins-checkbox in-line" value="auto-ins" id="new-auto-ins" disabled>
+                    <label for="auto-ins" class="in-line checkbox-label">${{ '{:,.0f}'.format(new_auto_ins) }}</label>
                 {% elif (player_info.yrs_til_change_car != 3) and (player_info.have_auto_ins) %}
                     <input type="checkbox" name="auto-ins" class="ins-checkbox in-line" value="auto-ins" id="new-auto-ins" checked>
+                    <label for="auto-ins" class="in-line checkbox-label">${{ '{:,.0f}'.format(car.insurance) }}</label>
                 {% else %}
-                    <input type="checkbox" name="auto-ins" class="ins-checkbox in-line short-margin" value="auto-ins" id="new-auto-ins">
+                    <input type="checkbox" name="auto-ins" class="ins-checkbox in-line" value="auto-ins" id="new-auto-ins">
+                    <label for="auto-ins" class="in-line checkbox-label short-margin">${{ '{:,.0f}'.format(new_auto_ins) }}</label>    
                     <label class="in-line once" class="ins-notice">New car: get insurance if desired</label>
                 {% endif %}
-                <label for="auto-ins" class="in-line checkbox-label">${{ '{:,.0f}'.format(new_auto_ins) }}</label>
-
+            
                 <p class="health-ins-bg input-label pad-bottom"><b>Health Insurance </b></p>
                 {% if player_info.age < 25 %}
                     <input type="checkbox" name="health-ins" class="ins-checkbox in-line" value="health-ins" id="new-health-ins" disabled checked>
@@ -468,16 +470,19 @@
                 {% endif %}
                 <label for="health-ins" class="in-line checkbox-label {{ 'short-margin' if player_info.age == 25 else ''}}" >${{ '{:,.0f}'.format(new_health_ins) }}</label>
                 {% if player_info.age == 25 %}
-                <label class="in-line once" class="ins-notice">Not covered by parents' health insurance</label>
+                <label class="in-line once" class="ins-notice">Not covered by parents</label>
                 {% endif %}
 
                 <p class="home-ins-bg input-label pad-bottom"><b>Home Insurance </b></p>
                 {% if no_fam_house %}
                     <input type="checkbox" name="home-ins" class="ins-checkbox in-line" value="home-ins" id="new-home-ins" disabled>
+                    <label for="home-ins" class="in-line checkbox-label">${{ '{:,.0f}'.format(new_home_ins) }}</label>
                 {% elif (player_info.yrs_til_change_house != 3) and (player_info.have_home_ins) %}
                     <input type="checkbox" name="home-ins" class="ins-checkbox in-line" value="home-ins" id="new-home-ins" checked>
+                    <label for="home-ins" class="in-line checkbox-label">${{ '{:,.0f}'.format(house.insurance) }}</label>
                 {% else %}
-                    <input type="checkbox" name="home-ins" class="ins-checkbox in-line short-margin" value="home-ins" id="new-home-ins">
+                    <input type="checkbox" name="home-ins" class="ins-checkbox in-line" value="home-ins" id="new-home-ins">
+                    <label for="home-ins" class="in-line checkbox-label short-margin">${{ '{:,.0f}'.format(new_home_ins) }}</label>
                     <label class="in-line once" class="ins-notice">New house: get insurance if desired</label>
                 {% endif %}
                 <label for="home-ins" class="in-line checkbox-label">${{ '{:,.0f}'.format(new_home_ins) }}</label>
@@ -566,11 +571,12 @@
             document.getElementById("total-expenses").value = parseFloat(expenses).toLocaleString('en');
             document.getElementById("net-earnings-val").value = parseFloat(net_earnings).toLocaleString('en');
 
-            if(taxes < 40000)
+            income = parseFloat("{{ player_info.current_salary }}");
+            if(income < 40000)
                 document.getElementById("tax-10").setAttribute('style', 'font-weight: bold;');
-            else if(taxes < 80000)
+            else if(income < 80000)
                 document.getElementById("tax-20").setAttribute('style', 'font-weight: bold;');
-            else if(taxes < 200000)
+            else if(income < 200000)
                 document.getElementById("tax-30").setAttribute('style', 'font-weight: bold;');
             else
                 document.getElementById("tax-40").setAttribute('style', 'font-weight: bold;');
@@ -614,15 +620,15 @@
                 document.getElementById("total-expenses").value = parseFloat(expenses).toLocaleString('en');
                 document.getElementById("net-earnings-val").value = parseFloat(net_earnings).toLocaleString('en');
             
-                if(taxes < 40000)
+                income = parseFloat("{{ player_info.current_salary }}");
+                if(income < 40000)
                     document.getElementById("tax-10").setAttribute('style', 'font-weight: bold;');
-                else if(taxes < 80000)
+                else if(income < 80000)
                     document.getElementById("tax-20").setAttribute('style', 'font-weight: bold;');
-                else if(taxes < 200000)
+                else if(income < 200000)
                     document.getElementById("tax-30").setAttribute('style', 'font-weight: bold;');
                 else
                     document.getElementById("tax-40").setAttribute('style', 'font-weight: bold;');
-
 
                 if(loans_payment == 0)
                     noLoanPaymentError(true, true);
