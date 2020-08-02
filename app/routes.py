@@ -740,11 +740,7 @@ def pick_job(job_name):  # set up job on player info
         else: 
             player_info.yrs_til_switch_jobs = wait_yrs  # changed job as action
 
-    if((not player_info.ready)):
-        game = get_game(player.cur_game)
-        switch_turn(game)
-        # not an action
-    elif(player_info.clicked_button):
+    if((not player_info.ready) or (player_info.clicked_button) or (player_info.last_card == "Lose job")):
         pass # not action, no switch turn
     elif(player_info.yrs_til_switch_jobs != 0):
         # (not player_info.graduating) and not (player_info.mil_to_college and player_info.mil_start_college == 0) and not (player_info.grad_school and player_info.num_yrs_grad_school == 1)):
