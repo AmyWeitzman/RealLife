@@ -65,27 +65,17 @@
             <button type="submit" class="continue-grad-btn detail">Continue Grad School</button>
         </form>
         {% endif %}
-        {% if (not player_info.ready) and (game.cur_turn != player_info.turn_num) %}
-            {% if announcements %}
-            {% for announcement, level in announcements.items() %}
-                {% if announcement.endsWith("'s turn") %}
-                <h3 class="detail announcement {{ level }}">{{ announcement }}</h3>
-                {% endif %}
-            {% endfor %}
-            {% endif %}
-        {% else %}
-            {% if player_info.end_of_year %}
-            <td id="side-button-cell" colspan="2">
-                <form action="{{ url_for('expenses', testing='false', data='none') }}">
-                    <button type="submit" id="end-of-year-button">End of Year</button>
-                </form>
-            </td>
-            {% endif %}
-            {% if announcements %}
-            {% for announcement, level in announcements.items() %}
-                <h3 class="detail announcement {{ level }}">{{ announcement }}</h3>
-            {% endfor %}
-            {% endif %}
+        {% if player_info.end_of_year %}
+        <td id="side-button-cell" colspan="2">
+            <form action="{{ url_for('expenses', testing='false', data='none') }}">
+                <button type="submit" id="end-of-year-button">End of Year</button>
+            </form>
+        </td>
+        {% endif %}
+        {% if announcements %}
+        {% for announcement, level in announcements.items() %}
+            <h3 class="detail announcement {{ level }}">{{ announcement }}</h3>
+        {% endfor %}
         {% endif %}
     {% endif %}
     </div>

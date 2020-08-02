@@ -1727,8 +1727,12 @@ def get_announcements(player_info):
     if(game.first().cur_turn == -1):  # game not started yet, no announcements
         return announcements
     elif(not player_info.ready):
-        announcements["Job is optional in college"] = "fyi"
-        announcements["Not required to have vehicle in military"] = "fyi"
+        if(game.first().cur_turn == player_info.turn_num):
+            announcements["Job is optional in college"] = "fyi"
+            announcements["Not required to have vehicle in military"] = "fyi"
+        else:
+            cur_turn = game.join(Player_Info, and_(Player_Info.game_id == Game.id, Player_Info.turn_num == Game.cur_turn)).add_columns(Player_Info.player_id).join(Player, Player.id == Player_Info.player_id).add_columns(Player.name).first().name
+            announcements[cur_turn + "'s turn"] = "turn"
     else:
         if(player_info.need_loan):  # automatically need to get a loan
             announcements["NEED TO GET A LOAN"] = "urgent"
