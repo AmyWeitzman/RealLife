@@ -448,7 +448,8 @@
                 {% elif (player_info.yrs_til_change_car != 3) and (player_info.have_auto_ins) %}
                     <input type="checkbox" name="auto-ins" class="ins-checkbox in-line" value="auto-ins" id="new-auto-ins" checked>
                 {% else %}
-                    <input type="checkbox" name="auto-ins" class="ins-checkbox in-line" value="auto-ins" id="new-auto-ins">
+                    <input type="checkbox" name="auto-ins" class="ins-checkbox in-line short-margin" value="auto-ins" id="new-auto-ins">
+                    <label class="in-line once" class="ins-notice">New car: get insurance if desired</label>
                 {% endif %}
                 <label for="auto-ins" class="in-line checkbox-label">${{ '{:,.0f}'.format(new_auto_ins) }}</label>
 
@@ -462,15 +463,19 @@
                 {% else %}
                     <input type="checkbox" name="health-ins" class="ins-checkbox in-line" value="health-ins" id="new-health-ins">
                 {% endif %}
-                <label for="health-ins" class="in-line checkbox-label" >${{ '{:,.0f}'.format(new_health_ins) }}</label>
-                
+                <label for="health-ins" class="in-line checkbox-label {{ 'short-margin' if player_info.age == 25 else ''}}" >${{ '{:,.0f}'.format(new_health_ins) }}</label>
+                {% if player_info.age == 25 %}
+                <label class="in-line once" class="ins-notice">Not covered by parents' health insurance</label>
+                {% endif %}
+
                 <p class="home-ins-bg input-label pad-bottom"><b>Home Insurance </b></p>
                 {% if no_fam_house %}
                     <input type="checkbox" name="home-ins" class="ins-checkbox in-line" value="home-ins" id="new-home-ins" disabled>
                 {% elif (player_info.yrs_til_change_house != 3) and (player_info.have_home_ins) %}
                     <input type="checkbox" name="home-ins" class="ins-checkbox in-line" value="home-ins" id="new-home-ins" checked>
                 {% else %}
-                    <input type="checkbox" name="home-ins" class="ins-checkbox in-line" value="home-ins" id="new-home-ins">
+                    <input type="checkbox" name="home-ins" class="ins-checkbox in-line short-margin" value="home-ins" id="new-home-ins">
+                    <label class="in-line once" class="ins-notice">New house: get insurance if desired</label>
                 {% endif %}
                 <label for="home-ins" class="in-line checkbox-label">${{ '{:,.0f}'.format(new_home_ins) }}</label>
                 

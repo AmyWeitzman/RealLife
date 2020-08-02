@@ -125,6 +125,14 @@ button:disabled {
     margin-right: 500px !important;
 }
 
+.short-margin {
+    margin-right: 0px !important;
+}
+
+.ins-notice {
+    margin-left: 25px !important;
+}
+
 .college-loans-bg {
     background-color: rgb(172, 238, 172);
 }

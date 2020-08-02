@@ -211,7 +211,7 @@ def cards():
 def pick_card(game_id):
     player = get_cur_player()
     player_info = Player_Info.query.filter_by(game_id=game_id, player_id=player.id).first()
-    card_type_regular = False if (player_info.path == "college") else True  # only college picks college cards
+    card_type_regular = False if (player_info.path == "college") and (player_info.age <= 22) else True  # only college (and under 22) picks college cards
     cards = list(Card.query.filter_by(regular=card_type_regular))  # get all cards from the appropriate category
     card = cards[randint(0, len(cards) - 1)]  # pick a random card
     while(not is_valid_card(player_info, card)):  # check if card is valid (no car cards if no have car, etc...)
@@ -603,13 +603,14 @@ def jobs():
     player, player_info = get_cur_player_info()
     if(player_info.jobs_page_type == "all"):
         jobs = Job.query.all()
-        picked = {job.title.lower(): job.picked for job in jobs}  # mark picked jobs so can't be chosen by others
+        picked = {job.title: job.picked for job in jobs}  # mark picked jobs so can't be chosen by others
     else:
         jobs = Job.query.filter_by(category=player_info.jobs_page_type)  # allow player to filter jobs by category
-        picked = {job.title.lower(): job.picked for job in jobs}  # mark picked jobs so can't be chosen by others
+        picked = {job.title: job.picked for job in jobs}  # mark picked jobs so can't be chosen by others
     if(player_info.last_card == "Lose job"):
         flash("You lost your job.", "error")
 
+    print(picked)
     job = "None"
     if(player_info.job != "None"):
         job = get_job(player_info.job)
@@ -653,7 +654,7 @@ def get_promotion():
         player_info.done_action = True
         switch_turn(game)
         db.session.commit()
-        return redirect(url_for('jobs'))
+        return redirect(url_for('player_info'))
 
     # promotion
     flash("You got a promotion!", "success")
@@ -739,12 +740,17 @@ def pick_job(job_name):  # set up job on player info
         else: 
             player_info.yrs_til_switch_jobs = wait_yrs  # changed job as action
 
-    # switch job, get job, quit job = actions
-    if((player_info.ready) and (player_info.yrs_til_switch_jobs != 0)):
+    if((not player_info.ready)):
         game = get_game(player.cur_game)
-        if((not player_info.graduating) and not (player_info.mil_to_college and player_info.mil_start_college == 0) and not (player_info.grad_school and player_info.num_yrs_grad_school == 1)):
-            player_info.done_action = True
         switch_turn(game)
+        # not an action
+    elif(player_info.clicked_button):
+        pass # not action, no switch turn
+    elif(player_info.yrs_til_switch_jobs != 0):
+        # (not player_info.graduating) and not (player_info.mil_to_college and player_info.mil_start_college == 0) and not (player_info.grad_school and player_info.num_yrs_grad_school == 1)):
+            player_info.done_action = True # switch job, get job, quit job = actions
+            game = get_game(player.cur_game) 
+            switch_turn(game)
 
     # if(player_info.mil_to_college and (player_info.mil_start_college == 0)):  # get job not count as action
     #     # game = get_game(player.cur_game)
@@ -1857,9 +1863,12 @@ def end_of_year():
     net_points = int(request.args.get("net-points").replace(",", ""))
     player_info.points += net_points
 
+    mandatory_loans = get_loan_int() * 0.005
+    expenses -= mandatory_loans  # mandatory loans come out of loans, not money
+
     loans_payment = request.args.get("loans-amount")
     if((player_info.loans > 0) and (loans_payment not in ["None", None, ""])):
-        player_info.loans -= int(loans_payment)
+        player_info.loans -= (int(loans_payment) + mandatory_loans)
 
     # update pay raises: check time til raise b/c grad school = regular path, but can have job in college
     if((player_info.path == "college") or (player_info.cur_time_til_raise == 0)):
