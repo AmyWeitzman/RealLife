@@ -1126,7 +1126,7 @@ def expenses(testing, data):
     tax_break = 500 * player_info.num_kids
 
     db.session.commit()
-    return render_template('expenses.html', page_name='Expenses', player_info=player_info, job=job, job_stress=job_stress, house=house, house_stress=house_stress, car=car, jobs=jobs, taxes=taxes, num_people=num_people, houses=houses, cars=cars, loans_int=loans_int, auto_ins=auto_ins, health_ins= health_ins, home_ins=home_ins, shopping=shopping, car_maintenance=car_maintenance, maid=maid, utilities=utilities, dental_fees=dental_fees, eat_ent=eat_ent, gas=gas, new_auto_ins=new_auto_ins, new_home_ins=new_home_ins, new_health_ins=new_health_ins, misc_points=misc_points, misc_fees=misc_fees, rent=rent, transit_fee=transit_fee, no_fam_car=no_fam_car, no_fam_house=no_fam_house, my_benefits=my_benefits, tax_prep=tax_prep, my_job=my_job, cur_house=my_house, cur_car=my_car, my_home_ins=my_home_ins, my_auto_ins=my_auto_ins, my_health_ins=my_health_ins, my_married=my_married, my_num_kids=my_num_kids, my_loans=my_loans, my_path=my_path, testing=is_testing, loan_pts=loan_pts, mandatory_loans=mandatory_loans, tax_break=tax_break, my_cur_salary=my_cur_salary, all_tax_prep_fees=all_tax_prep_fees, all_dental_fees=all_dental_fees, all_pet_fees=all_pet_fees, all_depression_fees=all_depression_fees)
+    return render_template('expenses.html', page_name='Expenses', player_info=player_info, job=job, job_stress=job_stress, house=house, house_stress=house_stress, car=car, jobs=jobs, taxes=taxes, num_people=num_people, houses=houses, cars=cars, loans_int=loans_int, auto_ins=auto_ins, health_ins= health_ins, home_ins=home_ins, shopping=shopping, car_maintenance=car_maintenance, maid=maid, utilities=utilities, dental_fees=dental_fees, eat_ent=eat_ent, gas=gas, new_auto_ins=new_auto_ins, new_home_ins=new_home_ins, new_health_ins=new_health_ins, misc_points=misc_points, misc_fees=misc_fees, rent=rent, transit_fee=transit_fee, no_fam_car=no_fam_car, no_fam_house=no_fam_house, my_benefits=my_benefits, tax_prep=tax_prep, my_job=my_job, my_house=my_house, my_car=my_car, my_home_ins=my_home_ins, my_auto_ins=my_auto_ins, my_health_ins=my_health_ins, my_married=my_married, my_num_kids=my_num_kids, my_loans=my_loans, my_path=my_path, testing=is_testing, loan_pts=loan_pts, mandatory_loans=mandatory_loans, tax_break=tax_break, my_cur_salary=my_cur_salary, all_tax_prep_fees=all_tax_prep_fees, all_dental_fees=all_dental_fees, all_pet_fees=all_pet_fees, all_depression_fees=all_depression_fees)
 
 @app.route('/test_expenses')
 @login_required
@@ -1863,7 +1863,7 @@ def end_of_year():
     net_points = int(request.args.get("net-points").replace(",", ""))
     player_info.points += net_points
 
-    mandatory_loans = get_loan_int() * 0.005
+    mandatory_loans = get_loan_int(player_info.loans) * 0.005
     expenses -= mandatory_loans  # mandatory loans come out of loans, not money
 
     loans_payment = request.args.get("loans-amount")

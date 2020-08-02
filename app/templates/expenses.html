@@ -20,8 +20,11 @@
                 </ul>
             </td>
             <td>
+                {% if player_info.path == "military" %}
+                <p>minus (current salary / 1000) points</p>
+                {% else %}
                 <p>minus (base salary / 1000) points</p>
-                <span class="once">* for military, use current salary instead</span>
+                {% endif %}
             </td>
             <td class="amount">-<span id="job-stress">{{ "{:,.0f}".format(job_stress) }}</span> points</td>
 
@@ -84,7 +87,7 @@
                     <label for="test-loan"><b>Loan:</b></label><br>
                     <b id="dollar-sign">$</b> <input type="text" class="textbox" name="test-loans-amount"><br>
 
-                    {% if benefits %}
+                    {% if my_benefits %}
                     <input type="checkbox" name="test-benefits" class="checkbox" value="test-benefits" id="test-benefits-checkbox">
                     <label for="test-benefits"><b>Military Benefits?</b></label><br>
                     {% else %}
