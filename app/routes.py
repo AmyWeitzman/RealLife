@@ -150,6 +150,8 @@ def player_info():
             game = get_game(player.cur_game)
             player_info.done_action = True
             switch_turn(game)
+
+    cur_turn_name = get_cur_turn(Game.query.filter_by(id=player.cur_game))
                    
         #if(player_info.car == "None"):
         #    flash("You must buy a vehicle.", "urgent")
@@ -161,7 +163,7 @@ def player_info():
     return render_template('player_info.html', page_name='Player Info', 
             game=game, name=current_user.name, player_info=player_info, job=job,
             taxes=taxes, benefits=benefits, num_people=num_people,
-            loans_int=loans_int, announcements=announcements, cur_turn=cur_turn)
+            loans_int=loans_int, announcements=announcements, cur_turn=cur_turn, cur_turn_name=cur_turn_name)
 
 @app.route('/set_roll_order')
 @login_required
@@ -272,8 +274,8 @@ def pick_card(game_id):
                 exterminator.money += 5000 
     elif(card.text == "Tech problems"):
         player_info.money -= 100  # pay $100
-        job = get_job("Software Developer")
-        if(job.picked and not player_info.job == "Software Developer"):  # someone is the software developer, gets paid $100
+        job = get_job("Programmer")
+        if(job.picked and not player_info.job == "Programmer"):  # someone is the programmer, gets paid $100
             developer = get_player_with_job(game_id, job)
             developer.money += 100 
     elif(card.text == "Lawsuit"):
@@ -325,12 +327,12 @@ def pick_card(game_id):
         if(job.picked):  # someone is the baker, gets paid $10,000
             baker = get_player_with_job(game_id, job)
             baker.money += 10010  # gets paid $10,000 + $10 already taken out above 
-    elif(card.text[:6] == "Animal"):  # animal trainer cards
+    elif(card.text[:3] == "Dog"):  # dog trainer cards
         player_infos = get_all_player_infos(game_id)
         for pi in player_infos:
             pi.money -= 10  # everyone pay $10
-        job = get_job("Animal Trainer")
-        if(job.picked):  # someone is the animal trainer, gets paid $10,000
+        job = get_job("Dog Trainer")
+        if(job.picked):  # someone is the dog trainer, gets paid $10,000
             trainer = get_player_with_job(game_id, job)
             trainer.money += 10010  # gets paid $10,000 + $10 already taken out above 
     elif(card.text[:8] == "Reporter"):  # reporter cards
@@ -476,7 +478,7 @@ def actions():  # actions can only be done every x yrs
     can_get_job = (player_info.job == "None") and ((player_info.path == "college") or (player_info.grad_school))
     can_quit_job = (player_info.path == "college") and (player_info.job != "None" and job.category == "job-in-college")
     can_get_promotion = (player_info.path != "military" and player_info.job != "None" and job.category != "job-in-college" and (not player_info.path == "college") and (not player_info.grad_school))
-    can_go_to_college = (player_info.path == "military" and player_info.yrs_military >= 4 and not player_info.mil_to_college) or (player_info.path != "college" and player_info.path != "military" and player_info.age_grad == 0)
+    can_go_to_college = (player_info.age != 18 and player_info.path == "military" and player_info.yrs_military >= 4 and not player_info.mil_to_college) or (player_info.path != "college" and player_info.path != "military" and player_info.age_grad == 0)
     can_go_to_grad_school = (player_info.age_grad > 0) and not (player_info.done_grad_1 and player_info.done_grad_2 and player_info.done_grad_6) and not player_info.grad_school
 
     if(can_switch_job): action_options.append("switch_jobs")
@@ -603,10 +605,24 @@ def jobs():
     player, player_info = get_cur_player_info()
     if(player_info.jobs_page_type == "all"):
         jobs = Job.query.all()
-        picked = {job.title: job.picked for job in jobs}  # mark picked jobs so can't be chosen by others
+        pinfos = get_all_player_infos(player.cur_game)
+        pjobs = []
+        for pinfo in pinfos:
+            if(pinfo.job != "None"):
+                job = get_job(pinfo.job)
+                if(job.category not in ["military", "job-in-college"]):  # one of each
+                    pjobs.append(pinfo.job)
+        picked = {job.title: job.title in pjobs for job in jobs}  # picked jobs can't be chosen by others
     else:
         jobs = Job.query.filter_by(category=player_info.jobs_page_type)  # allow player to filter jobs by category
-        picked = {job.title: job.picked for job in jobs}  # mark picked jobs so can't be chosen by others
+        pinfos = get_all_player_infos(player.cur_game)
+        pjobs = []
+        for pinfo in pinfos:
+            if(pinfo.job != "None"):
+                job = get_job(pinfo.job)
+                if(job.category not in ["military", "job-in-college"]):  # one of each
+                    pjobs.append(pinfo.job)
+        picked = {job.title: job.title in pjobs for job in jobs}  # picked jobs can't be chosen by others
     if(player_info.last_card == "Lose job"):
         flash("You lost your job.", "error")
 
@@ -908,7 +924,7 @@ def expenses(testing, data):
         if(is_testing):
             job_stress = int(job.base_salary / 1000)  # current salary = base salary since if got new job would start over salary
         else:
-            job_stress = int(job.base_salary / 1000) if my_path == "military" else int(job.base_salary / 1000)
+            job_stress = int(player_info.current_salary / 1000) if my_path == "military" else int(player_info.base_salary / 1000)
     jobs = Job.query.filter(Job.title != my_job)  # get all jobs except player's current job for dropdown
 
     house = "None"
@@ -1152,10 +1168,9 @@ def scoreboard():
     scores = []
     player = get_cur_player()
     players_infos = Player_Info.query.filter_by(game_id=player.cur_game, active=True).join(Player, Player_Info.player_id==Player.id).add_columns(Player.name, Player_Info.points, Player_Info.money, Player_Info.loans).order_by(Player_Info.points.desc())
-    for player_info in players_infos:  # show players ordered by highest -> lowest points
-        scores.append({"name": player_info.name, "points": player_info.points, "money": player_info.money, "has_loans": True if (player_info.loans > 0) else False})
-  
-    return render_template('scoreboard.html', page_name='Scoreboard', scores=scores)
+    ranks = calcRanks(players_infos)
+    
+    return render_template('scoreboard.html', page_name='Scoreboard', ranks=ranks)
 
 @app.route('/stats')
 @login_required
@@ -1596,6 +1611,18 @@ def get_all_player_infos(game_id):
     player_infos = Player_Info.query.filter_by(game_id=game_id)
     return player_infos
 
+def get_all_player_names(game_id):
+    player_infos = get_all_player_infos(game_id)
+    names = []
+    for pinfo in player_infos:
+        names.append(get_player_name(pinfo.player_id))
+    return names
+
+def get_player_name(player_id):
+    player = Player.query.filter_by(id=player_id).first()
+    name = player.name
+    return name
+
 def get_player_with_job(game_id, job):
     player = Player_Info.query.filter_by(game_id=game_id).join(job, Player_Info.job == job.title).first_or_404()
     return player
@@ -1714,6 +1741,24 @@ def get_new_home_ins(player_info):
         new_home_ins = 0  # firefighter gets free home insurance
     return new_home_ins
 
+def calcRanks(player_infos):  # already ordered 
+    curRank = 1  
+    lastPts = None
+    ranks = []
+    num_so_far = 0
+    for player_info in player_infos:  # show players ordered by highest -> lowest points (ties = same rank)
+        if((num_so_far >= 1) and (player_info.points != lastPts)):  # not tie, move to next ranking
+            curRank += 1
+        ranks.append({"rank": curRank, "name": player_info.name, "points": player_info.points, "money": player_info.money, "has_loans": True if (player_info.loans > 0) else False})
+        lastPts = player_info.points  # update points comparison for next player (checking for ties)
+        num_so_far += 1
+
+    return ranks
+
+def get_cur_turn(game):
+    cur_turn = game.join(Player_Info, and_(Player_Info.game_id == Game.id, Player_Info.turn_num == Game.cur_turn)).add_columns(Player_Info.player_id).join(Player, Player.id == Player_Info.player_id).add_columns(Player.name).first().name
+    return cur_turn
+
 def get_announcements(player_info):
     announcements = {}
     player = get_cur_player()
@@ -1726,8 +1771,12 @@ def get_announcements(player_info):
             announcements["Job is optional in college"] = "fyi"
             announcements["Not required to have vehicle in military"] = "fyi"
         else:
-            cur_turn = game.join(Player_Info, and_(Player_Info.game_id == Game.id, Player_Info.turn_num == Game.cur_turn)).add_columns(Player_Info.player_id).join(Player, Player.id == Player_Info.player_id).add_columns(Player.name).first().name
-            announcements[cur_turn + "'s turn"] = "turn"
+            # cur_turn = game.join(Player_Info, and_(Player_Info.game_id == Game.id, Player_Info.turn_num == Game.cur_turn)).add_columns(Player_Info.player_id).join(Player, Player.id == Player_Info.player_id).add_columns(Player.name).first().name
+            player_names = get_all_player_names(game.first().id)
+            for name in player_names:
+                announcements[name] = "turn"
+             # cur_turn = get_cur_turn(game)
+            # announcements[cur_turn + "'s turn"] = "turn"
     else:
         if(player_info.need_loan):  # automatically need to get a loan
             announcements["NEED TO GET A LOAN"] = "urgent"
@@ -1736,8 +1785,11 @@ def get_announcements(player_info):
             #announcements["End of year"] = "end_of_year"
             player_info.end_of_year = True
         else:  # don't really want/need these to show up at end of year
-            cur_turn = game.join(Player_Info, and_(Player_Info.game_id == Game.id, Player_Info.turn_num == Game.cur_turn)).add_columns(Player_Info.player_id).join(Player, Player.id == Player_Info.player_id).add_columns(Player.name).first().name
-            announcements[cur_turn + "'s turn"] = "turn"
+            #cur_turn = game.join(Player_Info, and_(Player_Info.game_id == Game.id, Player_Info.turn_num == Game.cur_turn)).add_columns(Player_Info.player_id).join(Player, Player.id == Player_Info.player_id).add_columns(Player.name).first().name
+            #announcements[cur_turn + "'s turn"] = "turn"
+            player_names = get_all_player_names(game.first().id)
+            for name in player_names:
+                announcements[name] = "turn"
         
             if((player_info.path == "military") and (player_info.yrs_military == 4)):
                 announcements["Eligible for discounted college tuition for 4 yrs"] = "fyi"
@@ -1862,12 +1914,15 @@ def end_of_year():
     net_points = int(request.args.get("net-points").replace(",", ""))
     player_info.points += net_points
 
-    mandatory_loans = get_loan_int(player_info.loans) * 0.005
+    loan_int = get_loan_int(player_info.loans)
+    mandatory_loans = loan_int * 0.005
     expenses -= mandatory_loans  # mandatory loans come out of loans, not money
 
     loans_payment = request.args.get("loans-amount")
-    if((player_info.loans > 0) and (loans_payment not in ["None", None, ""])):
+    if((loan_int > 0) and (loans_payment not in ["None", None, ""])):
         player_info.loans -= (int(loans_payment) + mandatory_loans)
+    if(player_info.loans < 0):
+        player_info.loans = 0
 
     # update pay raises: check time til raise b/c grad school = regular path, but can have job in college
     if((player_info.path == "college") or (player_info.cur_time_til_raise == 0)):
@@ -2114,11 +2169,11 @@ def go_to_college():
     player_info.current_salary /= 2
 
     # handle scholarships
-    tuition = 50000
-    roll = simulateRoll()  # roll for scholarship
-    scholarship = 5000 * roll
-    flash("You got a ${:,.0f} scholarship!".format(scholarship), "success")
-    player_info.loans += (tuition - scholarship)
+    # tuition = 50000
+    # roll = simulateRoll()  # roll for scholarship
+    # scholarship = 5000 * roll
+    # flash("You got a ${:,.0f} scholarship!".format(scholarship), "success")
+    # player_info.loans += (tuition - scholarship)
 
     if(not (player_info.mil_to_college and player_info.mil_start_college == 0)):
         game = get_game(player.cur_game)
@@ -2142,11 +2197,11 @@ def go_to_grad_school():
         player_info.age_grad = player_info.age  # just came from college, age grad never set
 
     # handle grad school scholarships
-    tuition = 100000
-    roll = simulateRoll()  # roll for scholarship
-    scholarship = 10000 * roll
-    flash("You got a ${:,.0f} scholarship!".format(scholarship), "success")
-    player_info.loans += (tuition - scholarship)
+    # tuition = 100000
+    # roll = simulateRoll()  # roll for scholarship
+    # scholarship = 10000 * roll
+    # flash("You got a ${:,.0f} scholarship!".format(scholarship), "success")
+    # player_info.loans += (tuition - scholarship)
 
     # when go to grad school straight from college, not an action; other go to grad school count as action
     if(player_info.picked_card):  # action

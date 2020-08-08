@@ -74,7 +74,7 @@
         {% endif %}
         {% if announcements %}
         {% for announcement, level in announcements.items() %}
-            <h3 class="detail announcement {{ level }}">{{ announcement }}</h3>
+            <h3 class="detail announcement {{ level }} {{ 'bold-name' if announcement == cur_turn_name or level != 'turn' else 'normal-name' }}">{{ announcement }}</h3>
         {% endfor %}
         {% endif %}
     {% endif %}
@@ -220,7 +220,9 @@
         </tr>
     </table>
     <!-- <label class="notes-label">Timeline</label> -->
+    <!-- <div id="timeline1" class="timeline"></div> -->
     <!-- <div id="timeline"></div> -->
+    <!-- <div id="timeline2" class="timeline"></div> -->
     <div id="notes">
         <label class="notes-label">Notes</label>
         <table id="sticky-notes">
@@ -252,6 +254,7 @@
             </tr>
         </table>
     </div>
+    <!-- <script src="./static/js/timeline.js"></script> -->
     <script>
         // window.onbeforeunload = function(e) {
         //     note1 = JSON.stringify(document.getElementById('notepad1').value);
@@ -366,18 +369,30 @@
             }
         }
 
-        // Timeline
-        // var container = document.getElementById('timeline');
-        // var items = new vis.DataSet([
-        //     {id: 1, content: 'item 1', start: '2013-04-20'},
-        //     {id: 2, content: 'item 2', start: '2013-04-14'},
-        //     {id: 3, content: 'item 3', start: '2013-04-18'},
-        //     {id: 4, content: 'item 4', start: '2013-04-16', end: '2013-04-19'},
-        //     {id: 5, content: 'item 5', start: '2013-04-25'},
-        //     {id: 6, content: 'item 6', start: '2013-04-27'}
+        // new Timeline('timeline', 18, 65, [
+        //     {"start": 18, "end": 20, "text": 'test', "color": 'lorem'},
+        //     {"start": 20, "end": 20, "text": 'test2', "color": 'dolor'},
         // ]);
-        // var options = {};
-        // var timeline = new vis.Timeline(container, items, options);
+    
 
+        // new Timesheet('timeline', 1918, 1941, [  // not working with 18-65 so just subtracting 1900 when displaying ages
+            // ['1918', 'test', 'lorem'],
+            // ['1919', '1920', 'Some great memories', 'ipsum'],
+            // ['1919', 'Had very bad luck'],
+            // ['1920', '1922', 'At least had fun', 'dolor'],
+            // ['1925', '1930', 'Enjoyed those times as well', 'ipsum'],
+            // ['1935', '1940', 'Bad luck again', 'default'],
+            // ['1941', 'For a long time nothing happened', 'dolor'],
+        // ]);
+
+        // new Timesheet('timeline2', 1942, 1965, [  // not working with 18-65 so just subtracting 1900 when displaying ages
+        //     ['48', 'test', 'lorem'],
+        //     ['49', '50', 'Some great memories', 'ipsum'],
+        //     ['49', 'Had very bad luck'],
+        //     ['50', '52', 'At least had fun', 'dolor'],
+        //     ['55', '60', 'Enjoyed those times as well', 'ipsum'],
+        //     ['55', '62', 'Bad luck again', 'default'],
+        //     ['65', 'For a long time nothing happened', 'dolor'],
+        // ]);
     </script>
 {% endblock %}

@@ -215,10 +215,10 @@
             </td>
         </tr>
         {% endif %}
-        {% if ((job_options != None and "Animal Trainer" in job_option_titles) or (job_options == None and category in ["regular", "all"])) %}
+        {% if ((job_options != None and "Dog Trainer" in job_option_titles) or (job_options == None and category in ["regular", "all"])) %}
         <tr>
-            <td class="col-picked picked-field">{{ "X" if picked["Animal Trainer"] else "" }}</td>
-            <td class="col-job regular">Animal Trainer</td>
+            <td class="col-picked picked-field">{{ "X" if picked["Dog Trainer"] else "" }}</td>
+            <td class="col-job regular">Dog Trainer</td>
             <td class="col-salary">
                 <p class="job-details"><b>$30,000</b></p>
                 <p class="job-details small">raise <span class="raise-time">every</span> year</p>
@@ -603,9 +603,9 @@
             </td>
         </tr>
         {% endif %}
-        {% if ((job_options != None and "Software Developer" in job_option_titles) or (job_options == None and category in ["college-grad", "all"])) %}
+        {% if ((job_options != None and "Programmer" in job_option_titles) or (job_options == None and category in ["college-grad", "all"])) %}
         <tr>
-            <td class="col-picked picked-field">{{ "X" if picked["Software Developer"] else "" }}</td>
+            <td class="col-picked picked-field">{{ "X" if picked["Programmer"] else "" }}</td>
             <td class="col-job college-grad">Software Developer</td>
             <td class="col-salary">
                 <p class="job-details"><b>$100,000</b></p>
@@ -710,7 +710,7 @@
         {% endif %}
     </table>
     <table id="legend-table">
-        <tr><td class="spacer">Spacer</td></tr>
+        <tr><td class="spacer">Shhh!</td></tr>
         <tr>
             <td id="job-picker-cell">
                 <form action="{{ url_for('get_job_options') }}">

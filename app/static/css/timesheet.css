@@ -1,0 +1,64 @@
+div.scrollmenu {
+    background-color: red;
+    /* margin: 0 auto; */
+    white-space: nowrap;
+    /* position: relative; */
+    overflow-x: scroll;
+    overflow-y: visible;
+}
+    
+div.scrollmenu section {
+    /* display: inline-block; */
+    color: yellow;
+    text-align: center;
+    padding: 14px;
+    /* text-decoration: none; */
+}
+    
+div.scrollmenu section:hover {
+    background-color: blue;
+}
+
+.timesheet{
+    /* border-top:1px solid rgba(250,250,250,0.5); */
+    background-color:rgb(190, 39, 177);
+    /* position:relative; */
+    /* display: inline-block; */
+    /* width: 100%; */
+    /* height: 100px; */
+    border-radius: 15px;
+    color: black;
+    /* width:720px;
+    height:292px;
+    margin:0 auto */
+    /* overflow-x: scroll;
+    overflow-y: visible;
+    white-space: nowrap; */
+}
+
+.timesheet .scale{
+    /* height:100%; */
+    /* position:absolute; */
+    /* top:0;
+    left:0;
+    float:left; */
+    border: 3px solid black;
+    border-radius: 15px;
+}
+
+.timesheet .scale section{
+    float:left;
+    width:59px;
+    text-align:center;
+    color: black;
+    font-family: Arial, Helvetica, sans-serif;
+    /* color:rgba(250,250,250,0.8); */
+    /* font-family:"Signika Negative"; */
+    font-size:30px;
+    /* line-height:24px; */
+    font-weight:lighter;
+    /* border-left: 3px dashed rgba(250,250,250,0.2); */
+    border-right: 3px solid black; 
+    height:100%;
+    padding-top: 10px;
+}

@@ -10,12 +10,12 @@
             <th>Points</th>
             <th>$$$</th>
         </tr>
-        {% for score in scores %}
+        {% for rank in ranks %}
             <tr>
-                <td>{{ loop.index }}</td>
-                <td>{{ score["name"] }}</td>
-                <td>{{ "{:,.0f}".format(score["points"]) }}</td>
-                <td class="{{ 'red' if score['has_loans'] else '' }}">{{ "{:,.0f}".format(score["money"]) }}</td>
+                <td>{{ rank['rank'] }}</td>
+                <td>{{ rank["name"] }}</td>
+                <td>{{ "{:,.0f}".format(rank["points"]) }}</td>
+                <td class="{{ 'red' if rank['has_loans'] else '' }}">{{ "{:,.0f}".format(rank["money"]) }}</td>
             </tr>
         {% endfor %}
     </table>

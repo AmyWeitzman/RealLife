@@ -243,9 +243,9 @@
             <td class="details">
             </td>
             <td>
-                <p><b>salary < $50,000:</b> 1% of salary</p>
-                <p><b>salary < $100,000:</b> 5% of salary</p>
-                <p><b>salary >= $100,000:</b> 10% of salary</p>
+                <p id="sal-50">salary < $50,000: 1% of salary</p>
+                <p id="sal-100">salary < $100,000: 5% of salary</p>
+                <p id="sal-101">salary >= $100,000: 10% of salary</p>
                 {% if player_info.job in ["Military", "Cashier", "Barista"] %}
                     <p class="once">* {{ player_info.job }} gets 50% off</p>
                 {% endif %}
@@ -485,7 +485,7 @@
                     <label for="home-ins" class="in-line checkbox-label short-margin">${{ '{:,.0f}'.format(new_home_ins) }}</label>
                     <label class="in-line once" class="ins-notice">New house: get insurance if desired</label>
                 {% endif %}
-                <label for="home-ins" class="in-line checkbox-label">${{ '{:,.0f}'.format(new_home_ins) }}</label>
+                <!-- <label for="home-ins" class="in-line checkbox-label">${{ '{:,.0f}'.format(new_home_ins) }}</label> -->
                 
                 <p id="net-points" class="in-line top-margin"><b>NET POINTS: </b></p>
                 <input id="net-points-val" name="net-points" class="top-margin" readonly>
@@ -515,7 +515,7 @@
             ttraise = parseFloat("{{ player_info.cur_time_til_raise }}");
             path = "{{ my_path }}";
             job = "{{ my_job }}";
-            real_loans = parseFloat("{{ my_loans }}");
+            real_loans = parseFloat("{{ loans_int }}");
             mandatory_loans = parseFloat("{{ mandatory_loans }}");
             if(job == "Teacher")
                 num_yrs_teacher = parseFloat("{{ player_info.num_yrs_teacher }}");
@@ -531,6 +531,8 @@
                 if(med_prob.toLowerCase() == "true")
                     salary *= 0.25  // athlete only get 1/4 of salary if injured
             }
+
+            is_loan_error = false;
 
             // Money
             taxes = parseFloat(document.getElementById("taxes").innerHTML.replace(/,/g, ''));
@@ -554,9 +556,14 @@
             // do not want expenses calculated with NaN, cannot pay more than current money for total loan payments
             if(isNaN(loans_payment))
                 loans_payment = 0;
-            if(loans_payment > (real_loans - mandatory_loans))
+            if(loans_payment > (real_loans - mandatory_loans)) {
                 loanPaymentError();  // cannot pay more than you owe for loans
-      
+                is_loan_error = true;
+            }
+            else {
+                is_loan_error = false;
+            }
+
             expenses = taxes + auto_ins + health_ins + home_ins + shopping + car_maintain + maid + utils + dental + eat_ent + gas + misc_fees + tax_prep - tax_break + loans_payment;
         
             // Points
@@ -565,7 +572,7 @@
             misc_points = parseFloat(document.getElementById("misc-points").innerHTML);
             net_points = misc_points - job_stress - house_stress;
 
-            net_earnings = salary - expenses;
+            net_earnings = salary - expenses + loans_payment;
 
             document.getElementById("net-points-val").value = parseFloat(net_points).toLocaleString('en');
             document.getElementById("total-expenses").value = parseFloat(expenses).toLocaleString('en');
@@ -583,8 +590,13 @@
 
             if(loans_payment == 0)
                 noLoanPaymentError();  // no error if not paying back any loan
-            else if((money + net_earnings < 0) || ((money + net_earnings > 0) && (loans_payment > (money + net_earnings)))) {
+            else if((money + net_earnings < 0) || ((money + net_earnings > 0) && (loans_payment > 0) && (expenses > (money + net_earnings)))) {
                 loanPaymentError();    // error if paying more than current money
+            }
+            else if(is_loan_error)
+                loanPaymentError(); 
+            else {
+                noLoanPaymentError();
             }
 
             function updateExpenses() {
@@ -609,13 +621,16 @@
                 // do not want expenses calculated with NaN
                 if(isNaN(loans_payment))
                     loans_payment = 0;
-                if(loans_payment > (real_loans - mandatory_loans))
-                    loanPaymentError();
-                else
-                    noLoanPaymentError();
+                if(loans_payment > (real_loans - mandatory_loans)) {
+                    loanPaymentError();  // cannot pay more than you owe for loans
+                    is_loan_error = true;
+                }
+                else {
+                    is_loan_error = false;
+                }
     
                 expenses = taxes + auto_ins + health_ins + home_ins + shopping + car_maintain + maid + utils + dental + eat_ent + gas + misc_fees + tax_prep - tax_break + loans_payment;
-                net_earnings = salary - expenses;
+                net_earnings = salary - expenses + loans_payment;
                 
                 document.getElementById("total-expenses").value = parseFloat(expenses).toLocaleString('en');
                 document.getElementById("net-earnings-val").value = parseFloat(net_earnings).toLocaleString('en');
@@ -630,11 +645,23 @@
                 else
                     document.getElementById("tax-40").setAttribute('style', 'font-weight: bold;');
 
+                if(income < 50000)
+                    document.getElementById("sal-50").setAttribute('style', 'font-weight: bold;');
+                else if(income < 100000)
+                    document.getElementById("sal-100").setAttribute('style', 'font-weight: bold;');
+                else
+                    document.getElementById("sal-101").setAttribute('style', 'font-weight: bold;');
+
                 if(loans_payment == 0)
-                    noLoanPaymentError(true, true);
-                else if((money + net_earnings < 0) || ((money + net_earnings > 0) && (loans_payment > (money + net_earnings)))) {
+                    noLoanPaymentError();
+                else if((money + net_earnings < 0) || ((money + net_earnings > 0) && (loans_payment > 0) && (expenses > (money + net_earnings)))) {
                     loanPaymentError();
-            }
+                }   
+                else if(is_loan_error)
+                    loanPaymentError(); 
+                else {
+                    noLoanPaymentError();
+                }
                 // if((college_loans_payment != 0 && loans_payment != 0) || ((college_loans_payment + loans_payment) > (money + net_earnings))) {
                 //     loanPaymentError(true);
                 //     loanPaymentError(false);

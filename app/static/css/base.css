@@ -10,12 +10,13 @@ body {
     padding: 10px;
     background-color: indigo;
     border-radius: 25px;
+    transition: all .3s ease-in-out;
 }
 
 #nav-container {
     margin-bottom: 20px;
-    display: flex;
-    justify-content: space-between;  
+    /* display: flex;
+    justify-content: space-between;   */
 }
 
 a {
@@ -25,6 +26,7 @@ a {
 
 .nav-link:hover {
     color: lightskyblue;
+    transform: scale(1.05);
 }
 
 hr {
@@ -37,3 +39,10 @@ hr {
     margin-left: 30%
 }
 
+button {
+    transition: all .3s ease-in-out;
+}
+
+button:hover {
+    transform: scale(1.05);
+}

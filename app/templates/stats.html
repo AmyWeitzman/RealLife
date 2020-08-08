@@ -6,16 +6,20 @@
         <script src="https://d3js.org/d3.v4.min.js"></script>
     </head>
     <body>
-        <div><a href="{{ url_for('player') }}" class="nav-link">Home</a></div>
-        <div><a href="{{ url_for('player_info', card_text='???') }}" class="nav-link">Player Info</a></div>
-        <div><a href="{{ url_for('cards') }}" class="nav-link">Cards</a></div>
-        <div><a href="{{ url_for('actions') }}" class="nav-link">Actions</a></div>
-        <div><a href="{{ url_for('jobs') }}" class="nav-link">Jobs</a></div>
-        <div><a href="{{ url_for('vehicles') }}" class="nav-link">Vehicles</a></div>
-        <div><a href="{{ url_for('houses') }}" class="nav-link">Houses</a></div>
-        <div><a href="{{ url_for('expenses', testing='false', data='none') }}" class="nav-link">Finances</a></div>
-        <div><a href="{{ url_for('stats') }}" class="nav-link">Analysis</a></div>
-        <div><a href="{{ url_for('scoreboard') }}" class="nav-link">Scoreboard</a></div>
+        <div id="nav-container" class="d-flex justify-content-between">
+            <div class="mx-auto row row-fluid">
+                <div class="p-2"><a href="{{ url_for('player') }}" class="nav-link">Home</a></div>
+                <div class="p-2"><a href="{{ url_for('player_info', card_text='???') }}" class="nav-link">Player Info</a></div>
+                <div class="p-2"><a href="{{ url_for('cards') }}" class="nav-link">Cards</a></div>
+                <div class="p-2"><a href="{{ url_for('actions') }}" class="nav-link">Actions</a></div>
+                <div class="p-2"><a href="{{ url_for('jobs') }}" class="nav-link">Jobs</a></div>
+                <div class="p-2"><a href="{{ url_for('vehicles') }}" class="nav-link">Vehicles</a></div>
+                <div class="p-2"><a href="{{ url_for('houses') }}" class="nav-link">Houses</a></div>
+                <div class="p-2"><a href="{{ url_for('expenses', testing='false', data='none') }}" class="nav-link">Finances</a></div>
+                <div class="p-2"><a href="{{ url_for('stats') }}" class="nav-link">Analysis</a></div>
+                <div class="p-2"><a href="{{ url_for('scoreboard') }}" class="nav-link">Scoreboard</a></div>
+            </div>
+        </div>
         <br>
         <hr>
         <style>

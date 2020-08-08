@@ -485,3 +485,19 @@ button:disabled {
 .complete {
     color: green;
 }
+
+.bold-name {
+    font-weight: bold;
+}
+
+.normal-name {
+    font-weight: normal !important;
+}
+
+/* .timeline {
+    width: 97%;
+    height: 100px;
+    background-color: rgb(175, 175, 175);
+    border-radius: 15px;
+    color: black;
+} */

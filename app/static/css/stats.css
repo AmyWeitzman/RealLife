@@ -3,6 +3,49 @@ body {
     margin: 25px;
 }
 
+.nav-link {
+    /* float: left; */
+     /* margin-left: 2%;   */
+    font-size: 20px;
+    padding: 10px;
+    background-color: indigo;
+    border-radius: 25px;
+    transition: all .3s ease-in-out;
+}
+
+#nav-container {
+    margin-bottom: 20px;
+    /* display: flex;
+    justify-content: space-between;   */
+}
+
+a {
+    text-decoration: none;
+    color: white;
+}
+
+.nav-link:hover {
+    color: lightskyblue;
+    transform: scale(1.05);
+}
+
+hr {
+    border: indigo 2px solid;
+    margin-top: 50px;
+}
+
+.alert {
+    width: 30%;
+    margin-left: 30%
+}
+
+button {
+    transition: all .3s ease-in-out;
+}
+
+button:hover {
+    transform: scale(1.05);
+}
 
 #tbl {
     width: 100%

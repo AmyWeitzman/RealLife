@@ -86,7 +86,7 @@
             </td>
         </tr>
         <tr>
-            <td>Rented Room</td>
+            <td>Studio</td>
             <td class="cost">7,000</td>
             <td>-1 pts</td>
             <td>0</td>
@@ -94,7 +94,7 @@
             <td>0</td>
             <td>0</td>
             <td class="buy-button-cell">
-                <form action="{{ url_for('buy_house', house='Rented Room') }}">
+                <form action="{{ url_for('buy_house', house='Studio') }}">
                     <button type="submit" id="buy_rented room">BUY</button>
                 </form>
             </td>
@@ -186,7 +186,7 @@
         </tr>
         <tr>
             <td class="large-family" rowspan=6><b>Large Family</b><br>Sell for 30% profit</td>
-            <td>Modern Victorian</td>
+            <td>Houseboat</td>
             <td class="cost">200,000</td>
             <td>-120 pts</td>
             <td>400</td>
@@ -194,13 +194,13 @@
             <td>1,000</td>
             <td>260,000</td>
             <td class="buy-button-cell">
-                <form action="{{ url_for('buy_house', house='Modern Victorian') }}">
-                    <button type="submit" id="buy_modern victorian">BUY</button>
+                <form action="{{ url_for('buy_house', house='Houseboat') }}">
+                    <button type="submit" id="buy_houseboat">BUY</button>
                 </form>
             </td>
         </tr>
         <tr>
-            <td>Mountain Retreat</td>
+            <td>Ranch</td>
             <td class="cost">350,000</td>
             <td>-110 pts</td>
             <td>700</td>
@@ -214,21 +214,21 @@
             </td>
         </tr>
         <tr>
-            <td>Houseboat</td>
+            <td>Snowy Chalet</td>
             <td class="cost">500,000</td>
             <td>-100 pts</td>
-            <td>1,000</td>
+            <td>1000</td>
             <td>{{ '{:,.0f}'.format(50 + 0.1 * 500000) }}</td>
             <td>2,500</td>
             <td>650,000</td>
             <td class="buy-button-cell">
-                <form action="{{ url_for('buy_house', house='Houseboat') }}">
-                    <button type="submit" id="buy_houseboat">BUY</button>
+                <form action="{{ url_for('buy_house', house='Modern Victorian') }}">
+                    <button type="submit" id="buy_modern victorian">BUY</button>
                 </form>
             </td>
         </tr>
         <tr>
-            <td>Penthouse Suite</td>
+            <td>Penthouse</td>
             <td class="cost">600,000</td>
             <td>-90 pts</td>
             <td>1,200</td>
@@ -236,7 +236,7 @@
             <td>3,000</td>
             <td>780,000</td>
             <td class="buy-button-cell">
-                <form action="{{ url_for('buy_house', house='Penthouse Suite') }}">
+                <form action="{{ url_for('buy_house', house='Penthouse') }}">
                     <button type="submit" id="buy_penthouse suite">BUY</button>
                 </form>
             </td>
