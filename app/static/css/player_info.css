@@ -297,7 +297,12 @@ button:disabled {
 }
 
 .orange  {
-    background-color: rgb(252, 169, 136);
+    background-color: rgb(252, 169, 136); 
+}
+
+.msg {
+    border: #87DCC0 dashed 3px;
+    padding-top: 15px;
 }
 
 .purple {
@@ -501,3 +506,11 @@ button:disabled {
     border-radius: 15px;
     color: black;
 } */
+
+.bold {
+    font-weight: bold;
+}
+
+.not-bold {
+    font-weight: normal;
+}

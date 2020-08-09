@@ -26,10 +26,12 @@
             <button type="submit" id="ready-button" class="detail">READY</button>
         </form>
         {% endif %}
-        {% if player_info.mil_to_college and player_info.mil_start_college == 0 and player_info.job in ["None", "Military"] %}
+        {% if player_info.mil_to_college and player_info.mil_start_college == 0 %}
+            {% if player_info.job in ["None", "Military"] %}
             <form action="{{ url_for('jobs') }}">
                 <button type="submit" id="mil-to-college-job-button" class="detail">Job</button>
             </form>
+            {% endif %}
             {% if player_info.car == "None" %}
             <form action="{{ url_for('vehicles') }}">
                 <button type="submit" id="mil-to-college-car-button" class="detail">Vehicle</button>
@@ -107,8 +109,14 @@
             </td>
         </tr>
         <tr>
-            <td class="field-name"><label class="field-label yellow">Path</label></td>
-            <td class="field-val"><label class="black-border">{{ player_info.path }}</label></td>
+            <td class="field-name" colspan="2">
+                {% if player_info.age < 22 %}
+                <label class="field-label msg"><span class="bold">Parent Aid:</span> <span class="not-bold">${{ "{:,.0f}".format(player_info.parent_help) }}/yr, {{ 22 - player_info.age }} {{ 'yr' if 22 - player_info.age == 1 else 'yrs' }}</span></label>
+                {% else %}
+                <label class="field-label msg"><span class="bold">Retirement:</span> <span class="not-bold">{{ 65 - player_info.age }}  {{ 'yr' if 65 - player_info.age == 1 else 'yrs' }}</span></label>
+                {% endif %}
+            </td>
+            <!-- <td class="field-val"><label class="black-border">{{ player_info.path }}</label></td> -->
             <td class="field-name"><label class="field-label yellow">Job</label></td>
             <td class="field-val"><label class="black-border">{{ player_info.job }}</label></td>
             <td class="field-name"><label class="field-label yellow">Salary</label></td>

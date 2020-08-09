@@ -88,7 +88,7 @@
                     <b id="dollar-sign">$</b> <input type="text" class="textbox" name="test-loans-amount"><br>
 
                     {% if my_benefits %}
-                    <input type="checkbox" name="test-benefits" class="checkbox" value="test-benefits" id="test-benefits-checkbox">
+                    <input type="checkbox" name="test-benefits" class="checkbox" value="test-benefits" id="test-benefits-checkbox" checked>
                     <label for="test-benefits"><b>Military Benefits?</b></label><br>
                     {% else %}
                     <input type="checkbox" name="test-benefits" class="checkbox" value="test-benefits" id="test-benefits-checkbox" style="visibility: hidden;">
@@ -255,8 +255,8 @@
             </td>
             <td class="amount">$-<span id="eat-ent">{{ '{:,.0f}'.format(eat_ent) }}</span></td>
             <td class="blank">
-                <p class="cur-status"><b>Current $$$:</b> {{ '{:,.0f}'.format(player_info.money) }}</p>
-                <p class="cur-status"><b>Current Points:</b> {{ '{:,.0f}'.format(player_info.points) }}</p>
+                <!-- <p class="cur-status"><b>Current $$$:</b> {{ '{:,.0f}'.format(player_info.money) }}</p>
+                <p class="cur-status"><b>Current Points:</b> {{ '{:,.0f}'.format(player_info.points) }}</p> -->
             </td>
         </tr>
         <tr>

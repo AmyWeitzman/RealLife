@@ -19,6 +19,12 @@ body {
     justify-content: space-between;   */
 }
 
+.cur-status {
+    font-size: 22px;
+    color: green;
+    margin: 0;
+}
+
 a {
     text-decoration: none;
     color: white;

@@ -55,6 +55,7 @@ class Player_Info(db.Model):
     done_grad_2 = db.Column(db.Boolean, default=False)
     done_grad_6 = db.Column(db.Boolean, default=False)
     graduating = db.Column(db.Boolean, default=False)
+    parent_help = db.Column(db.Integer, default=-1)
     car = db.Column(db.String(64), default="None")
     old_car = db.Column(db.String(64), default="None")
     house = db.Column(db.String(64), default="None")
