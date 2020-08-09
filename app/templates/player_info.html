@@ -15,7 +15,9 @@
     {% if not game.finished %}
         {% if not game.roll_order %}
         <form action="{{ url_for('set_roll_order') }}">
-            <button type="submit" id="roll-order-button" class="detail">ROLL</button>
+            <button type="submit" id="roll-order-button" class="detail">
+                <input type="image" id="roll-image" alt="Roll" src="{{ url_for('static', filename='imgs/die.png') }}">
+            </button>
         </form>
         {% endif %}
         {% if game.roll_order and (game.cur_turn == player_info.turn_num) and not player_info.ready %}

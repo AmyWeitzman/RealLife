@@ -224,10 +224,12 @@ textarea {
 }
 
 #roll-order-button {
-    border: 3px black solid;
+    /* border: 3px black solid;
     color:black;
     border-radius: 20px;
-    outline: 0;
+    outline: 0; */
+    border: none;
+    background-color: white;
 }
 
 #roll-order-button:hover {
@@ -513,4 +515,9 @@ button:disabled {
 
 .not-bold {
     font-weight: normal;
+}
+
+#roll-image {
+    width: 35px;
+    height: 35  px;
 }

@@ -764,7 +764,7 @@ def pick_job(job_name):  # set up job on player info
         else: 
             player_info.yrs_til_switch_jobs = wait_yrs  # changed job as action 
         
-        if(job.category != "job-in-college"): # part-time
+        if(((player_info.num_yrs_college > 0 and player_info.num_yrs_college < 5) or (player_info.grad_school)) and (job.category != "job-in-college")): # part-time
             # player_info.base_salary /= 2
             player_info.current_salary /= 2
         
