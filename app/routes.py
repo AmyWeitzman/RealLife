@@ -128,7 +128,7 @@ def player_info():
     if(player_info.job.lower() != "none"):
         job = get_job(player_info.job)
         taxes = get_taxes(player_info.current_salary, job.title, player_info.married)
-        benefits = check_eligibility(player_info.path, player_info.yrs_military, player_info.age_grad, player_info.age)
+        benefits = check_eligibility(player_info.path, player_info.yrs_military, player_info.age_grad, player_info.age, player_info.yrs_benefits_used)
     else:
         job = "None"
         taxes = 0
@@ -486,7 +486,7 @@ def actions():  # actions can only be done every x yrs
 
     action_options = ["buy_organic", "upgrade_appliances", "change_car", "change_house", "buy_clothes", "local_travel", "domestic_travel", "international_travel", "get_married", "get_divorced", "have_kid", "have_grandkid", "buy_pet", "buy_pool", "sell_pool", "major_donor", "season_tickets", "backpacking", "peace_corps", "mission_trip", "invest"]  
 
-    can_switch_job = player_info.job != "None"
+    can_switch_job = (player_info.job == "Military" and player_info.yrs_military > 5) or (player_info.job != "None")
     can_get_job = (player_info.job == "None") and (player_info.start_college_beginning and player_info.age < 22)
     can_quit_job = (player_info.path == "college") and (player_info.job != "None" and job.category == "job-in-college")
     can_get_promotion = (player_info.path != "military" and player_info.job != "None" and job.category != "job-in-college" and (not player_info.path == "college") and (not player_info.grad_school))
@@ -597,7 +597,7 @@ def actions():  # actions can only be done every x yrs
     loans_int = get_loan_int(player_info.loans)
     amt_can_afford = player_info.money - get_loan_int(player_info.loans)
 
-    benefits = check_eligibility(player_info.path, player_info.yrs_military, player_info.age_grad, player_info.age)
+    benefits = check_eligibility(player_info.path, player_info.yrs_military, player_info.age_grad, player_info.age, player_info.yrs_benefits_used)
     
     return render_template('actions.html', page_name='Actions', player_info=player_info, disabled=disabled, num_people=num_people, house=house, houses=houses, house_costs=house_costs, car=car, cars=cars, car_costs=car_costs, loans_int=loans_int, job=job, amt_can_afford=amt_can_afford, benefits=benefits, can_switch_job=can_switch_job, can_get_job=can_get_job, can_quit_job=can_quit_job, can_go_to_college=can_go_to_college, can_go_to_grad_school=can_go_to_grad_school, can_get_promotion=can_get_promotion)
 
@@ -642,7 +642,7 @@ def jobs():
     if(player_info.job != "None"):
         job = get_job(player_info.job)
 
-    benefits = check_eligibility(player_info.path, player_info.yrs_military, player_info.age_grad, player_info.age)
+    benefits = check_eligibility(player_info.path, player_info.yrs_military, player_info.age_grad, player_info.age, player_info.yrs_benefits_used)
 
     return render_template('jobs.html', page_name='Jobs', player_info=player_info, category=player_info.jobs_page_type, picked=picked, job_options=None, job=job, benefits=benefits)
 
@@ -815,7 +815,8 @@ def buy_car(car):
         player_info.money += old_car.sell_price
     vehicle = get_car(car)
     player_info.car = vehicle.name
-    player_info.money -= vehicle.cost
+    if(vehicle.name != "Public Transit"):
+        player_info.money -= vehicle.cost
     if(player_info.old_car != "None"):
         change_in_price = abs(vehicle.cost - old_car.cost)  # calculate points for upgrade/downgrade
         downgrade = -1 if (vehicle.cost - old_car.cost) < 0 else 1
@@ -929,7 +930,7 @@ def expenses(testing, data):
         my_num_kids = player_info.num_kids
         my_loans = player_info.loans
         my_path = player_info.path
-        my_benefits = check_eligibility(my_path, player_info.yrs_military, player_info.age_grad, player_info.age)
+        my_benefits = check_eligibility(my_path, player_info.yrs_military, player_info.age_grad, player_info.age, player_info.yrs_benefits_used)
  
     job = "None"
     job_stress = 0
@@ -1338,7 +1339,7 @@ def travel(loc):
         # check job for travel benefits: 2 people free for local travel
         if(player_info.job != "None"):
             job = get_job(player_info.job)
-            if((job.title.lower() in ['military', "flight attendant", "pilot"]) or check_eligibility(player_info.path, player_info.yrs_military, player_info.age_grad, player_info.age)):
+            if((job.title.lower() in ['military', "flight attendant", "pilot"]) or check_eligibility(player_info.path, player_info.yrs_military, player_info.age_grad, player_info.age, player_info.yrs_benefits_used)):
                 num_people -= 2
         if(num_people < 0): 
             num_people = 0  # just in case 1 person buy took off 2 people for discount
@@ -1578,7 +1579,7 @@ def invest():
     player, player_info = get_cur_player_info()
     amount = int(amount)
     if(amount > player_info.money):
-        flash("You do not have enough money for that investment.", "error")
+        flash("You don't have enough money.", "error")
         return redirect(url_for('actions'))
     roll = simulateRoll()
     if((roll % 2) == 0):  # even: gain
@@ -1702,9 +1703,9 @@ def get_path(job):
     else:
         return "regular"  
 
-def check_eligibility(path, yrs_military, age_grad, age):
+def check_eligibility(path, yrs_military, age_grad, age, yrs_benefits_used):
     if(path.lower() == "military"): return True
-    # if((yrs_military != 0) and ((age - age_grad) < yrs_military) and (yrs_benefits_used <= yrs_military)): return True
+    # if((yrs_military != 0) and ((age - age_grad) < yrs_military) and (player_info.yrs_benefits_used <= yrs_military)): return True
     if((yrs_military != 0) and (yrs_benefits_used <= yrs_military)): return True
     return False
 
@@ -1834,9 +1835,9 @@ def get_announcements(player_info):
                 announcements["Retiring next year"] = "fyi"
                 if(player_info.loans > 0):
                     announcements["Pay off all loans by end of year or will lose ALL points"] = "urgent"
-            cur_eligibility = check_eligibility(player_info.path, player_info.yrs_military, player_info.age_grad, player_info.age) 
-            next_year_eligib = check_eligibility(player_info.path, player_info.yrs_military, player_info.age_grad, player_info.age + 1)
-            next_next_year_eligib = check_eligibility(player_info.path, player_info.yrs_military, player_info.age_grad, player_info.age + 2)
+            cur_eligibility = check_eligibility(player_info.path, player_info.yrs_military, player_info.age_grad, player_info.age, player_info.yrs_benefits_used) 
+            next_year_eligib = check_eligibility(player_info.path, player_info.yrs_military, player_info.age_grad, player_info.age + 1, player_info.yrs_benefits_used)
+            next_next_year_eligib = check_eligibility(player_info.path, player_info.yrs_military, player_info.age_grad, player_info.age + 2, player_info.yrs_benefits_used)
             if(next_next_year_eligib != cur_eligibility):
                 announcements["Ineligible for military benefits in 2 years"] = "fyi"   # benefits run out soon
             if(next_year_eligib != cur_eligibility):
@@ -1938,8 +1939,11 @@ def end_of_year():
     expenses -= mandatory_loans  # mandatory loans come out of loans, not money
 
     loans_payment = request.args.get("loans-amount")
+    if(loans_payment == ""):
+        loans_payment = 0
+    loans_payment = int(loans_payment)
     if((loan_int > 0) and (loans_payment not in ["None", None, ""])):
-        player_info.loans -= (int(loans_payment) + mandatory_loans)
+        player_info.loans -= (loans_payment + mandatory_loans)
     if(player_info.loans < 0):
         player_info.loans = 0
 
@@ -2029,7 +2033,7 @@ def end_of_year():
     income = (salary - expenses)
 
     player_info.money += income
-    player_info.expenses = expenses - int(loans_payment)
+    player_info.expenses = expenses - loans_payment
     player_info.income = income
 
     player_info.age += 1
@@ -2055,7 +2059,7 @@ def end_of_year():
         player_info.mil_start_college += 1
 
     # update to new insurances
-    if((player_info.age < 26) or check_eligibility(player_info.path, player_info.yrs_military, player_info.age_grad, player_info.age)):
+    if((player_info.age < 26) or check_eligibility(player_info.path, player_info.yrs_military, player_info.age_grad, player_info.age, player_info.yrs_benefits_used)):
         player_info.have_health_ins = True
     else:
         want_health_ins = request.args.get("health-ins")
@@ -2081,7 +2085,7 @@ def end_of_year():
     # reset yearly vals kept track of
     player_info.med_prob = False
     player_info.depressed = False
-    player_info.buy_organic = False
+    player_info.buying_organic = False
     player_info.picked_card = False
     player_info.done_action = False
     player_info.end_of_year = False
@@ -2180,6 +2184,8 @@ def go_to_college():
         player_info.cur_time_til_raise = 0
         player_info.base_salary = 0
         player_info.current_salary = 0
+
+        player_info.clicked_button = True
   
     player_info.path = "college"
     player_info.num_yrs_college = 1

@@ -519,5 +519,9 @@ button:disabled {
 
 #roll-image {
     width: 35px;
-    height: 35  px;
+    height: 35px;
+}
+
+.retire-alert {
+    color: red;
 }

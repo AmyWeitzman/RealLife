@@ -384,7 +384,7 @@
                 <p class="loss">Public Transit: ${{ "{:,.0f}".format(transit_fee) }}</p>
                 {% endif %}
                 {% if player_info.buying_organic %}
-                <p class="loss">Buy organic: pay $1000 per person</p>
+                <p class="loss">Buy organic: pay ${{ "{:,.0f}".format(1000 * num_people) }}</p>
                 {% endif %}
                 {% if player_info.have_pet and player_info.job != "Veterinarian" %}
                 <p class="loss">Pet: $100</p>
