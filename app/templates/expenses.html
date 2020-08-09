@@ -45,7 +45,7 @@
                         <option value="{{ house.name }}" class="{{ house.category }}">{{ house.name }}</option>
                         {% endfor %}
                     </select><br>
-                    {% if player_info.house == "None" %}
+                    {% if player_info.house == "None" or house_cat == 'no-family' %}
                         <input type="checkbox" name="test-home-ins" class="checkbox" value="test-home-ins" id="test-home-ins-checkbox" disabled>
                     {% elif player_info.have_home_ins %}
                         <input type="checkbox" name="test-home-ins" class="checkbox" value="test-home-ins" id="test-home-ins-checkbox" checked>
@@ -61,7 +61,7 @@
                         <option value="{{ car.name }}" class="{{ car.category }}">{{ car.name }}</option>
                         {% endfor %}
                     </select><br>
-                    {% if player_info.car == "None" %}
+                    {% if player_info.car == "None" or car_cat == 'no-family' %}
                         <input type="checkbox" name="test-auto-ins" class="checkbox" value="test-auto-ins" id=test-auto-ins-checkbox disabled>
                     {% elif player_info.have_auto_ins %}
                         <input type="checkbox" name="test-auto-ins" class="checkbox" value="test-auto-ins" id=test-auto-ins-checkbox checked>
@@ -587,6 +587,13 @@
                 document.getElementById("tax-30").setAttribute('style', 'font-weight: bold;');
             else
                 document.getElementById("tax-40").setAttribute('style', 'font-weight: bold;');
+
+            if(income < 50000)
+                document.getElementById("sal-50").setAttribute('style', 'font-weight: bold;');
+            else if(income < 100000)
+                document.getElementById("sal-100").setAttribute('style', 'font-weight: bold;');
+            else
+                document.getElementById("sal-101").setAttribute('style', 'font-weight: bold;');
 
             if(loans_payment == 0)
                 noLoanPaymentError();  // no error if not paying back any loan
