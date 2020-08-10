@@ -525,3 +525,8 @@ button:disabled {
 .retire-alert {
     color: red;
 }
+
+#end-of-year-form {
+    float: left;
+    margin-right: 20px;
+}

@@ -148,7 +148,7 @@
                 {% if player_info.age < 26 %}
                 <p class="once">* Still covered by parents' health insurance</p>
                 {% endif %}
-                {% if benefits %}
+                {% if my_benefits %}
                 <p class="once">* Free health insurance through military benefits</p>
                 {% endif %}
                 {% if player_info.job == "Doctor" %}
@@ -249,7 +249,7 @@
                 {% if player_info.job in ["Military", "Cashier", "Barista"] %}
                     <p class="once">* {{ player_info.job }} gets 50% off</p>
                 {% endif %}
-                {% if player_info.path != "military" and benefits %}
+                {% if player_info.path != "military" and my_benefits %}
                     <p class="once">* military benefits: 50% off</p>
                 {% endif %}
             </td>
@@ -713,7 +713,7 @@
         if(married) // currently have health insurance
                 document.getElementById("test-married-checkbox").checked = true;
 
-        benefits = "{{ benefits }}".toLowerCase() == "true" ? true : false;
+        benefits = "{{ my_benefits }}".toLowerCase() == "true" ? true : false;
         if(benefits) // currently have health insurance
                 document.getElementById("test-benefits-checkbox").checked = true;
         

@@ -562,16 +562,16 @@
             change_in_points = 0
             if(house_from === house_to)
             change_in_points = 0;   // cannot switch to current car
-            else if(change_in_price <= 10000)
-                change_in_points = 10 * downgrade;
-            else if(change_in_price <= 20000)
-                change_in_points = 20 * downgrade;
             else if(change_in_price <= 50000)
                 change_in_points = 35 * downgrade;
-            else if(change_in_price <= 80000)
+            else if(change_in_price <= 100000)
                 change_in_points = 55 * downgrade;
-            else
+            else if(change_in_price <= 250000)
                 change_in_points = 80 * downgrade;
+            else if(change_in_price <= 500000)
+                change_in_points = 110 * downgrade;
+            else
+                change_in_points = 150 * downgrade;
 
             document.getElementById("house-change-points").innerHTML = change_in_points;
         }

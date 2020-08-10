@@ -45,7 +45,7 @@
             </form>
             {% endif %}
         {% endif %}
-        {% if player_info.num_yrs_college == 5 and not player_info.grad_college and not player_info.clicked_button %}
+        {% if (game.cur_turn == player_info.turn_num) and player_info.num_yrs_college == 5 and not player_info.grad_college and not player_info.clicked_button %}
         <form action="{{ url_for('graduate') }}">
             <button type="submit" class="graduate-button detail">Graduate</button>
         </form>
@@ -53,7 +53,7 @@
             <button type="submit" class="grad-school-button detail">Grad School</button>
         </form>
         {% endif %}
-        {% if player_info.grad_school and player_info.num_yrs_grad_school == 2 and not player_info.done_grad_1 and not player_info.clicked_button %}
+        {% if (game.cur_turn == player_info.turn_num) and player_info.grad_school and player_info.num_yrs_grad_school == 2 and not player_info.done_grad_1 and not player_info.clicked_button %}
         <form action="{{ url_for('graduate') }}">
             <button type="submit" class="graduate-button detail">Graduate</button>
         </form>
@@ -61,7 +61,7 @@
             <button type="submit" class="continue-grad-btn detail">Continue Grad School</button>
         </form>
         {% endif %}
-        {% if player_info.num_yrs_grad_school == 3 and not player_info.done_grad_2 and not player_info.clicked_button %}
+        {% if (game.cur_turn == player_info.turn_num) and player_info.num_yrs_grad_school == 3 and not player_info.done_grad_2 and not player_info.clicked_button %}
         <form action="{{ url_for('graduate') }}">
             <button type="submit" class="graduate-button detail">Graduate</button>
         </form>
@@ -70,11 +70,11 @@
         </form>
         {% endif %}
         {% if player_info.end_of_year %}
-        <td id="side-button-cell" colspan="2">
-            <form action="{{ url_for('expenses', testing='false', data='none') }}">
+        <!-- <td id="side-button-cell" colspan="2"> -->
+            <form action="{{ url_for('expenses', testing='false', data='none') }}" id="end-of-year-form">
                 <button type="submit" id="end-of-year-button">End of Year</button>
             </form>
-        </td>
+        <!-- </td> -->
         {% endif %}
         {% if announcements %}
         {% for announcement, level in announcements.items() %}

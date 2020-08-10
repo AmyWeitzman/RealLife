@@ -123,6 +123,7 @@ class Player_Info(db.Model):
     kids_ages = db.Column(db.String(64), default="None")
     start_college_beginning = db.Column(db.Boolean, default=False)
     disable_no_action = db.Column(db.Boolean, default=False)
+    twins_upgrade = db.Column(db.Boolean, default=False)
 
 class Card(db.Model):
     id = db.Column(db.Integer, primary_key=True)

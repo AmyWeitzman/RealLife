@@ -715,7 +715,7 @@
             <td id="job-picker-cell">
                 <form action="{{ url_for('get_job_options') }}">
                     <div id="job-picker">
-                        <select name="job-dropdown" id="job-dropdown">
+                        <select name="job-dropdown" id="job-dropdown" onchange="setButton()">
                             <option value="default" selected disabled hidden>Choose type...</option>
                             {% if player_info.age == 18 and not player_info.ready %}
                             <option value="military" class="military">Military</option>
@@ -744,8 +744,8 @@
                 </form>
                 <form action="{{ url_for('pick_job_from_options') }}" id="radio-buttons">
                     {% for job in jobs %}
-                        <input type="radio" name="jobs" value="{{ job.title }}" id="{{ job.title }}" class="radio-button">
-                        <label for="{{ job.title }}">{{ job.title }}</label><br>
+                        <input type="radio" name="jobs" value="{{ job }}" id="{{ job }}" class="radio-button">
+                        <label for="{{ job }}">{{ job }}</label><br>
                     {% endfor %}
                     {% if jobs %}
                         <button type="submit" id="select-job-button">SELECT</button>
@@ -755,7 +755,6 @@
         </tr>
     </table>
     <script type="text/javascript">
-    console.log('{{ player_info.path }}')
         category = '{{ category }}';
         switch(category) {
             case "job-in-college":
@@ -789,6 +788,17 @@
                 btn.disabled = true;
             });
             document.getElementById('job-dropdown').disabled = true
+        }
+
+        function setButton() {
+            dropdown = document.getElementById('job-dropdown');
+            cur_type = dropdown.options[dropdown.selectedIndex].text;
+            if(cur_type == "Military") {
+                document.getElementById('pick-job-button').innerHTML = "Enlist";
+            }
+            else {
+                document.getElementById('pick-job-button').innerHTML = "Choose Job";
+            }
         }
     </script>
 {% endblock %}
