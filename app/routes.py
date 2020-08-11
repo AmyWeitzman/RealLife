@@ -147,22 +147,14 @@ def player_info():
 
     cur_turn = game.cur_turn
 
-    print(player_info.mil_to_college)
-    print(player_info.mil_start_college)
     if((player_info.mil_to_college) and (player_info.mil_start_college == 0)):
         if(player_info.job == "None"): 
             flash("You have enrolled.", "success")
-        print(player_info.job)
-        print(player_info.car)
-        print(player_info.house)
         if(player_info.job != "None" and player_info.car != "None" and player_info.house != "None"):  # completed all required actions, switch to next turn
             game = get_game(player.cur_game)
-            print(game.cur_turn)
-            print(player_info.turn_num)
-            if(game.cur_turn == player_info.turn_num):
+            if((not player_info.done_action) and (game.cur_turn == player_info.turn_num)):
                 player_info.done_action = True
                 switch_turn(game)
-                print("switching to player " + str(game.cur_turn))
 
     cur_turn_name = get_cur_turn(Game.query.filter_by(id=player.cur_game))
                    
@@ -1945,7 +1937,6 @@ def switch_turn(game):
     if(next_turn > game.num_players):  # circle back to first player
         next_turn = 1
     game.cur_turn = next_turn
-    print(str(game.cur_turn) + "'s turn")
 
     db.session.commit()
     return redirect(url_for('player_info'))
