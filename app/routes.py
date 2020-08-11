@@ -147,11 +147,18 @@ def player_info():
 
     cur_turn = game.cur_turn
 
+    print(player_info.mil_to_college)
+    print(player_info.mil_start_college)
     if((player_info.mil_to_college) and (player_info.mil_start_college == 0)):
-        if(player_info.job == "Military"):  # only show once, hopefully they get job first
+        if(player_info.job == "None"): 
             flash("You have enrolled.", "success")
-        if(player_info.job != "Military" and player_info.car != "None" and player_info.house != "None"):  # completed all required actions, switch to next turn
+        print(player_info.job)
+        print(player_info.car)
+        print(player_info.house)
+        if(player_info.job != "None" and player_info.car != "None" and player_info.house != "None"):  # completed all required actions, switch to next turn
             game = get_game(player.cur_game)
+            print(game.cur_turn)
+            print(player_info.turn_num)
             if(game.cur_turn == player_info.turn_num):
                 player_info.done_action = True
                 switch_turn(game)
@@ -177,8 +184,8 @@ def player_info():
         else:
             parent_help = 0
         player_info.parent_help = parent_help
-        db.session.commit()
-
+    
+    db.session.commit()
     return render_template('player_info.html', page_name='Player Info', 
             game=game, name=current_user.name, player_info=player_info, job=job,
             taxes=taxes, benefits=benefits, num_people=num_people,
@@ -2283,6 +2290,9 @@ def go_to_college():
         game = get_game(player.cur_game)
         player_info.done_action = True
         switch_turn(game)
+
+    print(player_info.mil_to_college)
+    print(player_info.mil_start_college)
 
     db.session.commit()
     return redirect(url_for('player_info'))
