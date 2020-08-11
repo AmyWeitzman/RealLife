@@ -78,11 +78,11 @@
 
                     <p><b>Have child:</b></p>
                     <input type="radio" name="test-kids" value="test-single-child">
-                    <label for="test-single-child" class="left-radio">Single</label>
+                    <label for="test-single-child" class="left-radio">1</label>
                     <input type="radio" name="test-kids" value="test-twins">
-                    <label for="test-twins" class="left-radio">Twins</label>
+                    <label for="test-twins" class="left-radio">2</label>
                     <input type="radio" name="test-kids" value="test-kids-none" checked>
-                    <label for="test-kids-none">None</label><br>
+                    <label for="test-kids-none">0</label><br>
 
                     <label for="test-loan"><b>Loan:</b></label><br>
                     <b id="dollar-sign">$</b> <input type="text" class="textbox" name="test-loans-amount"><br>
@@ -206,7 +206,7 @@
             <td> 
                 <span class="italic">see houses chart</span>  
                 {%  if player_info.was_janitor %}
-                <p class="once">* learned cleaning skills as janitor so no pay maid</p>
+                <p class="once">* learned cleaning skills as janitor don't need to hire maid</p>
                 {% endif %}
             </td>
             <td class="amount">$-<span id="maid">{{ '{:,.0f}'.format(maid) }}</span></td>
@@ -334,7 +334,7 @@
                 <p>Public Transit: cost is annual fee</p>
                 {% endif %}
                 {% if player_info.buying_organic %}
-                <p>* Buy organic: extra $1000 per person</p>
+                <p>Buy organic: extra $1000 per person</p>
                 {% endif %}
                 {% if player_info.buying_organic and my_job == "Farmer" %}
                 <p>* Buy organic: farmer gets 25% off</p>
@@ -384,7 +384,7 @@
                 <p class="loss">Public Transit: ${{ "{:,.0f}".format(transit_fee) }}</p>
                 {% endif %}
                 {% if player_info.buying_organic %}
-                <p class="loss">Buy organic: pay ${{ "{:,.0f}".format(1000 * num_people) }}</p>
+                <p class="loss">Buy organic: ${{ "{:,.0f}".format(1000 * num_people) }}</p>
                 {% endif %}
                 {% if player_info.have_pet and player_info.job != "Veterinarian" %}
                 <p class="loss">Pet: $100</p>
@@ -572,7 +572,7 @@
             misc_points = parseFloat(document.getElementById("misc-points").innerHTML);
             net_points = misc_points - job_stress - house_stress;
 
-            net_earnings = salary - expenses + loans_payment;
+            net_earnings = salary - expenses;
 
             document.getElementById("net-points-val").value = parseFloat(net_points).toLocaleString('en');
             document.getElementById("total-expenses").value = parseFloat(expenses).toLocaleString('en');
@@ -637,7 +637,7 @@
                 }
     
                 expenses = taxes + auto_ins + health_ins + home_ins + shopping + car_maintain + maid + utils + dental + eat_ent + gas + misc_fees + tax_prep - tax_break + loans_payment;
-                net_earnings = salary - expenses + loans_payment;
+                net_earnings = salary - expenses;
                 
                 document.getElementById("total-expenses").value = parseFloat(expenses).toLocaleString('en');
                 document.getElementById("net-earnings-val").value = parseFloat(net_earnings).toLocaleString('en');

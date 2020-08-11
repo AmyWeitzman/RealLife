@@ -124,6 +124,7 @@ class Player_Info(db.Model):
     start_college_beginning = db.Column(db.Boolean, default=False)
     disable_no_action = db.Column(db.Boolean, default=False)
     twins_upgrade = db.Column(db.Boolean, default=False)
+    paid_expenses = db.Column(db.Boolean, default=True)
 
 class Card(db.Model):
     id = db.Column(db.Integer, primary_key=True)

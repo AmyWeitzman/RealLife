@@ -95,7 +95,7 @@
             <td>0</td>
             <td class="buy-button-cell">
                 <form action="{{ url_for('buy_house', house='Studio') }}">
-                    <button type="submit" id="buy_rented room">BUY</button>
+                    <button type="submit" id="buy_studio">BUY</button>
                 </form>
             </td>
         </tr>
@@ -209,7 +209,7 @@
             <td>455,000</td>
             <td class="buy-button-cell">
                 <form action="{{ url_for('buy_house', house='Ranch') }}">
-                    <button type="submit" id="buy_mountain retreat">BUY</button>
+                    <button type="submit" id="buy_ranch">BUY</button>
                 </form>
             </td>
         </tr>
@@ -223,7 +223,7 @@
             <td>650,000</td>
             <td class="buy-button-cell">
                 <form action="{{ url_for('buy_house', house='Snowy Chalet') }}">
-                    <button type="submit" id="buy_modern victorian">BUY</button>
+                    <button type="submit" id="buy_snowy chalet">BUY</button>
                 </form>
             </td>
         </tr>
@@ -271,11 +271,12 @@
         </tr>
     </table>
     <script type="text/javascript">
-        var owned = ["{{', '.join(disabled) }}"];
-        for(var i = 0; i < owned.length; i++) {  // cannot buy own house
-            if(owned[i] == "")
+        var owned = JSON.parse('{{ disabled|tojson }}');
+        //for(var i = 0; i < owned.length; i++) {  // cannot buy own house
+        for(const [key, val] of Object.entries(owned)) {
+            if(val !== true)
                 continue;
-            document.getElementById('buy_'+owned[i]).disabled = true
+            document.getElementById('buy_'+key).disabled = true
         }
 
         var money = parseFloat("{{ player_info.money }}");

@@ -152,8 +152,10 @@ def player_info():
             flash("You have enrolled.", "success")
         if(player_info.job != "Military" and player_info.car != "None" and player_info.house != "None"):  # completed all required actions, switch to next turn
             game = get_game(player.cur_game)
-            switch_turn(game)
-            player_info.done_action = True
+            if(game.cur_turn == player_info.turn_num):
+                player_info.done_action = True
+                switch_turn(game)
+                print("switching to player " + str(game.cur_turn))
 
     cur_turn_name = get_cur_turn(Game.query.filter_by(id=player.cur_game))
                    
@@ -163,6 +165,8 @@ def player_info():
         #else:
         #    flash("You may downgrade to a college vehicle.", "info")
         #    return redirect(url_for('player_info'))
+
+    all_paid = have_all_players_paid(player.cur_game)
 
     if(player_info.parent_help == -1):
         roll = simulateRoll()
@@ -178,7 +182,7 @@ def player_info():
     return render_template('player_info.html', page_name='Player Info', 
             game=game, name=current_user.name, player_info=player_info, job=job,
             taxes=taxes, benefits=benefits, num_people=num_people,
-            loans_int=loans_int, announcements=announcements, cur_turn=cur_turn, cur_turn_name=cur_turn_name)
+            loans_int=loans_int, announcements=announcements, cur_turn=cur_turn, cur_turn_name=cur_turn_name, all_paid=all_paid)
 
 @app.route('/set_roll_order')
 @login_required
@@ -188,10 +192,11 @@ def set_roll_order():
     player_infos = get_all_player_infos(player.cur_game)
     players = [p.player_id for p in player_infos]
     shuffle(players)
-   
+
     # set turn number for all players
     for num, pid in enumerate(players, start=1):
         player_infos.filter_by(player_id=pid).first().turn_num = num
+        
     game.roll_order = True
     game.num_players = len(players)
     game.cur_turn = 1
@@ -229,7 +234,7 @@ def cards():
 def pick_card(game_id):
     player = get_cur_player()
     player_info = Player_Info.query.filter_by(game_id=game_id, player_id=player.id).first()
-    card_type_regular = False if player_info.num_yrs_college > 0 and player_info.age <= 22 else True  # only college (and under 22) picks college cards
+    card_type_regular = False if player_info.num_yrs_college > 0 and player_info.age < 22 else True  # only college (and under 22) picks college cards
     cards = list(Card.query.filter_by(regular=card_type_regular))  # get all cards from the appropriate category
     card = cards[randint(0, len(cards) - 1)]  # pick a random card
     while(not is_valid_card(player_info, card)):  # check if card is valid (no car cards if no have car, etc...)
@@ -749,7 +754,7 @@ def get_job_options():
     if(job_type in ["job-in-college", "grad-school-1", "grad-school-2"]):
         # only get one option so whatever is picked is your job
         job = jobs[randint(0, len(jobs) - 1)]  # get random job
-        return redirect(url_for("pick_job", job_name=job.title))
+        return redirect(url_for("pick_job", job_name=job))
     elif(job_type == "grad-school-6"):
         # only 1 choice
         return redirect(url_for("pick_job", job="Doctor"))
@@ -1246,7 +1251,7 @@ def get_loan():
 @app.route('/save_notes/<notepad>')
 @login_required
 def save_notes(notepad):
-    print("saving...")
+    # print("saving...")
     sticky_note = request.args.get("notepad")  # get which sticky note to save
     player, player_info = get_cur_player_info()
     if(int(notepad) == 1): player_info.notes1 = sticky_note
@@ -1259,8 +1264,8 @@ def save_notes(notepad):
 @app.route('/save_allnotes/<note1>/<note2>/<note3>/<note4>')
 @login_required
 def save_allnotes(note1, note2, note3, note4):
-    print("here")
-    print(repr(note1))
+    # print("here")
+    # print(repr(note1))
     player, player_info = get_cur_player_info()
     player_info.notes1 = note1
     player_info.notes2 = note2
@@ -1661,7 +1666,7 @@ def get_game(id):
     return game
 
 def get_all_player_infos(game_id):
-    player_infos = Player_Info.query.filter_by(game_id=game_id)
+    player_infos = Player_Info.query.filter_by(game_id=game_id).order_by(Player_Info.turn_num)
     return player_infos
 
 def get_all_player_names(game_id):
@@ -1726,6 +1731,20 @@ def get_taxes(cur_salary, job, married):
     if(married):
         taxes /= 2
     return int(taxes)
+
+def have_all_players_paid(game_id):
+    player_infos = get_all_player_infos(game_id)
+    num_players = 0
+    num_paid = 0
+
+    for pi in player_infos:
+        num_players += 1
+        if(pi.paid_expenses):
+            num_paid += 1
+
+    if(num_paid == num_players):
+        return True
+    return False
 
 def get_picked_jobs(player, player_info, job_type):
     if(job_type == "all"):
@@ -1853,6 +1872,7 @@ def get_announcements(player_info):
         if((game.first().cur_turn == 1) and (player_info.done_action)):    # already went through a round a turns, end of year
             #announcements["End of year"] = "end_of_year"
             player_info.end_of_year = True
+            player_info.paid_expenses = False
         else:  # don't really want/need these to show up at end of year
             #cur_turn = game.join(Player_Info, and_(Player_Info.game_id == Game.id, Player_Info.turn_num == Game.cur_turn)).add_columns(Player_Info.player_id).join(Player, Player.id == Player_Info.player_id).add_columns(Player.name).first().name
             #announcements[cur_turn + "'s turn"] = "turn"
@@ -1887,9 +1907,9 @@ def get_announcements(player_info):
             cur_eligibility = check_eligibility(player_info.path, player_info.yrs_military, player_info.age_grad, player_info.age, player_info.yrs_benefits_used) 
             next_year_eligib = check_eligibility(player_info.path, player_info.yrs_military, player_info.age_grad, player_info.age + 1, player_info.yrs_benefits_used + 1)
             next_next_year_eligib = check_eligibility(player_info.path, player_info.yrs_military, player_info.age_grad, player_info.age + 2, player_info.yrs_benefits_used + 2)
-            if(next_next_year_eligib != cur_eligibility):
+            if(next_next_year_eligib != cur_eligibility and not player_info.mil_to_college):
                 announcements["Ineligible for military benefits in 2 years"] = "fyi"   # benefits run out soon
-            if(next_year_eligib != cur_eligibility):
+            elif(next_year_eligib != cur_eligibility and not player_info.mil_to_college):
                announcements["Ineligible for military benefits next year"] = "urgent"   # benefits run out
             if((player_info.num_kids == 3) or (player_info.num_kids == 4)):
                 announcements[">= 5 kids = -50 points each"] = "fyi"
@@ -1913,10 +1933,12 @@ def get_id(text):
     return page_id;
 
 def switch_turn(game):
+    player, player_info = get_cur_player_info()
     next_turn = game.cur_turn + 1
     if(next_turn > game.num_players):  # circle back to first player
         next_turn = 1
     game.cur_turn = next_turn
+    print(str(game.cur_turn) + "'s turn")
 
     db.session.commit()
     return redirect(url_for('player_info'))
@@ -2174,6 +2196,8 @@ def end_of_year():
 
     if(player_info.money < 0):  # need to get loan next year
         player_info.need_loan = True
+
+    player_info.paid_expenses = True
 
     db.session.commit()
 
