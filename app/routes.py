@@ -148,8 +148,6 @@ def player_info():
     cur_turn = game.cur_turn
 
     if((player_info.mil_to_college) and (player_info.mil_start_college == 0)):
-        if(player_info.job == "None"): 
-            flash("You have enrolled.", "success")
         if(player_info.job != "None" and player_info.car != "None" and player_info.house != "None"):  # completed all required actions, switch to next turn
             game = get_game(player.cur_game)
             if((not player_info.done_action) and (game.cur_turn == player_info.turn_num)):
@@ -1904,12 +1902,12 @@ def get_announcements(player_info):
                 if(player_info.loans > 0):
                     announcements["Pay off all loans by end of year or will lose ALL points"] = "urgent"
             cur_eligibility = check_eligibility(player_info.path, player_info.yrs_military, player_info.age_grad, player_info.age, player_info.yrs_benefits_used) 
-            next_year_eligib = check_eligibility(player_info.path, player_info.yrs_military, player_info.age_grad, player_info.age + 1, player_info.yrs_benefits_used + 1)
-            next_next_year_eligib = check_eligibility(player_info.path, player_info.yrs_military, player_info.age_grad, player_info.age + 2, player_info.yrs_benefits_used + 2)
-            if(next_next_year_eligib != cur_eligibility and not player_info.mil_to_college):
-                announcements["Ineligible for military benefits in 2 years"] = "fyi"   # benefits run out soon
-            elif(next_year_eligib != cur_eligibility and not player_info.mil_to_college):
+            next_year_eligib = check_eligibility(player_info.path, player_info.yrs_military, player_info.age_grad, player_info.age + 1, player_info.yrs_benefits_used)
+            next_next_year_eligib = check_eligibility(player_info.path, player_info.yrs_military, player_info.age_grad, player_info.age + 2, player_info.yrs_benefits_used)
+            if(next_year_eligib != cur_eligibility and not player_info.mil_to_college):
                announcements["Ineligible for military benefits next year"] = "urgent"   # benefits run out
+            elif(next_next_year_eligib != cur_eligibility and not player_info.mil_to_college):
+                announcements["Ineligible for military benefits in 2 years"] = "fyi"   # benefits run out soon
             if((player_info.num_kids == 3) or (player_info.num_kids == 4)):
                 announcements[">= 5 kids = -50 points each"] = "fyi"
             num_people = get_num_people(player_info.married, player_info.num_kids, player_info.kids_ages)
