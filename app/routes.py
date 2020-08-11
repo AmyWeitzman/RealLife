@@ -140,6 +140,8 @@ def player_info():
 
     if(player_info.money < 0):
         player_info.need_loan = True
+    if(player_info.points < 0):  # depressed
+        player_info.depressed = True
 
     num_people = get_num_people(player_info.married, player_info.num_kids, player_info.kids_ages)
     loans_int = get_loan_int(player_info.loans)
@@ -516,11 +518,11 @@ def actions():  # actions can only be done every x yrs
 
     action_options = ["buy_organic", "upgrade_appliances", "change_car", "change_house", "buy_clothes", "local_travel", "domestic_travel", "international_travel", "get_married", "get_divorced", "have_kid", "have_grandkid", "buy_pet", "buy_pool", "sell_pool", "major_donor", "season_tickets", "backpacking", "peace_corps", "mission_trip", "invest"]  
 
-    can_switch_job = (player_info.job == "Military" and player_info.yrs_military > 5) or (player_info.job != "None")
+    can_switch_job = (player_info.job != "None" and player_info.job != "Military")
     can_get_job = (player_info.job == "None") and (player_info.start_college_beginning and player_info.age < 22)
     can_quit_job = (player_info.path == "college") and (player_info.job != "None" and job.category == "job-in-college")
-    can_get_promotion = (player_info.path != "military" and player_info.job != "None" and job.category != "job-in-college" and (not player_info.path == "college") and (not player_info.grad_school))
-    can_go_to_college = (player_info.age != 18 and player_info.path == "military" and player_info.yrs_military >= 4 and not player_info.mil_to_college) or (player_info.path != "college" and player_info.path != "military" and player_info.age_grad == 0) and not player_info.mil_to_college
+    can_get_promotion = (player_info.path != "military" and player_info.job != "None" and player_info.job != "YouTuber" and job.category != "job-in-college" and (not player_info.path == "college") and (not player_info.grad_school) and not (player_info.num_yrs_college > 0 and player_info.num_yrs_college < 5))
+    can_go_to_college = ((player_info.age != 18 and player_info.path == "military" and player_info.yrs_military >= 4 and not player_info.mil_to_college) or (player_info.path != "college" and player_info.path != "military" and player_info.age_grad == 0)) and not player_info.mil_to_college
     can_go_to_grad_school = (player_info.age_grad > 0) and not (player_info.done_grad_1 and player_info.done_grad_2 and player_info.done_grad_6) and not player_info.grad_school
 
     if(can_switch_job): action_options.append("switch_jobs")
@@ -1433,7 +1435,8 @@ def have_kids():
         flash("You did NOT have a child.", "error")
         redirect(url_for('player_info'))
     roll = simulateRoll()
-    num_babies = 1 if roll < 6 else 2
+    #num_babies = 1 if roll < 6 else 2
+    num_babies = 1 if player_info.num_kids == 0 else 2
     points = (100 * num_babies) if (player_info.num_kids + num_babies) <= 4 else (-50 * num_babies) if (player_info.num_kids + num_babies) >= 6 else -50 if (num_babies == 1) else 50  # last one is for twins where one is +50 and one is -50
     school_fees = 1500 * num_babies
     job = get_job(player_info.job)
@@ -1902,8 +1905,8 @@ def get_announcements(player_info):
                 if(player_info.loans > 0):
                     announcements["Pay off all loans by end of year or will lose ALL points"] = "urgent"
             cur_eligibility = check_eligibility(player_info.path, player_info.yrs_military, player_info.age_grad, player_info.age, player_info.yrs_benefits_used) 
-            next_year_eligib = check_eligibility(player_info.path, player_info.yrs_military, player_info.age_grad, player_info.age + 1, player_info.yrs_benefits_used)
-            next_next_year_eligib = check_eligibility(player_info.path, player_info.yrs_military, player_info.age_grad, player_info.age + 2, player_info.yrs_benefits_used)
+            next_year_eligib = check_eligibility(player_info.path, player_info.yrs_military, player_info.age_grad, player_info.age + 1, player_info.yrs_benefits_used + 1)
+            next_next_year_eligib = check_eligibility(player_info.path, player_info.yrs_military, player_info.age_grad, player_info.age + 2, player_info.yrs_benefits_used + 2)
             if(next_year_eligib != cur_eligibility and not player_info.mil_to_college):
                announcements["Ineligible for military benefits next year"] = "urgent"   # benefits run out
             elif(next_next_year_eligib != cur_eligibility and not player_info.mil_to_college):
@@ -2223,11 +2226,11 @@ def graduate():
     player_info.yrs_til_switch_jobs = 0  #  need to reset so can get job since required
 
     # if completed a grad school, keep track of which one
-    if(player_info.num_yrs_grad_school == 1):
+    if(player_info.num_yrs_grad_school == 2):
         player_info.done_grad_1 = True
-    elif(player_info.num_yrs_grad_school == 2):
+    elif(player_info.num_yrs_grad_school == 3):
         player_info.done_grad_2 = True
-    elif(player_info.num_yrs_grad_school == 6):
+    elif(player_info.num_yrs_grad_school == 7):
         player_info.done_grad_6 = True
 
     if(not player_info.grad_school):
