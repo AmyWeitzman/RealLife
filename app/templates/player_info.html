@@ -172,7 +172,7 @@
         </tr>
         <tr>
             <td class="field-name"><label class="field-label brown">College</label></td>
-            {% if player_info.path == "college" %}
+            {% if player_info.num_yrs_college > 0 and player_info.num_yrs_college < 5 %}
                 {% if (5 - player_info.num_yrs_college) == 1 %}
                 <td class="field-val"><label class="black-border once">{{ 5 - player_info.num_yrs_college }} yr left</label></td>
                 {% else %}
@@ -184,7 +184,7 @@
             <td class="field-val"><label class="black-border">N/A</label></td>
             {% endif %}
             <td class="field-name"><label class="field-label brown">Grad 1</label></td>
-            {% if player_info.grad_school and not player_info.done_grad_1 %}
+            {% if player_info.grad_school and not player_info.done_grad_1 and player_info.num_yrs_grad_school < 2 %}
                 {% if (2 - player_info.num_yrs_grad_school) == 1 %}
                 <td class="field-val"><label class="black-border once">{{ 2 - player_info.num_yrs_grad_school }} yr left</label></td>
                 {% elif (2 - player_info.num_yrs_grad_school) < 0 %}
@@ -198,7 +198,7 @@
             <td class="field-val"><label class="black-border">N/A</label></td>
             {% endif %}
             <td class="field-name"><label class="field-label brown">Grad 2</label></td>
-            {% if player_info.grad_school and not player_info.done_grad_2 %}
+            {% if player_info.grad_school and not player_info.done_grad_2 and player_info.num_yrs_grad_school < 3 %}
                 {% if (3 - player_info.num_yrs_grad_school) == 1 %}
                 <td class="field-val"><label class="black-border once">{{ 3 - player_info.num_yrs_grad_school }} yr left</label></td>
                 {% elif (3 - player_info.num_yrs_grad_school) < 0 %}

@@ -584,9 +584,9 @@ def actions():  # actions can only be done every x yrs
         if(player_info.yrs_til_rich_action > 0):
             disabled["season_tickets"] = True
             disabled["backpacking"] = True
-        if((player_info.married) or (player_info.age > 45) or (player_info.yrs_til_peace_corps > 0)):
+        if((player_info.married) or (player_info.age > 45) or (player_info.yrs_til_peace_corps > 0) or (player_info.num_kids > 0)):
             disabled["peace_corps"] = True  # must be single and <= 45 to do peace corps
-        if((player_info.married) or (player_info.age <= 45) or (player_info.yrs_til_mission_trip > 0)):
+        if((player_info.married) or (player_info.age <= 45) or (player_info.yrs_til_mission_trip > 0) or (player_info.num_kids > 0)):
             disabled["mission_trip"] = True  # must be single and over 45 to do mission trip
         if(player_info.yrs_til_invest > 0):
             disabled["invest"] = True
@@ -608,6 +608,7 @@ def actions():  # actions can only be done every x yrs
             disabled["change_car"] = False
         if(must_change_house):
             disabled["change_house"] = False
+        player_info.disable_no_action = True
 
     # if(player_info.num_yrs_college == 4): 
     #     if(player_info.house == "None"):  # need to buy a house
@@ -744,10 +745,10 @@ def get_job_options():
         flash("You must specify a job type.", "error")
         return redirect(url_for('jobs'))
     # jobs = list(Job.query.filter_by(category=job_type, picked=False))  # only show jobs that are in the category and unpicked
-    jobs = [job.title for job in all_jobs if job not in picked and job.category == job_type]
+    jobs = [job.title for job in all_jobs if not picked[job.title] and job.category == job_type]
     while(len(jobs) == 0):  # in case no jobs left in category
         job_type = get_next_job_type(job_type)  # move down to next category
-        jobs = [job.title for job in all_jobs if job not in picked and job.category == job_type]
+        jobs = [job.title for job in all_jobs if not picked[job.title] and job.category == job_type]
     if(job_type == "military"):
         return redirect(url_for("pick_job", job_name="Military"))
     if(job_type in ["job-in-college", "grad-school-1", "grad-school-2"]):
@@ -988,6 +989,7 @@ def expenses(testing, data):
                 houses = House.query.filter(House.name != my_house) # get all houses except player's current house for dropdown 
         else:
             house = get_house(my_house)    
+            houses = House.query.filter(House.name != my_house) # get all houses except player's current house for dropdown 
         house_stress = house.minus_points
         if(house.category == "no-family"):
             rent = house.cost
@@ -1004,6 +1006,7 @@ def expenses(testing, data):
                 cars = Vehicle.query.filter(Vehicle.name != my_car) # get all cars except player's current car for dropdown
         else:
             car = get_car(my_car) 
+            cars = Vehicle.query.filter(Vehicle.name != my_car) # get all cars except player's current car for dropdown
         
     if((my_job == "Athlete") and (player_info.med_prob)):
         taxes = get_taxes(my_cur_salary * 0.25, my_job, my_married) # 25% salary -> 25% taxes (adjust with tax bracket)
@@ -1435,8 +1438,7 @@ def have_kids():
         flash("You did NOT have a child.", "error")
         redirect(url_for('player_info'))
     roll = simulateRoll()
-    #num_babies = 1 if roll < 6 else 2
-    num_babies = 1 if player_info.num_kids == 0 else 2
+    num_babies = 1 if roll < 6 else 2
     points = (100 * num_babies) if (player_info.num_kids + num_babies) <= 4 else (-50 * num_babies) if (player_info.num_kids + num_babies) >= 6 else -50 if (num_babies == 1) else 50  # last one is for twins where one is +50 and one is -50
     school_fees = 1500 * num_babies
     job = get_job(player_info.job)
@@ -2159,10 +2161,12 @@ def end_of_year():
     player_info.picked_card = False
     player_info.done_action = False
     player_info.end_of_year = False
-    player_info.disable_no_action = False
+    if(not player_info.twins_upgrade):
+        player_info.disable_no_action = False
     player_info.clicked_button = False
     if(player_info.twins_upgrade and ((get_car(player_info.car).category == "large-family") and (get_house(player_info.house).category == "large-family"))):
         player_info.twins_upgrade = False
+        player_info.disable_no_action = False
 
     if(player_info.mil_to_college and player_info.mil_start_college != 0):
         pass
@@ -2282,9 +2286,6 @@ def go_to_college():
         game = get_game(player.cur_game)
         player_info.done_action = True
         switch_turn(game)
-
-    print(player_info.mil_to_college)
-    print(player_info.mil_start_college)
 
     db.session.commit()
     return redirect(url_for('player_info'))

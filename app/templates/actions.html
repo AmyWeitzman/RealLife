@@ -236,7 +236,7 @@
                     <li>+100 points per child <= 4 kids, otherwise -50 points per child</li>
                     <li>pay $1500 school fee to the teacher per new child</li>
                     <li>to have 3rd child, must upgrade house and car</li>
-                    <li>4 years to upgrade if twins after first child</li>
+                    <li>must upgrade immediately if second child attempt is twins</li>
                     <li>less likely to have kids as age:</li>
                     <ul>
                         <li id="child-100">under 36 = 100% chance of child</li>
@@ -258,7 +258,7 @@
                     <button type="submit" id="have_grandkid">Have Grandkids</button>
                 </form>
             </td>
-            <td class="center yrs-wait">{{ player_info.yrs_til_have_kid }}</td>
+            <td class="center yrs-wait">{{ player_info.yrs_til_have_grandkid }}</td>
             <td>
                 <ul>
                     <li>pick x numbers on die (x = # kids over 18 / 2, round up, + 1, max=5)</li>
@@ -405,6 +405,7 @@
             <td>
                 <ul>
                     <li class="{{ 'no' if player_info.married else 'yes' }}">must be single</li>
+                    <li class="{{ 'no' if player_info.num_kids > 0 else 'yes' }}">must not have kids under 18</li>
                     <li class="{{ 'yes' if player_info.age <= 45 else 'no' }}">age <= 45</li>
                 </ul>
             </td>
@@ -425,6 +426,7 @@
             <td>
                 <ul>
                     <li class="{{ 'no' if player_info.married else 'yes' }}">must be single</li>
+                    <li class="{{ 'no' if player_info.num_kids > 0 else 'yes' }}">must not have kids under 18</li>
                     <li class="{{ 'yes' if player_info.age > 45 else 'no' }}">age > 45</li>
                 </ul>
             </td>
