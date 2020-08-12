@@ -1087,6 +1087,7 @@ def expenses(testing, data):
     loans_int = get_loan_int(my_loans)
 
     misc_points = 0
+    depression_pts = 0
     if player_info.buying_organic:
         misc_points += (50 * num_people)
     if player_info.have_pet:  
@@ -1094,7 +1095,8 @@ def expenses(testing, data):
     if player_info.have_pool:  
         misc_points += 250
     if((player_info.points < 0) or player_info.depressed):
-        misc_points += abs(player_info.points * 0.1)  # get 10% of negative points back
+        depression_pts = abs(player_info.points * 0.1)
+        misc_points += depression_pts  # get 10% of negative points back
     if my_job == "Teacher":
         misc_points += 100  # teacher appreciation
     if((my_path == "college") and (my_job != "None")):  
@@ -1194,7 +1196,7 @@ def expenses(testing, data):
     car_cat = car.category if car != "None" else 'no-family'
 
     db.session.commit()
-    return render_template('expenses.html', page_name='Expenses', player_info=player_info, job=job, job_stress=job_stress, house=house, house_stress=house_stress, car=car, jobs=jobs, taxes=taxes, num_people=num_people, houses=houses, cars=cars, loans_int=loans_int, auto_ins=auto_ins, health_ins= health_ins, home_ins=home_ins, shopping=shopping, car_maintenance=car_maintenance, maid=maid, utilities=utilities, dental_fees=dental_fees, eat_ent=eat_ent, gas=gas, new_auto_ins=new_auto_ins, new_home_ins=new_home_ins, new_health_ins=new_health_ins, misc_points=misc_points, misc_fees=misc_fees, rent=rent, transit_fee=transit_fee, no_fam_car=no_fam_car, no_fam_house=no_fam_house, my_benefits=my_benefits, tax_prep=tax_prep, my_job=my_job, my_house=my_house, my_car=my_car, my_home_ins=my_home_ins, my_auto_ins=my_auto_ins, my_health_ins=my_health_ins, my_married=my_married, my_num_kids=my_num_kids, my_loans=my_loans, my_path=my_path, testing=is_testing, loan_pts=loan_pts, mandatory_loans=mandatory_loans, tax_break=tax_break, my_cur_salary=my_cur_salary, all_tax_prep_fees=all_tax_prep_fees, all_dental_fees=all_dental_fees, all_pet_fees=all_pet_fees, all_depression_fees=all_depression_fees, house_cat=house_cat, car_cat=car_cat)
+    return render_template('expenses.html', page_name='Expenses', player_info=player_info, job=job, job_stress=job_stress, house=house, house_stress=house_stress, car=car, jobs=jobs, taxes=taxes, num_people=num_people, houses=houses, cars=cars, loans_int=loans_int, auto_ins=auto_ins, health_ins= health_ins, home_ins=home_ins, shopping=shopping, car_maintenance=car_maintenance, maid=maid, utilities=utilities, dental_fees=dental_fees, eat_ent=eat_ent, gas=gas, new_auto_ins=new_auto_ins, new_home_ins=new_home_ins, new_health_ins=new_health_ins, misc_points=misc_points, misc_fees=misc_fees, rent=rent, transit_fee=transit_fee, no_fam_car=no_fam_car, no_fam_house=no_fam_house, my_benefits=my_benefits, tax_prep=tax_prep, my_job=my_job, my_house=my_house, my_car=my_car, my_home_ins=my_home_ins, my_auto_ins=my_auto_ins, my_health_ins=my_health_ins, my_married=my_married, my_num_kids=my_num_kids, my_loans=my_loans, my_path=my_path, testing=is_testing, loan_pts=loan_pts, mandatory_loans=mandatory_loans, tax_break=tax_break, my_cur_salary=my_cur_salary, all_tax_prep_fees=all_tax_prep_fees, all_dental_fees=all_dental_fees, all_pet_fees=all_pet_fees, all_depression_fees=all_depression_fees, house_cat=house_cat, car_cat=car_cat, depression_pts=depression_pts)
 
 @app.route('/test_expenses')
 @login_required
@@ -1684,8 +1686,9 @@ def get_player_name(player_id):
     return name
 
 def get_player_with_job(game_id, job):
-    player = Player_Info.query.filter_by(game_id=game_id).join(Job, Player_Info.job == Job.title).first_or_404()
-    return player
+    # player = Player_Info.query.filter_by(game_id=game_id).join(Job, Player_Info.job == Job.title).first_or_404()
+    pinfo = Player_Info.query.filter_by(game_id=game_id, job=job.title).first_or_404()
+    return pinfo
 
 def get_job(title):
     job = Job.query.filter_by(title=title).first_or_404()
@@ -1898,8 +1901,8 @@ def get_announcements(player_info):
                 announcements["Next year no longer covered by parents' health insurance"] = "fyi"
             if((player_info.path == "military") and (player_info.num_pay_raises == 4)):
                 announcements["Only one more pay raise"] = "fyi"
-            if((player_info.age >= 40) and (player_info.age < 45)):
-                announcements["Last age to have kids is 40"] = "fyi"
+            if(player_info.age == 40):
+                announcements["Last age to have kids is 45"] = "fyi"
             if(player_info.age == 45):
                 announcements["Last year to have kids"] = "urgent"
             if(player_info.age == 64):  # retirement = game over

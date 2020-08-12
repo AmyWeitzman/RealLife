@@ -310,7 +310,7 @@
                 <p class="gain">Pool: +250 points</p>
                 {% endif %}
                 {% if player_info.depressed %}
-                <p class="gain">Depression: +{{ "{:,.0f}".format(abs(player_info.points * 0.1)) }} points</p>
+                <p class="gain">Depression: +{{ "{:,.0f}".format(depression_pts) }} points</p>
                 {% endif %}
                 {% if my_job == "Teacher" %}
                 <p class="gain">Teacher Appreciation: +100 points</p>
