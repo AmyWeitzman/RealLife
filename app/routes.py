@@ -128,11 +128,12 @@ def view_game(game_id):
 @login_required
 def player_info():
     player, player_info = get_cur_player_info()
+    
     game = get_game(player.cur_game)
     if(player_info.job.lower() != "none"):
         job = get_job(player_info.job)
         taxes = get_taxes(player_info.current_salary, job.title, player_info.married)
-        benefits = check_eligibility(player_info.path, player_info.yrs_military, player_info.age_grad, player_info.age, player_info.yrs_benefits_used)
+        benefits = check_eligibility(player_info.path, player_info.yrs_military, player_info.age_grad, player_info.age, player_info.yrs_benefits_left)
     else:
         job = "None"
         taxes = 0
@@ -238,6 +239,7 @@ def pick_card(game_id):
     card = cards[randint(0, len(cards) - 1)]  # pick a random card
     while(not is_valid_card(player_info, card)):  # check if card is valid (no car cards if no have car, etc...)
         card = cards[randint(0, len(cards) - 1)]  # pick a new random card
+    print("card: " + card.text)
     player_info.last_card = card.text   # keep track of card text to show on card when leave and return to page
     if(card.text in ["Family issue", "Mental illness"]):
         if(not player_info.have_health_ins):
@@ -639,7 +641,7 @@ def actions():  # actions can only be done every x yrs
     loans_int = get_loan_int(player_info.loans)
     amt_can_afford = player_info.money - get_loan_int(player_info.loans)
 
-    benefits = check_eligibility(player_info.path, player_info.yrs_military, player_info.age_grad, player_info.age, player_info.yrs_benefits_used)
+    benefits = check_eligibility(player_info.path, player_info.yrs_military, player_info.age_grad, player_info.age, player_info.yrs_benefits_left)
     
     return render_template('actions.html', page_name='Actions', player_info=player_info, disabled=disabled, num_people=num_people, house=house, houses=houses, house_costs=house_costs, car=car, cars=cars, car_costs=car_costs, loans_int=loans_int, job=job, amt_can_afford=amt_can_afford, benefits=benefits, can_switch_job=can_switch_job, can_get_job=can_get_job, can_quit_job=can_quit_job, can_go_to_college=can_go_to_college, can_go_to_grad_school=can_go_to_grad_school, can_get_promotion=can_get_promotion)
 
@@ -670,7 +672,7 @@ def jobs():
     if(player_info.job != "None"):
         job = get_job(player_info.job)
 
-    benefits = check_eligibility(player_info.path, player_info.yrs_military, player_info.age_grad, player_info.age, player_info.yrs_benefits_used)
+    benefits = check_eligibility(player_info.path, player_info.yrs_military, player_info.age_grad, player_info.age, player_info.yrs_benefits_left)
 
     return render_template('jobs.html', page_name='Jobs', player_info=player_info, category=player_info.jobs_page_type, picked=picked, job_options=None, job=job, benefits=benefits)
 
@@ -884,7 +886,8 @@ def houses():
         house = player_info.house.lower()
         if(house != "none"):
             disabled[house] = True  # house is already owned
-    return render_template('houses.html', page_name='Houses', disabled=disabled, player_info=player_info)
+    num_people = get_num_people(player_info.married, player_info.num_kids, player_info.kids_ages)
+    return render_template('houses.html', page_name='Houses', disabled=disabled, player_info=player_info, num_people=num_people)
 
 @app.route('/buy_house/<house>')
 @login_required
@@ -963,8 +966,13 @@ def expenses(testing, data):
         my_num_kids = player_info.num_kids
         my_loans = player_info.loans
         my_path = player_info.path
-        my_benefits = check_eligibility(my_path, player_info.yrs_military, player_info.age_grad, player_info.age, player_info.yrs_benefits_used)
+        my_benefits = check_eligibility(my_path, player_info.yrs_military, player_info.age_grad, player_info.age, player_info.yrs_benefits_left)
  
+    if(player_info.loans < 1):
+        player_info.loans = 0
+    if(my_loans < 1):
+        my_loans = 0
+
     job = "None"
     job_stress = 0
     if(my_job != "None"):
@@ -1163,7 +1171,7 @@ def expenses(testing, data):
     new_auto_ins = get_new_auto_ins(player_info)
     new_home_ins = get_new_home_ins(player_info)
     new_health_ins = 500 * num_people
-    if(player_info.age < 26):
+    if(player_info.age < 25):
         new_health_ins = 0
     if(my_benefits):
         new_health_ins = 0  # eligible for military benefits: free health insurance
@@ -1195,8 +1203,10 @@ def expenses(testing, data):
     house_cat = house.category if house != "None" else 'no-family'
     car_cat = car.category if car != "None" else 'no-family'
 
+    benefits_run_out = check_eligibility(my_path, player_info.yrs_military, player_info.age_grad, player_info.age + 1, player_info.yrs_benefits_left)
+
     db.session.commit()
-    return render_template('expenses.html', page_name='Expenses', player_info=player_info, job=job, job_stress=job_stress, house=house, house_stress=house_stress, car=car, jobs=jobs, taxes=taxes, num_people=num_people, houses=houses, cars=cars, loans_int=loans_int, auto_ins=auto_ins, health_ins= health_ins, home_ins=home_ins, shopping=shopping, car_maintenance=car_maintenance, maid=maid, utilities=utilities, dental_fees=dental_fees, eat_ent=eat_ent, gas=gas, new_auto_ins=new_auto_ins, new_home_ins=new_home_ins, new_health_ins=new_health_ins, misc_points=misc_points, misc_fees=misc_fees, rent=rent, transit_fee=transit_fee, no_fam_car=no_fam_car, no_fam_house=no_fam_house, my_benefits=my_benefits, tax_prep=tax_prep, my_job=my_job, my_house=my_house, my_car=my_car, my_home_ins=my_home_ins, my_auto_ins=my_auto_ins, my_health_ins=my_health_ins, my_married=my_married, my_num_kids=my_num_kids, my_loans=my_loans, my_path=my_path, testing=is_testing, loan_pts=loan_pts, mandatory_loans=mandatory_loans, tax_break=tax_break, my_cur_salary=my_cur_salary, all_tax_prep_fees=all_tax_prep_fees, all_dental_fees=all_dental_fees, all_pet_fees=all_pet_fees, all_depression_fees=all_depression_fees, house_cat=house_cat, car_cat=car_cat, depression_pts=depression_pts)
+    return render_template('expenses.html', page_name='Expenses', player_info=player_info, job=job, job_stress=job_stress, house=house, house_stress=house_stress, car=car, jobs=jobs, taxes=taxes, num_people=num_people, houses=houses, cars=cars, loans_int=loans_int, auto_ins=auto_ins, health_ins= health_ins, home_ins=home_ins, shopping=shopping, car_maintenance=car_maintenance, maid=maid, utilities=utilities, dental_fees=dental_fees, eat_ent=eat_ent, gas=gas, new_auto_ins=new_auto_ins, new_home_ins=new_home_ins, new_health_ins=new_health_ins, misc_points=misc_points, misc_fees=misc_fees, rent=rent, transit_fee=transit_fee, no_fam_car=no_fam_car, no_fam_house=no_fam_house, my_benefits=my_benefits, tax_prep=tax_prep, my_job=my_job, my_house=my_house, my_car=my_car, my_home_ins=my_home_ins, my_auto_ins=my_auto_ins, my_health_ins=my_health_ins, my_married=my_married, my_num_kids=my_num_kids, my_loans=my_loans, my_path=my_path, testing=is_testing, loan_pts=loan_pts, mandatory_loans=mandatory_loans, tax_break=tax_break, my_cur_salary=my_cur_salary, all_tax_prep_fees=all_tax_prep_fees, all_dental_fees=all_dental_fees, all_pet_fees=all_pet_fees, all_depression_fees=all_depression_fees, house_cat=house_cat, car_cat=car_cat, depression_pts=depression_pts, benefits_run_out=benefits_run_out)
 
 @app.route('/test_expenses')
 @login_required
@@ -1377,7 +1387,7 @@ def travel(loc):
         # check job for travel benefits: 2 people free for local travel
         if(player_info.job != "None"):
             job = get_job(player_info.job)
-            if((job.title.lower() in ['military', "flight attendant", "pilot"]) or check_eligibility(player_info.path, player_info.yrs_military, player_info.age_grad, player_info.age, player_info.yrs_benefits_used)):
+            if((job.title.lower() in ['military', "flight attendant", "pilot"]) or check_eligibility(player_info.path, player_info.yrs_military, player_info.age_grad, player_info.age, player_info.yrs_benefits_left)):
                 num_people -= 2
         if(num_people < 0): 
             num_people = 0  # just in case 1 person buy took off 2 people for discount
@@ -1776,10 +1786,10 @@ def get_path(job):
     else:
         return "regular"  
 
-def check_eligibility(path, yrs_military, age_grad, age, yrs_benefits_used):
+def check_eligibility(path, yrs_military, age_grad, age, yrs_benefits_left):
     if(path.lower() == "military"): return True
-    # if((yrs_military != 0) and ((age - age_grad) < yrs_military) and (player_info.yrs_benefits_used <= yrs_military)): return True
-    if((yrs_military != 0) and (yrs_benefits_used <= yrs_military)): return True
+    # if((yrs_military != 0) and ((age - age_grad) < yrs_military) and (player_info.yrs_benefits_left <= yrs_military)): return True
+    if((yrs_military != 0) and (yrs_benefits_left > 0)): return True
     return False
 
 def get_num_people(is_married, num_kids, kids_ages):
@@ -1909,21 +1919,19 @@ def get_announcements(player_info):
                 announcements["Retiring next year"] = "fyi"
                 if(player_info.loans > 0):
                     announcements["Pay off all loans by end of year or will lose ALL points"] = "urgent"
-            cur_eligibility = check_eligibility(player_info.path, player_info.yrs_military, player_info.age_grad, player_info.age, player_info.yrs_benefits_used) 
-            next_year_eligib = check_eligibility(player_info.path, player_info.yrs_military, player_info.age_grad, player_info.age + 1, player_info.yrs_benefits_used + 1)
-            next_next_year_eligib = check_eligibility(player_info.path, player_info.yrs_military, player_info.age_grad, player_info.age + 2, player_info.yrs_benefits_used + 2)
-            if(next_year_eligib != cur_eligibility and not player_info.mil_to_college):
+
+            if((player_info.yrs_benefits_left == 1) and not (player_info.num_yrs_college > 0 and player_info.num_yrs_college < 5)):
                announcements["Ineligible for military benefits next year"] = "urgent"   # benefits run out
-            elif(next_next_year_eligib != cur_eligibility and not player_info.mil_to_college):
+            elif((player_info.yrs_benefits_left == 2) and not (player_info.num_yrs_college > 0 and player_info.num_yrs_college < 5)):
                 announcements["Ineligible for military benefits in 2 years"] = "fyi"   # benefits run out soon
             if((player_info.num_kids == 3) or (player_info.num_kids == 4)):
                 announcements[">= 5 kids = -50 points each"] = "fyi"
-            num_people = get_num_people(player_info.married, player_info.num_kids, player_info.kids_ages)
-            if(num_people == 4):  # can assume already have house and car
-                car = get_car(player_info.car)
-                house = get_house(player_info.house) 
-                if((car.category != "large-family") or (house.category != "large-family")):
-                    announcements["Reached max family size for small car/house"] = "fyi"
+            # num_people = get_num_people(player_info.married, player_info.num_kids, player_info.kids_ages)
+            # if(num_people == 4):  # can assume already have house and car
+            #     car = get_car(player_info.car)
+            #     house = get_house(player_info.house) 
+            #     if((car.category != "large-family") or (house.category != "large-family")):
+            #         announcements["Reached max family size for small car/house"] = "fyi"
             if((player_info.loans > 0) and (player_info.age in [40, 50, 60])):
                 announcements["Should pay off all loans before 65"] = "fyi"
         db.session.commit()
@@ -2090,7 +2098,7 @@ def end_of_year():
         player_info.num_yrs_teacher += 1
 
     if((player_info.job == "Teacher") and (player_info.num_yrs_teacher == 15)):
-        flash("You have been promoted to Principal!", "success")
+        flash("Promoted to Principal!", "success")
         player_info.current_salary = 100000
         
     salary = player_info.current_salary
@@ -2115,7 +2123,7 @@ def end_of_year():
     if(player_info.num_kids >= 1):
         player_info.oldest_child_age += 1
         new_kids_ages_int = list(map(lambda x: (int(x) + 1), player_info.kids_ages.split(";")))
-        kids_ages_over_18 = [age for age in new_kids_ages_int if age >= 18]
+        kids_ages_over_18 = [age for age in new_kids_ages_int if age == 18]
         player_info.num_kids -= len(kids_ages_over_18)
         new_kids_ages_str = ";".join(list(map(lambda x: str(x), new_kids_ages_int)))  # increment all kids' ages
         player_info.kids_ages = new_kids_ages_str
@@ -2134,7 +2142,7 @@ def end_of_year():
         player_info.mil_start_college += 1
 
     # update to new insurances
-    if((player_info.age < 26) or check_eligibility(player_info.path, player_info.yrs_military, player_info.age_grad, player_info.age, player_info.yrs_benefits_used)):
+    if((player_info.age < 26) or check_eligibility(player_info.path, player_info.yrs_military, player_info.age_grad, player_info.age, player_info.yrs_benefits_left)):
         player_info.have_health_ins = True
     else:
         want_health_ins = request.args.get("health-ins")
@@ -2171,10 +2179,10 @@ def end_of_year():
         player_info.twins_upgrade = False
         player_info.disable_no_action = False
 
-    if(player_info.mil_to_college and player_info.mil_start_college != 0):
+    if((player_info.mil_to_college and player_info.mil_start_college != 0)or (player_info.grad_school)):
         pass
     else:
-        player_info.yrs_benefits_used += 1
+        player_info.yrs_benefits_left -= 1
 
     # handle college scholarships
     if((player_info.num_yrs_college != 0) and (player_info.num_yrs_college <= 5) and not player_info.grad_college):  # not graduating yet
@@ -2269,6 +2277,7 @@ def go_to_college():
         player_info.current_salary = 0
 
         player_info.clicked_button = True
+        player_info.yrs_benefits_left = player_info.num_yrs_military
   
     # player_info.path = "college"
     player_info.path = "regular"

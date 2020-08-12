@@ -78,11 +78,11 @@
 
                     <p><b>Have child:</b></p>
                     <input type="radio" name="test-kids" value="test-kids-none" checked>
-                    <label for="test-kids-none">0</label><br>
+                    <label for="test-kids-none" class="left-radio">0</label>
                     <input type="radio" name="test-kids" value="test-single-child">
                     <label for="test-single-child" class="left-radio">1</label>
                     <input type="radio" name="test-kids" value="test-twins">
-                    <label for="test-twins" class="left-radio">2</label>
+                    <label for="test-twins" class="left-radio">2</label><br>
 
                     <label for="test-loan"><b>Loan:</b></label><br>
                     <b id="dollar-sign">$</b> <input type="text" class="textbox" name="test-loans-amount"><br>
@@ -366,13 +366,13 @@
                 {% if my_job == "Athlete" and player_info.med_prob %}
                 <p class="once">* Athlete had medical problem, only gets paid 1/4 of salary</p>
                 {% endif %}
-                {% if player_info.cur_time_til_raise == 1 and my_path != "military" and my_job != "YouTuber" and not (my_job == "Teacher" and player_info.num_yrs_teacher == 15) %}
+                {% if player_info.cur_time_til_raise == 1 and my_path != "military" and my_job != "YouTuber" and not (my_job == "Teacher" and player_info.num_yrs_teacher == 14) %}
                 <p>Getting a $1000 raise this year</p>
                 {% endif %}
                 {% if player_info.cur_time_til_raise == 1 and my_path == "military" %}
                 <p>Salary doubles this year</p>
                 {% endif %}
-                {% if my_job == "Teacher" and player_info.num_yrs_teacher == 15 %}
+                {% if my_job == "Teacher" and player_info.num_yrs_teacher == 14 %}
                 <p>Teacher promoted to Principal</p>
                 {% endif %}
             </td>
@@ -413,13 +413,13 @@
                 {% if my_job == "Psychologist" %}
                 <p class="gain">Depression fees: ${{ all_depression_fees }}</p>
                 {% endif %}
-                {% if player_info.cur_time_til_raise == 1 and my_path != "military" and my_job != "YouTuber" and not (my_job == "Teacher" and player_info.num_yrs_teacher == 15) %}
+                {% if player_info.cur_time_til_raise == 1 and my_path != "military" and my_job != "YouTuber" and not (my_job == "Teacher" and player_info.num_yrs_teacher == 14) %}
                 <p class="gain">Raise: $1000</p>
                 {% endif %}
                 {% if player_info.cur_time_til_raise == 1 and my_path == "military" %}
                 <p class="gain">Raise: salary -> ${{ '{:,.0f}'.format(player_info.current_salary * 2) }}</p>
                 {% endif %}
-                {% if my_job == "Teacher" and player_info.num_yrs_teacher == 15 %}
+                {% if my_job == "Teacher" and player_info.num_yrs_teacher == 14 %}
                 <p>Raise: salary -> $100,000</p>
                 {% endif %}
             </td>
@@ -462,7 +462,7 @@
                 {% endif %}
             
                 <p class="health-ins-bg input-label pad-bottom"><b>Health Insurance </b></p>
-                {% if player_info.age < 25 %}
+                {% if player_info.age < 25 and my_benefits and not benefits_run_out %}
                     <input type="checkbox" name="health-ins" class="ins-checkbox in-line" value="health-ins" id="new-health-ins" disabled checked>
                 {% elif player_info.age == 25 %}
                 <input type="checkbox" name="health-ins" class="ins-checkbox in-line" value="health-ins" id="new-health-ins">
@@ -472,7 +472,7 @@
                     <input type="checkbox" name="health-ins" class="ins-checkbox in-line" value="health-ins" id="new-health-ins">
                 {% endif %}
                 <label for="health-ins" class="in-line checkbox-label {{ 'short-margin' if player_info.age == 25 else ''}}" >${{ '{:,.0f}'.format(new_health_ins) }}</label>
-                {% if player_info.age == 25 %}
+                {% if player_info.age == 25 and not my_benefits %}
                 <label class="in-line once" class="ins-notice">Not covered by parents</label>
                 {% endif %}
 
@@ -525,11 +525,11 @@
             mandatory_loans = parseFloat("{{ mandatory_loans }}");
             if(job == "Teacher")
                 num_yrs_teacher = parseFloat("{{ player_info.num_yrs_teacher }}");
-            if((ttraise == 1) && (path != "military") && (job != "YouTuber") && !(job == "Teacher" && num_yrs_teacher == 15))
+            if((ttraise == 1) && (path != "military") && (job != "YouTuber") && !(job == "Teacher" && num_yrs_teacher == 14))
                 salary += 1000;  // getting $1000 raise
             else if((ttraise == 1) && (path == "military"))
                 salary *= 2;  // salary doubles for raise
-            else if((job == "Teacher") && (num_yrs_teacher == 15))
+            else if((job == "Teacher") && (num_yrs_teacher == 14))
                 salary = 100000
 
             if(job == "Athlete") {
@@ -603,7 +603,7 @@
 
             if(loans_payment == 0)
                 noLoanPaymentError();  // no error if not paying back any loan
-            else if((money + net_earnings < 0) || ((money + net_earnings > 0) && (loans_payment > 0) && (expenses > (money + net_earnings)))) {
+            else if((money + net_earnings <= 0) || ((money + net_earnings > 0) && (loans_payment > 0) && (expenses > (money + net_earnings)) && (loans_payment > (money + net_earnings - expenses)))) {
                 loanPaymentError();    // error if paying more than current money
             }
             else if(is_loan_error)
@@ -667,7 +667,7 @@
 
                 if(loans_payment == 0)
                     noLoanPaymentError();
-                else if((money + net_earnings < 0) || ((money + net_earnings > 0) && (loans_payment > 0) && (expenses > (money + net_earnings)))) {
+                else if((money + net_earnings <= 0) || ((money + net_earnings > 0) && (loans_payment > 0) && (expenses > (money + net_earnings)) && (loans_payment > (money + net_earnings - expenses)))) {
                     loanPaymentError();
                 }   
                 else if(is_loan_error)

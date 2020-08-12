@@ -75,7 +75,7 @@ class Player_Info(db.Model):
     med_prob = db.Column(db.Boolean, default=False)
     depressed = db.Column(db.Boolean, default=False)
     yrs_military = db.Column(db.Integer, default=0) 
-    yrs_benefits_used = db.Column(db.Integer, default=0) 
+    yrs_benefits_left = db.Column(db.Integer, default=65) 
     yrs_til_buy_organic = db.Column(db.Integer, default=0)
     bought_appliances = db.Column(db.Boolean, default=False)
     yrs_til_upgrade_appliances = db.Column(db.Integer, default=0)
