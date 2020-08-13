@@ -180,7 +180,7 @@
                 {% endif %}
             {% elif player_info.grad_college %}
             <td class="field-val complete"><label class="black-border">Graduated!</label></td>
-            {% elif not player_info.clicked_button %}
+            {% elif player_info.num_yrs_college == 5 and not player_info.clicked_button %}
             <td class="field-val"><label class="black-border">0 yrs left</label></td>
             {% else %}
             <td class="field-val"><label class="black-border">N/A</label></td>
@@ -196,7 +196,7 @@
                 {% endif %}
             {% elif player_info.done_grad_1 %}
             <td class="field-val complete"><label class="black-border">Graduated!</label></td>
-            {% elif not player_info.clicked_button %}
+            {% elif player_info.num_yrs_grad_school == 2 and not player_info.clicked_button %}
             <td class="field-val"><label class="black-border">0 yrs left</label></td>
             {% else %}
             <td class="field-val"><label class="black-border">N/A</label></td>
@@ -212,7 +212,7 @@
                 {% endif %}
             {% elif player_info.done_grad_2 %}
             <td class="field-val complete"><label class="black-border">Graduated!</label></td>
-            {% elif not player_info.clicked_button %}
+            {% elif player_info.num_yrs_grad_school == 3 and not player_info.clicked_button %}
             <td class="field-val"><label class="black-border">0 yrs left</label></td>
             {% else %}
             <td class="field-val"><label class="black-border">N/A</label></td>
@@ -228,7 +228,7 @@
                 {% endif %}
             {% elif player_info.done_grad_6 %}
             <td class="field-val complete"><label class="black-border">Graduated!</label></td>
-            {% elif not player_info.clicked_button %}
+            {% elif player_info.num_yrs_grad_school == 7 and not player_info.clicked_button %}
             <td class="field-val"><label class="black-border">0 yrs left</label></td>
             {% else %}
             <td class="field-val"><label class="black-border">N/A</label></td>
@@ -286,10 +286,6 @@
         //     // if(note4 == '') note4 = 'To-Do:'
         //     $.get(Flask.url_for('save_allnotes', {note1: note1, note2: note2, note3: note3, note4: note4}));
         // };
-
-        $(document).ready(function(){
-            $('[data-toggle="tooltip"]').tooltip();
-        });
 
         job = "{{ player_info.job }}";
         car = "{{ player_info.car }}";
