@@ -416,6 +416,10 @@ option {
     margin-right: 0;
 }
 
+#can-afford {
+    margin-left: 10px;
+}
+
 /* .cur-status {
     font-size: 25px;
     color: green

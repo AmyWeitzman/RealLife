@@ -236,7 +236,7 @@ def pick_card(game_id):
     player_info = Player_Info.query.filter_by(game_id=game_id, player_id=player.id).first()
     card_type_regular = False if player_info.num_yrs_college > 0 and player_info.age < 22 else True  # only college (and under 22) picks college cards
     cards = list(Card.query.filter_by(regular=card_type_regular))  # get all cards from the appropriate category
-    card = cards[randint(0, len(cards) - 1)]  # pick a random card
+    card = cards[randint(0, len(cards) - 1)]  # pick a random car
     while(not is_valid_card(player_info, card)):  # check if card is valid (no car cards if no have car, etc...)
         card = cards[randint(0, len(cards) - 1)]  # pick a new random card
     print("card: " + card.text)
@@ -275,7 +275,7 @@ def pick_card(game_id):
                 chiro = get_player_with_job(game_id, job)
                 chiro.money += (50 * num_people)
     elif(card.text == "Earthquake damage"):
-        if(player_info.house != "None"):
+        if(player_info.house != "None" and player_info.job != "Carpenter"):
             if(not player_info.have_home_ins):
                 player_info.money -= 50000  # pay $50,000
             job = get_job("Carpenter")
@@ -284,7 +284,7 @@ def pick_card(game_id):
                 carpenter = get_player_with_job(game_id, job)
                 carpenter.money += 5000  
     elif(card.text == "Fire damage"):
-        if(player_info.house != "None"):
+        if(player_info.house != "None" and player_info.job != "Firefighter"):
             if(not player_info.have_home_ins):
                 player_info.money -= 50000  # pay $50,000
             job = get_job("Firefighter")
@@ -293,7 +293,7 @@ def pick_card(game_id):
                 firefighter = get_player_with_job(game_id, job)
                 firefighter.money += 5000  
     elif(card.text == "Pest problem"):
-        if(player_info.house != "None"):
+        if(player_info.house != "None" and player_info.job != "Exterminator"):
             player_info.money -= 5000  # pay $5000, no insurance coverage
             job = get_job("Exterminator")
             picked = get_picked_jobs(player, player_info, "all")
@@ -301,22 +301,24 @@ def pick_card(game_id):
                 exterminator = get_player_with_job(game_id, job)
                 exterminator.money += 5000 
     elif(card.text == "Tech problems"):
-        player_info.money -= 100  # pay $100
-        job = get_job("Programmer")
-        picked = get_picked_jobs(player, player_info, "all")
-        if((picked["Programmer"]) and not player_info.job == "Programmer"):  # someone is the programmer, gets paid $100
-            developer = get_player_with_job(game_id, job)
-            developer.money += 100 
+        if(player_info.job != "Programmer"):
+            player_info.money -= 100  # pay $100
+            job = get_job("Programmer")
+            picked = get_picked_jobs(player, player_info, "all")
+            if((picked["Programmer"]) and not player_info.job == "Programmer"):  # someone is the programmer, gets paid $100
+                developer = get_player_with_job(game_id, job)
+                developer.money += 100 
     elif(card.text == "Lawsuit"):
-        roll = simulateRoll()
-        payment = (500 * roll)  # pay $500 * roll
-        flash("You have been sued for $" + str(payment) + ".", "error")
-        player_info.money -= payment
-        job = get_job("Lawyer")
-        picked = get_picked_jobs(player, player_info, "all")
-        if((picked["Lawyer"]) and not player_info.job == "Lawyer"):  # someone is the lawyer, gets paid 50% of payment
-            lawyer = get_player_with_job(game_id, job)
-            lawyer.money += (0.5 * payment)
+        if(player_info.job != "Lawyer"):
+            roll = simulateRoll()
+            payment = (500 * roll)  # pay $500 * roll
+            flash("You have been sued for $" + str(payment) + ".", "error")
+            player_info.money -= payment
+            job = get_job("Lawyer")
+            picked = get_picked_jobs(player, player_info, "all")
+            if((picked["Lawyer"]) and not player_info.job == "Lawyer"):  # someone is the lawyer, gets paid 50% of payment
+                lawyer = get_player_with_job(game_id, job)
+                lawyer.money += (0.5 * payment)
     elif(card.text == "Speeding"):
         if(player_info.car != "None"):  # must have car for speeding
             car = get_car(player_info.car)
@@ -1136,7 +1138,7 @@ def expenses(testing, data):
     if((player_info.points < 0) or player_info.depressed): # depression fee
         depressed_cost = 1000  
     if(my_loans > 0):
-        loans_cost = (0.005 * loans_int)  # automatically pay back 0.5% of loans
+        loans_cost = math.ceil(0.005 * loans_int)  # automatically pay back 0.5% of loans
     if(my_job == "Waiter"): # waiter gets $2000 in tips
         misc_fees -= 2000 
 
@@ -1196,7 +1198,7 @@ def expenses(testing, data):
     player_info.total_tax_prep = tax_prep
 
     loan_pts = math.ceil(my_loans / 10000)
-    mandatory_loans = loans_int * 0.005  # must pay 0.5% of loans + interest back every year
+    mandatory_loans = loans_cost  # must pay 0.5% of loans + interest back every year
 
     tax_break = 500 * player_info.num_kids
 
@@ -1919,7 +1921,6 @@ def get_announcements(player_info):
                 announcements["Retiring next year"] = "fyi"
                 if(player_info.loans > 0):
                     announcements["Pay off all loans by end of year or will lose ALL points"] = "urgent"
-
             if((player_info.yrs_benefits_left == 1) and not (player_info.num_yrs_college > 0 and player_info.num_yrs_college < 5)):
                announcements["Ineligible for military benefits next year"] = "urgent"   # benefits run out
             elif((player_info.yrs_benefits_left == 2) and not (player_info.num_yrs_college > 0 and player_info.num_yrs_college < 5)):
@@ -2179,7 +2180,7 @@ def end_of_year():
         player_info.twins_upgrade = False
         player_info.disable_no_action = False
 
-    if((player_info.mil_to_college and player_info.mil_start_college != 0)or (player_info.grad_school)):
+    if((player_info.mil_to_college and player_info.mil_start_college != 0 and player_info.age_grad == 0) or (player_info.grad_school)):
         pass
     else:
         player_info.yrs_benefits_left -= 1
@@ -2277,7 +2278,7 @@ def go_to_college():
         player_info.current_salary = 0
 
         player_info.clicked_button = True
-        player_info.yrs_benefits_left = player_info.num_yrs_military
+        player_info.yrs_benefits_left = player_info.yrs_military
   
     # player_info.path = "college"
     player_info.path = "regular"

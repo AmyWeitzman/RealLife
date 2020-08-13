@@ -444,6 +444,10 @@
                 {% else %}
                     <b class="last-dollar-sign in-line">$</b> <input type="text" class="textbox in-line loans-bg" name="loans-amount" id="pay-loans" onchange="updateExpenses()">
                 {% endif %}
+                <!-- <label for="pay-loans" class="in-line checkbox-label {{ 'short-margin' if player_info.age == 25 and not my_benefits else ''}}" >${{ '{:,.0f}'.format(new_health_ins) }}</label> -->
+                {% if player_info.loans > 0 %}
+                <label class="in-line" id='can-afford'>Can Afford: $<span id="loans-afford"></span></label>
+                {% endif %}
                 
                 <p class="auto-ins-bg input-label pad-bottom"><b>Auto Insurance </b></p>
                 {% if no_fam_car %}
@@ -471,7 +475,7 @@
                 {% else %}
                     <input type="checkbox" name="health-ins" class="ins-checkbox in-line" value="health-ins" id="new-health-ins">
                 {% endif %}
-                <label for="health-ins" class="in-line checkbox-label {{ 'short-margin' if player_info.age == 25 else ''}}" >${{ '{:,.0f}'.format(new_health_ins) }}</label>
+                <label for="health-ins" class="in-line checkbox-label {{ 'short-margin' if player_info.age == 25 and not my_benefits else ''}}" >${{ '{:,.0f}'.format(new_health_ins) }}</label>
                 {% if player_info.age == 25 and not my_benefits %}
                 <label class="in-line once" class="ins-notice">Not covered by parents</label>
                 {% endif %}
@@ -523,6 +527,7 @@
             job = "{{ my_job }}";
             real_loans = parseFloat("{{ loans_int }}");
             mandatory_loans = parseFloat("{{ mandatory_loans }}");
+
             if(job == "Teacher")
                 num_yrs_teacher = parseFloat("{{ player_info.num_yrs_teacher }}");
             if((ttraise == 1) && (path != "military") && (job != "YouTuber") && !(job == "Teacher" && num_yrs_teacher == 14))
@@ -556,7 +561,6 @@
             tax_prep = parseFloat(document.getElementById("tax-prep").innerHTML.replace(/,/g, ''));
             tax_break = parseFloat(document.getElementById("tax-break-val").innerHTML.replace(/,/g, ''));
             loans_payment = parseFloat(document.getElementById("pay-loans").value.replace(/,/g, ''));
-
             //salary -= misc_fees;
 
             // do not want expenses calculated with NaN, cannot pay more than current money for total loan payments
@@ -583,6 +587,7 @@
             document.getElementById("net-points-val").value = parseFloat(net_points).toLocaleString('en');
             document.getElementById("total-expenses").value = parseFloat(expenses).toLocaleString('en');
             document.getElementById("net-earnings-val").value = parseFloat(net_earnings).toLocaleString('en');
+            document.getElementById('loans-afford').innerHTML = parseFloat(Math.min(Math.floor(net_earnings + money + loans_payment), Math.floor(real_loans - mandatory_loans))).toLocaleString('en');
 
             income = parseFloat("{{ player_info.current_salary }}");
             if(income < 40000)
@@ -603,7 +608,7 @@
 
             if(loans_payment == 0)
                 noLoanPaymentError();  // no error if not paying back any loan
-            else if((money + net_earnings <= 0) || ((money + net_earnings > 0) && (loans_payment > 0) && (expenses > (money + net_earnings)) && (loans_payment > (money + net_earnings - expenses)))) {
+            else if((money + net_earnings <= 0) || ((money + net_earnings > 0) && (loans_payment > 0) && (expenses > (money + net_earnings)) && (loans_payment > (money + net_earnings + loans_payment)))) {
                 loanPaymentError();    // error if paying more than current money
             }
             else if(is_loan_error)
@@ -628,7 +633,6 @@
                 tax_prep = parseFloat(document.getElementById("tax-prep").innerHTML.replace(/,/g, ''));
                 tax_break = parseFloat(document.getElementById("tax-break-val").innerHTML.replace(/,/g, ''));
                 loans_payment = parseFloat(document.getElementById("pay-loans").value.replace(/,/g, ''));
-                
                 // salary -= misc_fees;
 
                 // do not want expenses calculated with NaN
@@ -667,7 +671,7 @@
 
                 if(loans_payment == 0)
                     noLoanPaymentError();
-                else if((money + net_earnings <= 0) || ((money + net_earnings > 0) && (loans_payment > 0) && (expenses > (money + net_earnings)) && (loans_payment > (money + net_earnings - expenses)))) {
+                else if((money + net_earnings <= 0) || ((money + net_earnings > 0) && (loans_payment > 0) && (expenses > (money + net_earnings)) && (loans_payment > (money + net_earnings + loans_payment)))) {
                     loanPaymentError();
                 }   
                 else if(is_loan_error)
@@ -726,7 +730,7 @@
         function updateTestOptions() {
             cur_home = "{{ player_info.house }}";
             test_home = document.getElementById("house").value;
-            if(test_home == "None")  // can't get insurance for no home
+            if((['Teepee', 'Tent', 'None', 'Igloo', 'Hut', 'Tree House', 'Studio'].includes(test_home)))  // can't get insurance for no home
                 document.getElementById("test-home-ins-checkbox").disabled = true;
             else if((test_home == cur_home) && home_ins) {
                 document.getElementById("test-home-ins-checkbox").disabled = false;
@@ -737,7 +741,7 @@
 
             cur_car = "{{ player_info.car }}";
             test_car = document.getElementById("car").value;
-            if(test_car == "None")   // can't get insurance for no car
+            if((['Bike', 'Skateboard', 'None', 'Public Transit'].includes(test_car)))   // can't get insurance for no car
                 document.getElementById("test-auto-ins-checkbox").disabled = true;
             else if((test_car == cur_car) && auto_ins) {
                 document.getElementById("test-auto-ins-checkbox").disabled = false;
