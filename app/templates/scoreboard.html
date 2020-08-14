@@ -7,15 +7,15 @@
         <tr>
             <th>Rank</th>
             <th>Name</th>
-            <th>Points</th>
             <th>$$$</th>
+            <th>Points</th>
         </tr>
         {% for rank in ranks %}
             <tr>
                 <td>{{ rank['rank'] }}</td>
                 <td>{{ rank["name"] }}</td>
-                <td>{{ "{:,.0f}".format(rank["points"]) }}</td>
                 <td class="{{ 'red' if rank['has_loans'] else '' }}">{{ "{:,.0f}".format(rank["money"]) }}</td>
+                <td>{{ "{:,.0f}".format(rank["points"]) }}</td>
             </tr>
         {% endfor %}
     </table>

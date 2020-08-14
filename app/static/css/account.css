@@ -134,3 +134,17 @@ hr {
     margin-right: 50px;
 }
 
+#rules {
+    font-size: 20px;
+    margin-left: 10px;
+    color: white;
+    font-weight: bold;
+    border: white solid 2px;
+    border-radius: 20px;
+    padding: 5px;
+    background-color: indigo;
+}
+
+#rules:hover {
+    color: lightskyblue;
+}

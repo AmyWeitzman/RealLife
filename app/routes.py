@@ -178,11 +178,16 @@ def player_info():
             parent_help = 0
         player_info.parent_help = parent_help
     
+    cat_map = {'no-family': 'Single Person', 'small-family': 'Small Family', 'large-family': 'Large Family'}
+    car_cat = 'None' if player_info.car == "None" else cat_map[get_car(player_info.car).category]
+    house_cat = 'None' if player_info.house == "None" else cat_map[get_house(player_info.house).category]
+
     db.session.commit()
     return render_template('player_info.html', page_name='Player Info', 
             game=game, name=current_user.name, player_info=player_info, job=job,
             taxes=taxes, benefits=benefits, num_people=num_people,
-            loans_int=loans_int, announcements=announcements, cur_turn=cur_turn, cur_turn_name=cur_turn_name, all_paid=all_paid)
+            loans_int=loans_int, announcements=announcements, cur_turn=cur_turn, 
+            cur_turn_name=cur_turn_name, all_paid=all_paid, car_cat=car_cat, house_cat=house_cat)
 
 @app.route('/set_roll_order')
 @login_required
@@ -227,7 +232,11 @@ def set_ready():
 @login_required
 def cards():
     player_info = get_cur_player_info()[1]
-    return render_template('cards.html', page_name='Cards', player_info=player_info)
+    cat_map = {'no-family': 'Single Person', 'small-family': 'Small Family', 'large-family': 'Large Family'}
+    car_cat = 'None' if player_info.car == "None" else cat_map[get_car(player_info.car).category]
+    house_cat = 'None' if player_info.house == "None" else cat_map[get_house(player_info.house).category]
+
+    return render_template('cards.html', page_name='Cards', player_info=player_info, car_cat=car_cat, house_cat=house_cat)
 
 @app.route('/pick_card/<game_id>')
 @login_required
@@ -312,7 +321,7 @@ def pick_card(game_id):
         if(player_info.job != "Lawyer"):
             roll = simulateRoll()
             payment = (500 * roll)  # pay $500 * roll
-            flash("You have been sued for $" + str(payment) + ".", "error")
+            flash("Sued for $" + str(payment) + ".", "error")
             player_info.money -= payment
             job = get_job("Lawyer")
             picked = get_picked_jobs(player, player_info, "all")
@@ -431,7 +440,7 @@ def pick_card(game_id):
         if(player_info.path == "military"):  # demoted
             job = get_job("Military")
             if(player_info.current_salary == player_info.base_salary):
-                flash("You have been kicked out of the military!", "error")
+                flash("Kicked out of the military!", "error")
                 player_info.picked_card = True
                 db.session.commit()
                 return redirect(url_for('jobs')) # kicked out of military
@@ -645,7 +654,27 @@ def actions():  # actions can only be done every x yrs
 
     benefits = check_eligibility(player_info.path, player_info.yrs_military, player_info.age_grad, player_info.age, player_info.yrs_benefits_left)
     
-    return render_template('actions.html', page_name='Actions', player_info=player_info, disabled=disabled, num_people=num_people, house=house, houses=houses, house_costs=house_costs, car=car, cars=cars, car_costs=car_costs, loans_int=loans_int, job=job, amt_can_afford=amt_can_afford, benefits=benefits, can_switch_job=can_switch_job, can_get_job=can_get_job, can_quit_job=can_quit_job, can_go_to_college=can_go_to_college, can_go_to_grad_school=can_go_to_grad_school, can_get_promotion=can_get_promotion)
+    cat_map = {'no-family': 'Single Person', 'small-family': 'Small Family', 'large-family': 'Large Family'}
+    car_cat = 'None' if player_info.car == "None" else cat_map[get_car(player_info.car).category]
+    house_cat = 'None' if player_info.house == "None" else cat_map[get_house(player_info.house).category]
+
+    num_kids_over_18 = get_num_kids_over_18(player_info.num_kids, player_info.kids_ages)
+    chance_grandkid = 0
+    if(num_kids_over_18 > 0): 
+        temp = math.ceil(num_kids_over_18 / 2) + 1
+        chance_grandkid = int((5 if temp > 5 else temp) / 6 * 100)
+
+    afford_local_travel = False
+    if(player_info.job in ['Pilot', 'Flight Attendant'] or benefits):
+        num_people_travel = get_num_people(player_info.married, player_info.num_kids, player_info.kids_ages)
+        num_people_travel -= 2
+        if(num_people_travel < 0): 
+            num_people_travel = 0  # just in case 1 person but took off 2 people for discount
+        travel_cost = 500 * num_people_travel
+        if((travel_cost == 0) or (travel_cost < amt_can_afford)):
+            afford_local_travel = True
+
+    return render_template('actions.html', page_name='Actions', player_info=player_info, disabled=disabled, num_people=num_people, house=house, houses=houses, house_costs=house_costs, car=car, cars=cars, car_costs=car_costs, loans_int=loans_int, job=job, amt_can_afford=amt_can_afford, benefits=benefits, can_switch_job=can_switch_job, can_get_job=can_get_job, can_quit_job=can_quit_job, can_go_to_college=can_go_to_college, can_go_to_grad_school=can_go_to_grad_school, can_get_promotion=can_get_promotion, car_cat=car_cat, house_cat=house_cat, chance_grandkid=chance_grandkid, afford_local_travel=afford_local_travel)
 
 @app.route('/no_action')
 @login_required
@@ -676,7 +705,11 @@ def jobs():
 
     benefits = check_eligibility(player_info.path, player_info.yrs_military, player_info.age_grad, player_info.age, player_info.yrs_benefits_left)
 
-    return render_template('jobs.html', page_name='Jobs', player_info=player_info, category=player_info.jobs_page_type, picked=picked, job_options=None, job=job, benefits=benefits)
+    cat_map = {'no-family': 'Single Person', 'small-family': 'Small Family', 'large-family': 'Large Family'}
+    car_cat = 'None' if player_info.car == "None" else cat_map[get_car(player_info.car).category]
+    house_cat = 'None' if player_info.house == "None" else cat_map[get_house(player_info.house).category]
+
+    return render_template('jobs.html', page_name='Jobs', player_info=player_info, category=player_info.jobs_page_type, picked=picked, job_options=None, job=job, benefits=benefits, car_cat=car_cat, house_cat=house_cat)
 
 @app.route('/filter_jobs')
 @login_required
@@ -739,6 +772,10 @@ def get_job_options():
     # picked = {job.title.lower(): job.picked for job in all_jobs}
     player, player_info = get_cur_player_info()
 
+    cat_map = {'no-family': 'Single Person', 'small-family': 'Small Family', 'large-family': 'Large Family'}
+    car_cat = 'None' if player_info.car == "None" else cat_map[get_car(player_info.car).category]
+    house_cat = 'None' if player_info.house == "None" else cat_map[get_house(player_info.house).category]
+
     jobs_order = {val: idx for idx, val in enumerate([j.title for j in all_jobs])}
 
     job = "None"
@@ -766,12 +803,12 @@ def get_job_options():
         # get 2 options
         job_options = sorted(sample(jobs, 2), key=cmp_to_key(lambda x, y: 1 if jobs_order[x] > jobs_order[y] else -1))  # randomly pick 2 jobs
         job_option_titles = [j for j in job_options]
-        return  render_template('jobs.html', page_name='Jobs', jobs=job_options, picked=picked, job_option_titles=job_option_titles, category="regular", player_info=player_info)  # show options
+        return  render_template('jobs.html', page_name='Jobs', jobs=job_options, picked=picked, job_option_titles=job_option_titles, category="regular", player_info=player_info, car_cat=car_cat, house_cat=house_cat)  # show options
     elif(job_type == "college-grad"):
         # get 3 options
         job_options = sorted(sample(jobs, 3), key=cmp_to_key(lambda x, y: 1 if jobs_order[x] > jobs_order[y] else -1))  # randomly pick 3 jobs
         job_option_titles = [j for j in job_options]
-        return  render_template('jobs.html', page_name='Jobs', jobs=job_options, job_option_titles=job_option_titles, picked=picked, category="college-grad", player_info=player_info)  # show options
+        return  render_template('jobs.html', page_name='Jobs', jobs=job_options, job_option_titles=job_option_titles, picked=picked, category="college-grad", player_info=player_info, car_cat=car_cat, house_cat=house_cat)  # show options
     else:   # problem!
         return redirect(url_for('jobs', job=job))
 
@@ -840,7 +877,13 @@ def pick_job_from_options():
 def vehicles():
     player, player_info = get_cur_player_info()
     num_people = get_num_people(player_info.married, player_info.num_kids, player_info.kids_ages)
-    return render_template('vehicles.html', page_name='Vehicles', player_info=player_info, num_people=num_people)
+
+    cat_map = {'no-family': 'Single Person', 'small-family': 'Small Family', 'large-family': 'Large Family'}
+    car_cat = 'None' if player_info.car == "None" else cat_map[get_car(player_info.car).category]
+    house_cat = 'None' if player_info.house == "None" else cat_map[get_house(player_info.house).category]
+
+    return render_template('vehicles.html', page_name='Vehicles', player_info=player_info, num_people=num_people,
+    car_cat=car_cat, house_cat=house_cat)
 
 @app.route('/buy_car/<car>')
 @login_required
@@ -889,7 +932,12 @@ def houses():
         if(house != "none"):
             disabled[house] = True  # house is already owned
     num_people = get_num_people(player_info.married, player_info.num_kids, player_info.kids_ages)
-    return render_template('houses.html', page_name='Houses', disabled=disabled, player_info=player_info, num_people=num_people)
+
+    cat_map = {'no-family': 'Single Person', 'small-family': 'Small Family', 'large-family': 'Large Family'}
+    car_cat = 'None' if player_info.car == "None" else cat_map[get_car(player_info.car).category]
+    house_cat = 'None' if player_info.house == "None" else cat_map[get_house(player_info.house).category]
+
+    return render_template('houses.html', page_name='Houses', disabled=disabled, player_info=player_info, num_people=num_people, car_cat=car_cat, house_cat=house_cat)
 
 @app.route('/buy_house/<house>')
 @login_required
@@ -1082,6 +1130,8 @@ def expenses(testing, data):
             eat_ent = 0.05 * my_cur_salary
         else: 
             eat_ent = 0.1 * my_cur_salary
+        if((player_info.job == "Athlete") and player_info.med_prob):
+            eat_ent *= 0.25
 
         if(my_job in ["Cashier", "Barista"]):
             eat_ent *= 0.5  # 50% off
@@ -1202,13 +1252,17 @@ def expenses(testing, data):
 
     tax_break = 500 * player_info.num_kids
 
-    house_cat = house.category if house != "None" else 'no-family'
-    car_cat = car.category if car != "None" else 'no-family'
+    house_category = house.category if house != "None" else 'no-family'
+    car_category = car.category if car != "None" else 'no-family'
 
     benefits_run_out = check_eligibility(my_path, player_info.yrs_military, player_info.age_grad, player_info.age + 1, player_info.yrs_benefits_left)
 
+    cat_map = {'no-family': 'Single Person', 'small-family': 'Small Family', 'large-family': 'Large Family'}
+    car_cat = 'None' if player_info.car == "None" else cat_map[get_car(player_info.car).category]
+    house_cat = 'None' if player_info.house == "None" else cat_map[get_house(player_info.house).category]
+
     db.session.commit()
-    return render_template('expenses.html', page_name='Expenses', player_info=player_info, job=job, job_stress=job_stress, house=house, house_stress=house_stress, car=car, jobs=jobs, taxes=taxes, num_people=num_people, houses=houses, cars=cars, loans_int=loans_int, auto_ins=auto_ins, health_ins= health_ins, home_ins=home_ins, shopping=shopping, car_maintenance=car_maintenance, maid=maid, utilities=utilities, dental_fees=dental_fees, eat_ent=eat_ent, gas=gas, new_auto_ins=new_auto_ins, new_home_ins=new_home_ins, new_health_ins=new_health_ins, misc_points=misc_points, misc_fees=misc_fees, rent=rent, transit_fee=transit_fee, no_fam_car=no_fam_car, no_fam_house=no_fam_house, my_benefits=my_benefits, tax_prep=tax_prep, my_job=my_job, my_house=my_house, my_car=my_car, my_home_ins=my_home_ins, my_auto_ins=my_auto_ins, my_health_ins=my_health_ins, my_married=my_married, my_num_kids=my_num_kids, my_loans=my_loans, my_path=my_path, testing=is_testing, loan_pts=loan_pts, mandatory_loans=mandatory_loans, tax_break=tax_break, my_cur_salary=my_cur_salary, all_tax_prep_fees=all_tax_prep_fees, all_dental_fees=all_dental_fees, all_pet_fees=all_pet_fees, all_depression_fees=all_depression_fees, house_cat=house_cat, car_cat=car_cat, depression_pts=depression_pts, benefits_run_out=benefits_run_out)
+    return render_template('expenses.html', page_name='Finances', player_info=player_info, job=job, job_stress=job_stress, house=house, house_stress=house_stress, car=car, jobs=jobs, taxes=taxes, num_people=num_people, houses=houses, cars=cars, loans_int=loans_int, auto_ins=auto_ins, health_ins= health_ins, home_ins=home_ins, shopping=shopping, car_maintenance=car_maintenance, maid=maid, utilities=utilities, dental_fees=dental_fees, eat_ent=eat_ent, gas=gas, new_auto_ins=new_auto_ins, new_home_ins=new_home_ins, new_health_ins=new_health_ins, misc_points=misc_points, misc_fees=misc_fees, rent=rent, transit_fee=transit_fee, no_fam_car=no_fam_car, no_fam_house=no_fam_house, my_benefits=my_benefits, tax_prep=tax_prep, my_job=my_job, my_house=my_house, my_car=my_car, my_home_ins=my_home_ins, my_auto_ins=my_auto_ins, my_health_ins=my_health_ins, my_married=my_married, my_num_kids=my_num_kids, my_loans=my_loans, my_path=my_path, testing=is_testing, loan_pts=loan_pts, mandatory_loans=mandatory_loans, tax_break=tax_break, my_cur_salary=my_cur_salary, all_tax_prep_fees=all_tax_prep_fees, all_dental_fees=all_dental_fees, all_pet_fees=all_pet_fees, all_depression_fees=all_depression_fees, house_category=house_category, car_category=car_category, depression_pts=depression_pts, benefits_run_out=benefits_run_out, car_cat=car_cat, house_cat=house_cat)
 
 @app.route('/test_expenses')
 @login_required
@@ -1238,13 +1292,18 @@ def scoreboard():
     players_infos = Player_Info.query.filter_by(game_id=player.cur_game, active=True).join(Player, Player_Info.player_id==Player.id).add_columns(Player.name, Player_Info.points, Player_Info.money, Player_Info.loans).order_by(Player_Info.points.desc())
     ranks = calcRanks(players_infos)
     
-    return render_template('scoreboard.html', page_name='Scoreboard', ranks=ranks, player_info=player_info)
+    cat_map = {'no-family': 'Single Person', 'small-family': 'Small Family', 'large-family': 'Large Family'}
+    car_cat = 'None' if player_info.car == "None" else cat_map[get_car(player_info.car).category]
+    house_cat = 'None' if player_info.house == "None" else cat_map[get_house(player_info.house).category]
+
+    return render_template('scoreboard.html', page_name='Scoreboard', ranks=ranks, player_info=player_info,
+    car_cat=car_cat, house_cat=house_cat)
 
 @app.route('/stats')
 @login_required
 def stats():
     player, player_info = get_cur_player_info()
-    return render_template('stats.html', page_name='Stats', player_info=player_info)
+    return render_template('stats.html', page_name='Analysis', player_info=player_info)
 
 @app.route('/get_loan')
 @login_required
@@ -1287,7 +1346,7 @@ def save_allnotes(note1, note2, note3, note4):
     player_info.notes2 = note2
     player_info.notes3 = note3
     player_info.notes4 = note4
-    print(note1)
+    #print(note1)
     db.session.commit()
     return redirect(url_for('player_info'))
 
@@ -1420,7 +1479,10 @@ def change_marriage(mtype):
         player_info.points += 50
     else: # "divorce"
         player_info.married = False
-        player_info.points *= 0.99  # lose 1% of points
+        if(player_info.points < 0):
+            player_info.points *= 1.01  # if have negative points, must still lose points
+        else:
+            player_info.points *= 0.99  # lose 1% of points
         player_info.money -= 1000  # pay lawyer $1000
 
         # lawyer collect $1000 fee
@@ -1497,8 +1559,8 @@ def have_kids():
 def have_grandkids():
     player, player_info = get_cur_player_info()
     roll = simulateRoll()
-    num_kids_over_18 = player_info.num_kids # when child turns 18, removed from num kids  #get_num_kids_over_18(player_info.num_kids, player_info.kids_ages)
-    nums_needed = (num_kids_over_18 / 2) + 1
+    num_kids_over_18 = get_num_kids_over_18(player_info.num_kids, player_info.kids_ages)  #player_info.num_kids # when child turns 18, removed from num kids
+    nums_needed = math.ceil((num_kids_over_18 / 2)) + 1
     if(nums_needed > 5): nums_needed = 5  # max of 5 nums on die
     if(roll <= nums_needed):  # had grandchild
         player_info.points += 200
@@ -1800,8 +1862,11 @@ def get_num_people(is_married, num_kids, kids_ages):
 
 def get_num_kids_over_18(num_kids, kids_ages):
     num_kids_over_18 = 0
-    if(num_kids > 0):
-        num_kids_over_18 = len(list(map(lambda x: int(x) > 18, kids_ages.split(";"))))
+    if(kids_ages != "None"):  # have kids
+        ages = kids_ages.split(";")
+        for age in ages:
+            if(int(age) >= 18):
+                num_kids_over_18 += 1
     return num_kids_over_18
 
 # def get_college_loan_int(college_loans, age, age_grad):
@@ -2121,7 +2186,8 @@ def end_of_year():
     player_info.income = income
 
     player_info.age += 1
-    if(player_info.num_kids >= 1):
+    # if(player_info.num_kids >= 1):
+    if(player_info.kids_ages != "None"):  # once kids over 18, remove from num kids but still need to update ages
         player_info.oldest_child_age += 1
         new_kids_ages_int = list(map(lambda x: (int(x) + 1), player_info.kids_ages.split(";")))
         kids_ages_over_18 = [age for age in new_kids_ages_int if age == 18]

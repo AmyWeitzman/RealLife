@@ -55,3 +55,8 @@ button {
 button:hover {
     transform: scale(1.05);
 }
+
+.tooltip-inner {
+    white-space:pre-wrap;
+}
+

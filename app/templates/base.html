@@ -30,7 +30,7 @@
                 <div class="p-2"><a href="{{ url_for('stats') }}" class="nav-link">Analysis</a></div>
                 <div class="p-2"><a href="{{ url_for('scoreboard') }}" class="nav-link">Scoreboard</a></div>
             </div>
-            <div id="money-points">
+            <div id="money-points" data-toggle="tooltip" data-html="true" title="Age: {{ player_info.age }} <br> Car: {{ player_info.car }} {{ '('+car_cat+')' if car_cat != 'None' else '' }} <br> House: {{ player_info.house }} {{ '('+house_cat+')' if house_cat != 'None' else '' }}">
                 <p class="cur-status"><b>Current $$$:</b> {{ '{:,.0f}'.format(player_info.money) }}</p>
                 <p class="cur-status"><b>Current Points:</b> {{ '{:,.0f}'.format(player_info.points) }}</p>
             </div>

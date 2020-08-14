@@ -13,7 +13,7 @@
         <tr>
             <td class="action-button">
                 <form action="{{ url_for('buy_organic') }}">
-                    <button type="submit" id="buy_organic" class="{{ 'afford' if ((2000 * num_people) < amt_can_afford) else 'not-afford' }}">Buy organic</button><br>
+                    <button type="submit" id="buy_organic" class="{{ 'afford' if not player_info.job == 'Farmer' and ((2000 * num_people) < amt_can_afford) else 'afford' if player_info.job == 'Farmer' and ((1500 * num_people) < amt_can_afford) else 'not-afford' }}">Buy organic</button><br>
                     {% if player_info.job == "Farmer" %}
                     <label>pay ${{ "{:,.0f}".format((2000 * num_people) * 0.75) }}</label><br>
                     {% else %}
@@ -162,7 +162,7 @@
         <tr>
             <td class="action-button">
                 <form action="{{ url_for('travel', loc='local') }}">
-                    <button type="submit" id="local_travel" class="{{ 'afford' if ((500 * num_people) < amt_can_afford) else 'not-afford' }}">Local Travel</button><br>
+                    <button type="submit" id="local_travel" class="{{ 'afford' if ((500 * num_people) < amt_can_afford) or afford_local_travel else 'not-afford' }}">Local Travel</button><br>
                     {% if (player_info.job in ["Pilot", "Flight Attendant"]) or benefits %}
                     <label>pay ${{ "{:,.0f}".format(500 * (num_people - 2 if num_people - 2 > 0 else 0)) }}</label><br>
                     {% else %}
@@ -226,7 +226,9 @@
         <tr>
             <td class="action-button">
                 <form action="{{ url_for('have_kids') }}">
-                    <button type="submit" id="have_kid">Have Kids</button>
+                    <button type="submit" id="have_kid">Have Kids</button><br>
+                    <label># Kids Under 18: <b>{{ player_info.num_kids }}</b></label><br>
+                    <label>Kids' Ages: <b>{{ player_info.kids_ages }}</b></label>
                 </form>
             </td>
             <td class="center yrs-wait">{{ player_info.yrs_til_have_kid }}</td>
@@ -255,7 +257,8 @@
         <tr>
             <td class="action-button">
                 <form action="{{ url_for('have_grandkids') }}">
-                    <button type="submit" id="have_grandkid">Have Grandkids</button>
+                    <button type="submit" id="have_grandkid">Have Grandkids</button><br>
+                    <label>{{ chance_grandkid }}% chance of grandchild</label>
                 </form>
             </td>
             <td class="center yrs-wait">{{ player_info.yrs_til_have_grandkid }}</td>
@@ -598,9 +601,11 @@
 
         money = parseFloat("{{ player_info.money }}");
         loans_int = parseFloat("{{ loans_int }}");
+        afford_local_travel = "{{ afford_local_travel }}".toLowerCase() == "true" ? true : false;
         if((money - loans_int) < 0) { // cannot afford any action
             document.querySelectorAll('.afford').forEach(btn => {
-                btn.classList.add('not-afford');
+                if(!afford_local_travel)
+                    btn.classList.add('not-afford');
             });
         }
         else {

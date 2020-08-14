@@ -4,6 +4,12 @@
         <meta charset="utf-8">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/stats.css') }}">
         <script src="https://d3js.org/d3.v4.min.js"></script>
+
+        {% if page_name %}
+        <title>Real Life: {{ page_name }}</title>
+        {% else %}
+        <title>Real Life</title>
+        {% endif %}
     </head>
     <body>
         <div id="nav-container" class="d-flex justify-content-between">

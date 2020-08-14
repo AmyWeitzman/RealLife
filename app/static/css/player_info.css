@@ -367,10 +367,6 @@ button:disabled {
     color: green !important;
 }
 
-.tooltip-inner {
-    white-space:pre-wrap;
-}
-
 #mil-go-to-college {
     float: right;
     margin-right: 30px;

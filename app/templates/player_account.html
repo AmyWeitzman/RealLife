@@ -19,6 +19,7 @@
     </head>
     <body>
         <h1 id="page-title">Real Life of <span id='player-name'>{{ player.name }}</span></h1>
+        <a href="https://docs.google.com/document/d/1BTVhJpHs1V9N6_I8DIPkwvwjlYg6-COy9R48hBVUu0M/edit?usp=sharing" target="_blank" id="rules">Rules</a>
         {% if player.name == "Test" %}
             <a href="{{ url_for('database') }}">Database</a>
         {% endif %}

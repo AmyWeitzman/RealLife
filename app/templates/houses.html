@@ -279,9 +279,15 @@
             document.getElementById('buy_'+key).disabled = true
         }
 
+        var job = "{{ player_info.job }}";
         var money = parseFloat("{{ player_info.money }}");
         document.querySelectorAll('.cost').forEach(el => {
-            if(money - parseFloat(el.innerHTML.replace(/,/g, '')) < 0) { // cannot afford
+            var cost = parseFloat(el.innerHTML.replace(/,/g, ''));
+            if(job == "Carpenter")
+                cost *= 75;
+            if(job == "Realtor")
+                cost *= 90;
+            if(money - cost < 0) { // cannot afford
                 el.classList.add('neg');
             }
         });

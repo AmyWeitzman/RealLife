@@ -45,7 +45,7 @@
                         <option value="{{ house.name }}" class="{{ house.category }}">{{ house.name }}</option>
                         {% endfor %}
                     </select><br>
-                    {% if player_info.house == "None" or house_cat == 'no-family' %}
+                    {% if player_info.house == "None" or house_category == 'no-family' %}
                         <input type="checkbox" name="test-home-ins" class="checkbox" value="test-home-ins" id="test-home-ins-checkbox" disabled>
                     {% elif player_info.have_home_ins %}
                         <input type="checkbox" name="test-home-ins" class="checkbox" value="test-home-ins" id="test-home-ins-checkbox" checked>
@@ -61,7 +61,7 @@
                         <option value="{{ car.name }}" class="{{ car.category }}">{{ car.name }}</option>
                         {% endfor %}
                     </select><br>
-                    {% if player_info.car == "None" or car_cat == 'no-family' %}
+                    {% if player_info.car == "None" or car_category == 'no-family' %}
                         <input type="checkbox" name="test-auto-ins" class="checkbox" value="test-auto-ins" id=test-auto-ins-checkbox disabled>
                     {% elif player_info.have_auto_ins %}
                         <input type="checkbox" name="test-auto-ins" class="checkbox" value="test-auto-ins" id=test-auto-ins-checkbox checked>
@@ -587,7 +587,10 @@
             document.getElementById("net-points-val").value = parseFloat(net_points).toLocaleString('en');
             document.getElementById("total-expenses").value = parseFloat(expenses).toLocaleString('en');
             document.getElementById("net-earnings-val").value = parseFloat(net_earnings).toLocaleString('en');
-            document.getElementById('loans-afford').innerHTML = parseFloat(Math.min(Math.floor(net_earnings + money + loans_payment), Math.floor(real_loans - mandatory_loans))).toLocaleString('en');
+
+            amt_can_afford = Math.min(Math.floor(net_earnings + money + loans_payment), Math.floor(real_loans - mandatory_loans))
+            if(real_loans - mandatory_loans > 0)
+                document.getElementById('loans-afford').innerHTML = parseFloat(amt_can_afford > 0 ? amt_can_afford : 0).toLocaleString('en');
 
             income = parseFloat("{{ player_info.current_salary }}");
             if(income < 40000)
