@@ -468,7 +468,7 @@
                 <p class="health-ins-bg input-label pad-bottom"><b>Health Insurance </b></p>
                 {% if player_info.age < 25 and my_benefits and not benefits_run_out %}
                     <input type="checkbox" name="health-ins" class="ins-checkbox in-line" value="health-ins" id="new-health-ins" disabled checked>
-                {% elif player_info.age == 25 %}
+                {% elif player_info.age == 25 and not my_benefits %}
                 <input type="checkbox" name="health-ins" class="ins-checkbox in-line" value="health-ins" id="new-health-ins">
                 {% elif player_info.have_health_ins %}
                 <input type="checkbox" name="health-ins" class="ins-checkbox in-line" value="health-ins" id="new-health-ins" checked>

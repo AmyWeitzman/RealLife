@@ -625,7 +625,6 @@ def actions():  # actions can only be done every x yrs
             disabled["change_car"] = False
         if(must_change_house):
             disabled["change_house"] = False
-        player_info.disable_no_action = True
 
     # if(player_info.num_yrs_college == 4): 
     #     if(player_info.house == "None"):  # need to buy a house
@@ -678,6 +677,7 @@ def actions():  # actions can only be done every x yrs
         if((travel_cost == 0) or (travel_cost < amt_can_afford)):
             afford_local_travel = True
 
+    db.session.commit()
     return render_template('actions.html', page_name='Actions', player_info=player_info, disabled=disabled, num_people=num_people, house=house, houses=houses, house_costs=house_costs, car=car, cars=cars, car_costs=car_costs, loans_int=loans_int, job=job, amt_can_afford=amt_can_afford, benefits=benefits, can_switch_job=can_switch_job, can_get_job=can_get_job, can_quit_job=can_quit_job, can_go_to_college=can_go_to_college, can_go_to_grad_school=can_go_to_grad_school, can_get_promotion=can_get_promotion, car_cat=car_cat, house_cat=house_cat, chance_grandkid=chance_grandkid, afford_local_travel=afford_local_travel)
 
 @app.route('/no_action')
@@ -1564,6 +1564,7 @@ def have_kids():
     
     if((num_babies == 2) and (get_num_people(player_info.married, player_info.num_kids, player_info.kids_ages) >= 5) and ((get_car(player_info.car).category != "large-family") or (get_house(player_info.house).category != "large-family"))):
         player_info.twins_upgrade = True
+        player_info.disable_no_action = True
         flash("Must upgrade to large family house/car.", "error")
 
     db.session.commit()  
