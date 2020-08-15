@@ -2194,8 +2194,6 @@ def end_of_year():
     # elif(player_info.job == "Veterinarian"):  # get all pet fees
     #     extras += get_all_pet_fees(player.cur_game)
 
-    # income = ()
-
     player_info.money += (salary - expenses)
     player_info.expenses = expenses - loans_payment
     player_info.income = salary

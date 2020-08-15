@@ -160,7 +160,7 @@
             <td class="field-name"><label class="field-label blue" data-toggle="tooltip" data-html="true" title="under 18" data-placement="bottom">Kids</label></td>
             <td class="field-val"><label class="black-border">{{ player_info.num_kids }}</label></td>
             <td class="field-name"><label class="field-label blue">Ages</label></td>
-            <td class="field-val"><label class="black-border">{{ ", ".join(player_info.kids_ages.split(";")) }}</label></td>
+            <td class="field-val"><label class="black-border">{{ ",".join(player_info.kids_ages.split(";")) }}</label></td>
             <td id="side-button-cell" colspan="2">
                 <form action="{{ url_for('actions') }}">
                     <button type="submit" id="do-action-button">Action</button>

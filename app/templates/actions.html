@@ -230,7 +230,7 @@
                 <form action="{{ url_for('have_kids') }}">
                     <button type="submit" id="have_kid">Have Kids</button><br>
                     <label># Kids Under 18: <b><span class="{{ 'kid-pt-alert' if player_info.num_kids == 4 else '' }}">{{ player_info.num_kids }}</span></b></label><br>
-                    <label>Kids' Ages: <b>{{ player_info.kids_ages }}</b></label>
+                    <label>Kids' Ages: <b>{{ player_info.kids_ages.replace(';', ',') }}</b></label>
                 </form>
             </td>
             <td class="center yrs-wait">{{ player_info.yrs_til_have_kid }}</td>

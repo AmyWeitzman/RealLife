@@ -284,9 +284,9 @@
         document.querySelectorAll('.cost').forEach(el => {
             var cost = parseFloat(el.innerHTML.replace(/,/g, ''));
             if(job == "Carpenter")
-                cost *= 75;
+                cost *= 0.75;
             if(job == "Realtor")
-                cost *= 90;
+                cost *= 0.90;
             if(money - cost < 0) { // cannot afford
                 el.classList.add('neg');
             }
