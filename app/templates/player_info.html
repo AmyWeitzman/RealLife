@@ -347,13 +347,13 @@
             else {
                 document.getElementById('do-action-button').disabled = false;
                 document.getElementById('no-action-button').disabled = false;
+    
+                disable_no_action = "{{ player_info.disable_no_action }}".toLowerCase() == "true" ? true : false;
+                if(disable_no_action) 
+                    document.getElementById("no-action-button").disabled = true;
+                else
+                    document.getElementById('no-action-button').disabled = false;
             }
-
-            disable_no_action = "{{ player_info.disable_no_action }}".toLowerCase() == "true" ? true : false;
-            if(disable_no_action) 
-                document.getElementById("no-action-button").disabled = true;
-            else
-                document.getElementById('no-action-button').disabled = false;
         }
         else if((ready_to_start.toLowerCase() == "false") || (!all_paid)) {    // game not started yet
             document.getElementById('pick-card-button').disabled = true;

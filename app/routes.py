@@ -811,7 +811,7 @@ def get_job_options():
         return redirect(url_for("pick_job", job_name=job))
     elif(job_type == "grad-school-6"):
         # only 1 choice
-        return redirect(url_for("pick_job", job="Doctor"))
+        return redirect(url_for("pick_job", job_name="Doctor"))
     elif(job_type == "regular"):
         # get 2 options
         job_options = sorted(sample(jobs, 2), key=cmp_to_key(lambda x, y: 1 if jobs_order[x] > jobs_order[y] else -1))  # randomly pick 2 jobs
@@ -2303,7 +2303,6 @@ def end_of_year():
             player_info.num_yrs_grad_school = 0  # reset so can tell if do another grad school
             flash("You graduated med school!", "success")
             return redirect(url_for('graduate'))   
-        
 
     if(player_info.age == 65):  # retirement = game over
         end_game(player.cur_game)
