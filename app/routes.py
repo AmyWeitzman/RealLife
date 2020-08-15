@@ -273,6 +273,8 @@ def pick_card(game_id):
                 player_info.money -= (50 * num_people)
             else:
                 flash("Chiropractor fees covered by health insurance.", "success")
+            if(player_info.job == "Athlete"):
+                player_info.med_prob = True
             job = get_job("Mechanic")
             picked = get_picked_jobs(player, player_info, "all")
             if((picked["Mechanic"]) and not player_info.job == "Mechanic"):  # someone is the mechanic, gets paid $5000
@@ -345,6 +347,8 @@ def pick_card(game_id):
                         player_info.money -= (50 * num_people)
                     else:
                         flash("Chiropractor fees covered by health insurance.", "success")
+                    if(player_info.job == "Athlete"):
+                        player_info.med_prob = True
                     job = get_job("Mechanic")
                     picked = get_picked_jobs(player, player_info, "all")
                     if((picked["Mechanic"]) and not player_info.job == "Mechanic"):  # someone is the mechanic, gets paid $5000
@@ -570,7 +574,7 @@ def actions():  # actions can only be done every x yrs
             disabled["get_married"] = True  # must have at least small family house/car to get married
         if((not player_info.married) or (player_info.yrs_til_change_married > 0)):
             disabled["get_divorced"] = True  # must be married to get divorced
-        if((not player_info.married) or (player_info.age > 45) or (player_info.yrs_til_have_kid > 0)):
+        if((not player_info.married) or (player_info.age > 45) or (player_info.yrs_til_have_kid > 0) or ((get_num_people(player_info.married, player_info.num_kids, player_info.kids_ages) == 4) and (get_house(player_info.house).category == "small-family") and (get_car(player_info.car).category == "small-family"))):
             disabled["have_kid"] = True  # must be married to have kids and under 40
         if((player_info.oldest_child_age < 18) or (player_info.yrs_til_have_grandkid > 0)):
             disabled["have_grandkid"] = True  # oldest child must be at least 18 to try for grandchild
@@ -792,7 +796,16 @@ def get_job_options():
         jobs = [job.title for job in all_jobs if not picked[job.title] and job.category == job_type]
     if(job_type == "military"):
         return redirect(url_for("pick_job", job_name="Military"))
-    if(job_type in ["job-in-college", "grad-school-1", "grad-school-2"]):
+    if(job_type in ["job-in-college"]):
+        # only get one option so whatever is picked is your job
+        if(player_info.job != "None"):
+            job = jobs[randint(0, len(jobs) - 1)]  # get random job
+            while(job == player_info.job):  # make sure not your current job (job in college not "picked"
+                job = jobs[randint(0, len(jobs) - 1)]  # get random job
+        else:
+            job = jobs[randint(0, len(jobs) - 1)]  # get random job
+        return redirect(url_for("pick_job", job_name=job))
+    elif(job_type in ["grad-school-1", "grad-school-2"]):
         # only get one option so whatever is picked is your job
         job = jobs[randint(0, len(jobs) - 1)]  # get random job
         return redirect(url_for("pick_job", job_name=job))
@@ -907,7 +920,7 @@ def buy_car(car):
         else: player_info.points += 80
         if(player_info.points < 0):  # depressed
             player_info.depressed = True
-        if((downgrade == 1) and (player_info.age >= 40)):  # upgrade over 40 takes wait_yrs
+        if(player_info.age >= 40):  # upgrade over 40 takes wait_yrs
             player_info.upgrade_over_40 = wait_yrs
     player_info.yrs_til_change_car = wait_yrs
 
@@ -933,6 +946,7 @@ def houses():
             disabled[house] = True  # house is already owned
     num_people = get_num_people(player_info.married, player_info.num_kids, player_info.kids_ages)
 
+    player_info = get_cur_player_info()[1];
     cat_map = {'no-family': 'Single Person', 'small-family': 'Small Family', 'large-family': 'Large Family'}
     car_cat = 'None' if player_info.car == "None" else cat_map[get_car(player_info.car).category]
     house_cat = 'None' if player_info.house == "None" else cat_map[get_house(player_info.house).category]
@@ -966,7 +980,7 @@ def buy_house(house):
         else: player_info.points += 150
         if(player_info.points < 0):  # depressed
             player_info.depressed = True
-        if((downgrade == 1) and (player_info.age >= 40)):  # upgrade over 40 takes wait_yrs
+        if(player_info.age >= 40):  # upgrade over 40 takes wait_yrs
             player_info.upgrade_over_40 = wait_yrs
     player_info.yrs_til_change_house = wait_yrs
 
@@ -1124,14 +1138,15 @@ def expenses(testing, data):
 
     eat_ent = 0 
     if(my_job != "None"):
+        if((player_info.job == "Athlete") and player_info.med_prob):
+            my_cur_salary *= 0.25
+
         if my_cur_salary < 50000:
             eat_ent = 0.01 * my_cur_salary
         elif my_cur_salary < 100000:
             eat_ent = 0.05 * my_cur_salary
         else: 
             eat_ent = 0.1 * my_cur_salary
-        if((player_info.job == "Athlete") and player_info.med_prob):
-            eat_ent *= 0.25
 
         if(my_job in ["Cashier", "Barista"]):
             eat_ent *= 0.5  # 50% off
@@ -1990,8 +2005,8 @@ def get_announcements(player_info):
                announcements["Ineligible for military benefits next year"] = "urgent"   # benefits run out
             elif((player_info.yrs_benefits_left == 2) and not (player_info.num_yrs_college > 0 and player_info.num_yrs_college < 5)):
                 announcements["Ineligible for military benefits in 2 years"] = "fyi"   # benefits run out soon
-            if((player_info.num_kids == 3) or (player_info.num_kids == 4)):
-                announcements[">= 5 kids = -50 points each"] = "fyi"
+            # if((player_info.num_kids == 3) or (player_info.num_kids == 4)):
+            #     announcements[">= 5 kids = -50 points each"] = "fyi"
             # num_people = get_num_people(player_info.married, player_info.num_kids, player_info.kids_ages)
             # if(num_people == 4):  # can assume already have house and car
             #     car = get_car(player_info.car)
@@ -2179,11 +2194,11 @@ def end_of_year():
     # elif(player_info.job == "Veterinarian"):  # get all pet fees
     #     extras += get_all_pet_fees(player.cur_game)
 
-    income = (salary - expenses)
+    # income = ()
 
-    player_info.money += income
+    player_info.money += (salary - expenses)
     player_info.expenses = expenses - loans_payment
-    player_info.income = income
+    player_info.income = salary
 
     player_info.age += 1
     # if(player_info.num_kids >= 1):
@@ -2282,12 +2297,13 @@ def end_of_year():
 
     db.session.commit()
 
-    if((player_info.grad_school) and player_info.graduating):
-        if(player_info.num_yrs_grad_school == 7):  # graduating 6 yr grad school
+    if(player_info.grad_school and player_info.graduating):
+        player_info.num_yrs_grad_school = 0  # reset so can tell if do another grad school 
+    elif(player_info.grad_school and (player_info.num_yrs_grad_school == 7)):  # graduating 6 yr grad school
             player_info.num_yrs_grad_school = 0  # reset so can tell if do another grad school
             flash("You graduated med school!", "success")
             return redirect(url_for('graduate'))   
-        player_info.num_yrs_grad_school = 0  # reset so can tell if do another grad school 
+        
 
     if(player_info.age == 65):  # retirement = game over
         end_game(player.cur_game)

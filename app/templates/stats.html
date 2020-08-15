@@ -135,6 +135,8 @@
                 return d.count;                                           
                 }));                                        
                 var percent = Math.round(1000 * d.data.count / total) / 10; 
+                if(percent < 0)
+                    percent = 100
                 tooltip.attr('id', "tooltip-left")
                 tooltip.select('.label').html(d.data.label).style('font-weight', 'bold');                
                 tooltip.select('.count').html('$' + d.data.count.toLocaleString('en'));                

@@ -593,6 +593,10 @@
                 document.getElementById('loans-afford').innerHTML = parseFloat(amt_can_afford > 0 ? amt_can_afford : 0).toLocaleString('en');
 
             income = parseFloat("{{ player_info.current_salary }}");
+            job = "{{ my_job }}";
+            if(job == "Athlete")
+                income *= 0.25
+
             if(income < 40000)
                 document.getElementById("tax-10").setAttribute('style', 'font-weight: bold;');
             else if(income < 80000)
@@ -656,6 +660,10 @@
                 document.getElementById("net-earnings-val").value = parseFloat(net_earnings).toLocaleString('en');
             
                 income = parseFloat("{{ player_info.current_salary }}");
+                job = "{{ my_job }}";
+                if(job == "Athlete")
+                    income *= 0.25
+
                 if(income < 40000)
                     document.getElementById("tax-10").setAttribute('style', 'font-weight: bold;');
                 else if(income < 80000)

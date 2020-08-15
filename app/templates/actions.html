@@ -95,6 +95,7 @@
                         <li>change in price <= 80,000: 55 points</li>
                         <li>change in price > 80,000: 80 points</li>
                     </ul>
+                    <span class="once">* Upgrade/downgrade over 40 takes up next 3 yrs of actions</span>
                 </ul>
             </td>
             <td>
@@ -136,6 +137,7 @@
                         <li>change in price <= 500,000: 110 points</li>
                         <li>change in price > 500,000: 150 points</li>
                     </ul>
+                    <span class="once">* Upgrade/downgrade over 40 takes up next 3 yrs of actions</span>
                 </ul>
             </td>
             <td>
@@ -227,7 +229,7 @@
             <td class="action-button">
                 <form action="{{ url_for('have_kids') }}">
                     <button type="submit" id="have_kid">Have Kids</button><br>
-                    <label># Kids Under 18: <b>{{ player_info.num_kids }}</b></label><br>
+                    <label># Kids Under 18: <b><span class="{{ 'kid-pt-alert' if player_info.num_kids == 4 else '' }}">{{ player_info.num_kids }}</span></b></label><br>
                     <label>Kids' Ages: <b>{{ player_info.kids_ages }}</b></label>
                 </form>
             </td>
@@ -235,7 +237,7 @@
             <td>
                 <ul>
                     <li>roll: 1-5 = single, 6 = twins</li>
-                    <li>+100 points per child <= 4 kids, otherwise -50 points per child</li>
+                    <li>+100 points per child <= 4 kids, otherwise <span class="{{ 'kid-pt-alert' if player_info.num_kids == 4 else '' }}">-50 points per child</span></li>
                     <li>pay $1500 school fee to the teacher per new child</li>
                     <li>to have 3rd child, must upgrade house and car</li>
                     <li>must upgrade immediately if second child attempt is twins</li>

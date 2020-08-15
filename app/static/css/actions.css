@@ -323,3 +323,7 @@ button:disabled {
     color: white;
     border: white 5px solid;
 }
+
+.kid-pt-alert {
+    color: red;
+}
