@@ -1553,7 +1553,9 @@ def have_kids():
         kids_ages.extend(new_babies_ages)
         kids_ages = ";".join(kids_ages)  # add new kid(s) ages
     else:
-        kids_ages = "0"
+        new_babies_ages = ['0'] * num_babies
+        kids_ages = ";".join(new_babies_ages)  # add new kid(s) ages
+
     player_info.kids_ages = kids_ages
 
     game = get_game(player.cur_game)
