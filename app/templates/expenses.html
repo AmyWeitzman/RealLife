@@ -176,7 +176,7 @@
             </td>
             <td>
                 <p>$1000 per person</p>
-                {% if player_info.path == "college" %}
+                {% if player_info.num_yrs_college > 0 and player_info.age < 22 %}
                 <p class="once">* college students get 50% off</p>
                 {% endif %}
             </td>

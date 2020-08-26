@@ -556,7 +556,7 @@ def actions():  # actions can only be done every x yrs
 
     disabled = {}  # keep track of which actions player is not eligible to do and disable the button for them
     if((player_info.upgrade_over_40 == 0)):  # not stuck in upgrade over 40
-        if((player_info.path == "college") or (player_info.buying_organic == True) or (player_info.yrs_til_buy_organic > 0)):
+        if((player_info.num_yrs_college > 0 and player_info.age < 22) or (player_info.buying_organic == True) or (player_info.yrs_til_buy_organic > 0)):
             disabled["buy_organic"] = True  # cannot buy organic in college
         if((player_info.house.lower() == "none") or (house.category == "no-family") or (player_info.yrs_til_upgrade_appliances > 0) or (player_info.bought_appliances)):
             disabled["upgrade_appliances"] = True  # must have at least small family house to upgrade appliances
