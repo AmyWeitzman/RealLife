@@ -53,10 +53,10 @@
         <tr>
             <td class="small-family" rowspan=4><b>Small Family</b><br>(max 4 people)</td>
             <td>Mini</td>
-            <td class="cost">20,000</td>
-            <td>600</td>
-            <td>1,000</td>
-            <td>10,000</td>
+            <td class="cost">15,000</td>
+            <td>450</td>
+            <td>500</td>
+            <td>7,500</td>
             <td class="buy-button-cell">
                 <form action="{{ url_for('buy_car', car='Mini') }}">
                     <button type="submit" id="buy_Mini">BUY</button>
@@ -65,10 +65,10 @@
         </tr>
         <tr>
             <td>Sedan</td>
-            <td class="cost">30,000</td>
-            <td>900</td>
-            <td>1,500</td>
-            <td>15,000</td>
+            <td class="cost">20,000</td>
+            <td>600</td>
+            <td>750</td>
+            <td>10,000</td>
             <td class="buy-button-cell">
                 <form action="{{ url_for('buy_car', car='Sedan') }}">
                     <button type="submit" id="buy_Sedan">BUY</button>
@@ -77,10 +77,10 @@
         </tr>
         <tr>
             <td>Station Wagon</td>
-            <td class="cost">30,000</td>
-            <td>900</td>
-            <td>1,500</td>
-            <td>15,000</td>
+            <td class="cost">25,000</td>
+            <td>750</td>
+            <td>1,000</td>
+            <td>12,500</td>
             <td class="buy-button-cell">
                 <form action="{{ url_for('buy_car', car='Station Wagon') }}">
                     <button type="submit" id="buy_Station Wagon">BUY</button>
@@ -185,6 +185,18 @@
             </td>
         </tr>
         <tr>
+            <td>Limo</td>
+            <td class="cost">90,000</td>
+            <td>2,700</td>
+            <td>4,000</td>
+            <td>45,000</td>
+            <td class="buy-button-cell">
+                <form action="{{ url_for('buy_car', car='Limo') }}">
+                    <button type="submit" id="buy_Limo">BUY</button>
+                </form>
+            </td>
+        </tr>
+        <tr>
             <td>Tesla</td>
             <td class="cost">100,000</td>
             <td>3,000</td>
@@ -193,18 +205,6 @@
             <td class="buy-button-cell">
                 <form action="{{ url_for('buy_car', car='Tesla') }}">
                     <button type="submit" id="buy_Tesla">BUY</button>
-                </form>
-            </td>
-        </tr>
-        <tr>
-            <td>Limo</td>
-            <td class="cost">100,000</td>
-            <td>3,000</td>
-            <td>5,000</td>
-            <td>50,000</td>
-            <td class="buy-button-cell">
-                <form action="{{ url_for('buy_car', car='Limo') }}">
-                    <button type="submit" id="buy_Limo">BUY</button>
                 </form>
             </td>
         </tr>

@@ -539,7 +539,7 @@ def actions():  # actions can only be done every x yrs
     can_get_job = (player_info.job == "None") and (player_info.start_college_beginning and player_info.age < 22)
     can_quit_job = (player_info.path == "college") and (player_info.job != "None" and job.category == "job-in-college")
     can_get_promotion = (player_info.path != "military" and player_info.job != "None" and player_info.job != "YouTuber" and job.category != "job-in-college" and (not player_info.path == "college") and (not player_info.grad_school) and not (player_info.num_yrs_college > 0 and player_info.num_yrs_college < 5))
-    can_go_to_college = ((player_info.age != 18 and player_info.path == "military" and player_info.yrs_military >= 4 and not player_info.mil_to_college) or (player_info.path != "college" and player_info.path != "military" and player_info.age_grad == 0)) and not player_info.mil_to_college
+    can_go_to_college = (player_info.yrs_military >= 4 and not player_info.mil_to_college) or (player_info.num_yrs_college == 0) 
     can_go_to_grad_school = (player_info.age_grad > 0) and not (player_info.done_grad_1 and player_info.done_grad_2 and player_info.done_grad_6) and not player_info.grad_school
 
     if(can_switch_job): action_options.append("switch_jobs")
@@ -574,7 +574,7 @@ def actions():  # actions can only be done every x yrs
             disabled["get_married"] = True  # must have at least small family house/car to get married
         if((not player_info.married) or (player_info.yrs_til_change_married > 0)):
             disabled["get_divorced"] = True  # must be married to get divorced
-        if((not player_info.married) or (player_info.age > 45) or (player_info.yrs_til_have_kid > 0) or ((get_num_people(player_info.married, player_info.num_kids, player_info.kids_ages) == 4) and (get_house(player_info.house).category == "small-family") and (get_car(player_info.car).category == "small-family"))):
+        if((not player_info.married) or (player_info.age > 45) or (player_info.yrs_til_have_kid > 0) or ((get_num_people(player_info.married, player_info.num_kids, player_info.kids_ages) == 4) and (get_house(player_info.house).category == "small-family") or (get_car(player_info.car).category == "small-family"))):
             disabled["have_kid"] = True  # must be married to have kids and under 40
         if((player_info.oldest_child_age < 18) or (player_info.yrs_til_have_grandkid > 0)):
             disabled["have_grandkid"] = True  # oldest child must be at least 18 to try for grandchild
@@ -1172,7 +1172,7 @@ def expenses(testing, data):
     if((player_info.points < 0) or player_info.depressed):
         depression_pts = abs(player_info.points * 0.1)
         misc_points += depression_pts  # get 10% of negative points back
-    if my_job == "Teacher":
+    if((my_job == "Teacher") and (player_info.current_salary < 100000)):
         misc_points += 100  # teacher appreciation
     if((my_path == "college") and (my_job != "None")):  
         misc_points -= 50  # job in college = minus points
@@ -1527,7 +1527,11 @@ def have_kids():
         had_child = simulateRoll() in [1, 2, 3]  # 50% chance of child
     if(not had_child):
         flash("You did NOT have a child.", "error")
-        redirect(url_for('player_info'))
+        game = get_game(player.cur_game)
+        player_info.done_action = True
+        switch_turn(game)
+        db.session.commit()  
+        return redirect(url_for('player_info'))
     roll = simulateRoll()
     num_babies = 1 if roll < 6 else 2
     points = (100 * num_babies) if (player_info.num_kids + num_babies) <= 4 else (-50 * num_babies) if (player_info.num_kids + num_babies) >= 6 else -50 if (num_babies == 1) else 50  # last one is for twins where one is +50 and one is -50
@@ -1818,7 +1822,8 @@ def is_valid_card(player_info, card):
 
 def get_taxes(cur_salary, job, married):
     percent = 0
-    if(cur_salary < 40000): percent = 0.1
+    if(cur_salary <= 20000): percent = 0
+    elif(cur_salary < 40000): percent = 0.1
     elif(cur_salary < 80000): percent = 0.2
     elif(cur_salary < 200000): percent = 0.3
     else: percent = 0.4  

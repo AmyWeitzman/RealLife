@@ -60,3 +60,13 @@ button:hover {
     white-space:pre-wrap;
 }
 
+#home-button {
+    background-color: lightskyblue;
+    color: indigo;
+    font-weight: bold;
+}
+
+#home-button:hover {
+    color: white;
+}
+

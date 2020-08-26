@@ -31,7 +31,7 @@
             </td>
             <td>
                 <ul>
-                    <li class="{{ 'no' if player_info.path == 'college' else 'yes' }}">cannot be in college</li>
+                    <li class="{{ 'no' if player_info.num_yrs_college > 0 and player_info.age < 22 else 'yes' }}">cannot be in college under 22</li>
                 </ul>
             </td>
         </tr>
@@ -371,7 +371,7 @@
                 <ul>
                     {% if can_go_to_college %}
                         <li>go to 4 yr college</li>  
-                        <span class="once">* eligible for scholarships but not parent contribution</span><br>
+                        <span class="once">* eligible for scholarships {{ 'but not' if player_info.age > 22 else 'and' }} parent contribution</span><br>
                         {% if not (player_info.path == "military") %}
                         <span class="once">* keep current job part-time for half salary</span><br> 
                         {% else %}

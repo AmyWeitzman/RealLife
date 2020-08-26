@@ -227,6 +227,10 @@ button:disabled {
     color: blue;
 }
 
+.tax-0 {
+    color: darkgreen;
+}
+
 .tax-10{
     color: darkgoldenrod;
 }
