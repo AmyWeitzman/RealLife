@@ -574,7 +574,7 @@ def actions():  # actions can only be done every x yrs
             disabled["get_married"] = True  # must have at least small family house/car to get married
         if((not player_info.married) or (player_info.yrs_til_change_married > 0)):
             disabled["get_divorced"] = True  # must be married to get divorced
-        if((not player_info.married) or (player_info.age > 45) or (player_info.yrs_til_have_kid > 0) or ((get_num_people(player_info.married, player_info.num_kids, player_info.kids_ages) == 4) and (get_house(player_info.house).category == "small-family") or (get_car(player_info.car).category == "small-family"))):
+        if((not player_info.married) or (player_info.age > 45) or (player_info.yrs_til_have_kid > 0) or ((get_num_people(player_info.married, player_info.num_kids, player_info.kids_ages) == 4) and ((get_house(player_info.house).category == "small-family") or (get_car(player_info.car).category == "small-family")))):
             disabled["have_kid"] = True  # must be married to have kids and under 40
         if((player_info.oldest_child_age < 18) or (player_info.yrs_til_have_grandkid > 0)):
             disabled["have_grandkid"] = True  # oldest child must be at least 18 to try for grandchild
@@ -1525,6 +1525,7 @@ def have_kids():
         had_child = randint(1, 4) in [1, 2, 3]   # 75% chance of child
     else:  # age 41-45
         had_child = simulateRoll() in [1, 2, 3]  # 50% chance of child
+
     if(not had_child):
         flash("You did NOT have a child.", "error")
         game = get_game(player.cur_game)
@@ -1532,6 +1533,7 @@ def have_kids():
         switch_turn(game)
         db.session.commit()  
         return redirect(url_for('player_info'))
+
     roll = simulateRoll()
     num_babies = 1 if roll < 6 else 2
     points = (100 * num_babies) if (player_info.num_kids + num_babies) <= 4 else (-50 * num_babies) if (player_info.num_kids + num_babies) >= 6 else -50 if (num_babies == 1) else 50  # last one is for twins where one is +50 and one is -50
